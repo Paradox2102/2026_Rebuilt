@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems.intake;
+package frc.robot.subsystems.indexer;
 
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
@@ -26,24 +26,24 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class IntakeRollerSubsystem extends SubsystemBase {
-  private SparkFlex m_intakeRollerMotor = new SparkFlex(Constants.CANIDConstants.intake_roller, MotorType.kBrushless);
-  private SparkClosedLoopController m_pid = m_intakeRollerMotor.getClosedLoopController();
-  private RelativeEncoder m_encoder = m_intakeRollerMotor.getEncoder();
+public class ConveyorSubsystem extends SubsystemBase {
+  private SparkFlex m_conveyorMotor = new SparkFlex(Constants.CANIDConstants.conveyor, MotorType.kBrushless);
+  private SparkClosedLoopController m_pid = m_conveyorMotor.getClosedLoopController();
+  private RelativeEncoder m_encoder = m_conveyorMotor.getEncoder();
 
-  private FlywheelSim m_intakeRollerSim = new FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNeoVortex(1), Constants.IntakeConstants.k_rollerMOI, Constants.IntakeConstants.k_rollerReduction), DCMotor.getNeoVortex(1));
-  private SparkSim m_intakeRollerMotorSim = new SparkSim(m_intakeRollerMotor, DCMotor.getNeoVortex(1));
+  private FlywheelSim m_conveyorSim = new FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNeoVortex(1), Constants.IndexerConstants.k_conveyorMOI, Constants.IndexerConstants.k_conveyorReduction), DCMotor.getNeoVortex(1));
+  private SparkSim m_conveyorMotorSim = new SparkSim(m_conveyorMotor, DCMotor.getNeoVortex(1));
   
   private double m_simVelocity = 0;
 
-  /** Creates a new intakeRollerSubsystem. */
-  public IntakeRollerSubsystem() {
-    m_intakeRollerMotor.configure(Constants.IntakeConstants.k_rollerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+  /** Creates a new ConveyorSubsystem. */
+  public ConveyorSubsystem() {
+    m_conveyorMotor.configure(Constants.IndexerConstants.k_conveyorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   public Command run(boolean in){
     return Commands.runEnd(() -> {
-      m_pid.setSetpoint(in ? Constants.IntakeConstants.k_rollerInSpeed : Constants.IntakeConstants.k_rollerOutSpeed , ControlType.kVelocity);
+      m_pid.setSetpoint(in ? Constants.IndexerConstants.k_conveyorInSpeed : Constants.IndexerConstants.k_conveyorOutSpeed , ControlType.kVelocity);
     }, () -> {
       m_pid.setSetpoint(0, ControlType.kVelocity);
     }, this);
@@ -55,13 +55,13 @@ public class IntakeRollerSubsystem extends SubsystemBase {
   }
 
   public void simulationPeriodic() {
-    m_intakeRollerSim.setInput(m_intakeRollerMotorSim.getAppliedOutput() * RoboRioSim.getVInVoltage());
-    m_intakeRollerSim.update(0.02);
-    m_intakeRollerMotorSim.iterate(
-        Units.radiansPerSecondToRotationsPerMinute(m_intakeRollerSim.getAngularVelocityRadPerSec()),
+    m_conveyorSim.setInput(m_conveyorMotorSim.getAppliedOutput() * RoboRioSim.getVInVoltage());
+    m_conveyorSim.update(0.02);
+    m_conveyorMotorSim.iterate(
+        Units.radiansPerSecondToRotationsPerMinute(m_conveyorSim.getAngularVelocityRadPerSec()),
         RoboRioSim.getVInVoltage(),0.02);
     RoboRioSim.setVInVoltage(
-        BatterySim.calculateDefaultBatteryLoadedVoltage(m_intakeRollerSim.getCurrentDrawAmps()));
-    m_simVelocity = Units.radiansPerSecondToRotationsPerMinute(m_intakeRollerSim.getAngularVelocityRadPerSec());
+        BatterySim.calculateDefaultBatteryLoadedVoltage(m_conveyorSim.getCurrentDrawAmps()));
+    m_simVelocity = Units.radiansPerSecondToRotationsPerMinute(m_conveyorSim.getAngularVelocityRadPerSec());
   }
 }

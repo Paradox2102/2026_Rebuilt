@@ -5,6 +5,7 @@
 package frc.robot;
 
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.config.SparkFlexConfig;
 
 import edu.wpi.first.math.geometry.Translation3d;
@@ -26,14 +27,6 @@ public final class Constants
   public static final Matter k_chassis    = new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), k_robotMass);
   public static final double k_loopTime  = 0.13; //s, 20ms + 110ms sprk max velocity lag
   public static final double k_maxSpeed  = Units.feetToMeters(14.5);
-  // Maximum speed of the robot in meters per second, used to limit acceleration.
-
-//  public static final class AutonConstants
-//  {
-//
-//    public static final PIDConstants TRANSLATION_PID = new PIDConstants(0.7, 0, 0);
-//    public static final PIDConstants ANGLE_PID       = new PIDConstants(0.4, 0, 0.01);
-//  }
 
   public static final class DrivebaseConstants
   {
@@ -49,7 +42,25 @@ public final class Constants
   }
 
   public static class IntakeConstants{
-    
+    public static double k_rollerMOI = 0;
+
+    public static final double k_rollerReduction = 0;
+
+    public static final double k_rollerKV = 0;
+    public static final double k_rollerP = 0;
+
+    public static final int k_rollerCurrent = 60;
+    public static final double k_rollerInSpeed = 0;
+    public static final double k_rollerOutSpeed = 0;
+
+    public static final SparkFlexConfig k_rollerConfig = new SparkFlexConfig();
+
+    static {
+      k_rollerConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_rollerCurrent);
+
+      k_rollerConfig.closedLoop.p(k_rollerP).feedbackSensor(FeedbackSensor.kPrimaryEncoder).
+      feedForward.kV(k_rollerKV);
+    }
   }
 
   public static class ShooterConstants{
@@ -57,7 +68,42 @@ public final class Constants
   }
 
   public static class IndexerConstants{
-    
+    public static final double k_conveyorMOI = 0;
+
+    public static final double k_kickerMOI = 0;
+
+    public static final double k_conveyorReduction = 0;
+
+    public static final double k_kickerReduction = 0;
+
+    public static final double k_conveyorKV = 0;
+    public static final double k_conveyorP = 0;
+
+    public static final double k_kickerKV = 0;
+    public static final double k_kickerP = 0;
+
+    public static final int k_conveyorCurrent = 40;
+    public static final double k_conveyorInSpeed = 0;
+    public static final double k_conveyorOutSpeed = 0;
+
+    public static final int k_kickerCurrent = 40;
+    public static final double k_kickerInSpeed = 0;
+    public static final double k_kickerOutSpeed = 0;
+
+    public static final SparkFlexConfig k_conveyorConfig = new SparkFlexConfig();
+
+    public static final SparkFlexConfig k_kickerConfig = new SparkFlexConfig();
+    static {
+      k_conveyorConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_conveyorCurrent);
+
+      k_kickerConfig.apply(k_conveyorConfig);
+
+      k_conveyorConfig.closedLoop.p(k_conveyorP).feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+      .feedForward.kV(k_conveyorKV);
+
+      k_conveyorConfig.closedLoop.p(k_kickerP).feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+      .feedForward.kV(k_kickerKV);
+    }
   }
 
   public static class ClimberConstants{
@@ -84,10 +130,9 @@ public final class Constants
     public static final int bl_turn = 6; 
     public static final int br_drive = 7; 
     public static final int br_turn = 8;
-    public static final int intake_pivot_leader = 10;
-    public static final int intake_pivot_follower = 11;
-    public static final int intake_roller = 12;
-    public static final int indexer = 20;
+    public static final int intake_pivot = 10;
+    public static final int intake_roller = 11;
+    public static final int conveyor = 20;
     public static final int kicker = 21;
     public static final int shooter_1 = 30;
     public static final int shooter_2 = 31;
