@@ -10,6 +10,7 @@ import com.revrobotics.spark.config.SparkFlexConfig;
 
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import swervelib.math.Matter;
 
 /**
@@ -43,7 +44,6 @@ public final class Constants
 
   public static class IntakeConstants{
     public static double k_rollerMOI = 0;
-
     public static final double k_rollerReduction = 0;
 
     public static final double k_rollerKV = 0;
@@ -53,13 +53,33 @@ public final class Constants
     public static final double k_rollerInSpeed = 0;
     public static final double k_rollerOutSpeed = 0;
 
+    public static final double k_pivotMOI = 0;
+    public static final double k_pivotReduction = 0;
+    public static final double k_pivotLength = 0;
+    public static final double k_pivotMaxRotation = 0;
+
     public static final SparkFlexConfig k_rollerConfig = new SparkFlexConfig();
+
+    public static final double k_pivotKCos = 0;
+    public static final double k_pivotP = 0;
+    public static final double k_pivotI = 0;
+    public static final double k_pivotD = 0;
+
+    public static final int k_pivotCurrent = 80;
+
+    public static final SparkFlexConfig k_pivotConfig = new SparkFlexConfig();
 
     static {
       k_rollerConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_rollerCurrent);
 
       k_rollerConfig.closedLoop.p(k_rollerP).feedbackSensor(FeedbackSensor.kPrimaryEncoder).
       feedForward.kV(k_rollerKV);
+
+      k_pivotConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_pivotCurrent)
+      .absoluteEncoder.positionConversionFactor(360);
+
+      k_pivotConfig.closedLoop.pid(k_pivotP, k_pivotI, k_pivotD).feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+      .feedForward.kCosRatio(1.0/360.0).kCos(k_pivotKCos);
     }
   }
 
