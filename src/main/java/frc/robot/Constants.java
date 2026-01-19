@@ -5,11 +5,17 @@
 package frc.robot;
 
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
 import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.config.SparkFlexConfig;
 
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import swervelib.math.Matter;
 
@@ -202,5 +208,13 @@ public final class Constants
     public static final int climber_pivot_leader = 40;
     public static final int climber_pivot_follower = 41;
     public static final int climber_extension = 42;
+  }
+    public static class LightConstants {
+    public static final int k_lightPort = 0; // may be different on actual robot
+    public static final int k_lightAmount = 60;
+
+    public static LinearVelocity k_rainbowVelocity = MetersPerSecond.of(0.4);
+    public static Distance k_ledSpacing = Meters.of(1 / 120.0);
+    
   }
 }
