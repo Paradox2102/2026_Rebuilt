@@ -29,6 +29,7 @@ import frc.robot.Constants.ClimberConstants;
 public class ClimberPivotSubsystem extends SubsystemBase {
   public enum ClimberState{
     STOW(0,0,"Stow");
+    
     private double m_angle;
     private double m_extension;
     private String m_name;

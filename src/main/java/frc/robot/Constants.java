@@ -12,6 +12,9 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.config.SparkFlexConfig;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Distance;
@@ -45,6 +48,16 @@ public final class Constants
     public static final double k_rotateD = 0.0008;
 
     public static final double k_rotateIZone = 20;
+
+    public static final double k_fieldLengthMeters = 16.541;
+    public static final double k_fieldWidthMeters = 8.069;
+
+    public static final Translation2d k_blueHub = new Translation2d(4.625, 4.05);
+    public static final Translation2d k_blueOutpost = new Translation2d(0.365, 0.675);
+    public static final double k_blueZoneX = 4.625;
+    public static final double k_redZoneX = 11.925;
+
+    public static final double[][] k_shotTimes = {{0,0},{0,0}};
   }
 
   public static class IntakeConstants{

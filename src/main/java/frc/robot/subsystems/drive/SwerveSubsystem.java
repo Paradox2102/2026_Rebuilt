@@ -24,6 +24,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.Trajectory;
@@ -36,6 +37,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants.DrivebaseConstants;
+import frc.robot.subsystems.light.LightSubsystem;
 import frc.robot.Constants.CANIDConstants;
 
 import java.io.File;
@@ -66,13 +68,23 @@ public class SwerveSubsystem extends SubsystemBase {
 
     private PIDController m_orientPID = new PIDController(DrivebaseConstants.k_rotateP, DrivebaseConstants.k_rotateI, DrivebaseConstants.k_rotateD);
 
+    private Pose2d m_pastPos = getPose();
+    private Pose2d m_curPos = getPose();
+
+    private double m_curXVel = 0;
+    private double m_curYVel = 0;
+
+    private InterpolatingDoubleTreeMap m_shotTimeInt = new InterpolatingDoubleTreeMap();
+
+    private LightSubsystem m_LightSubsystem;
+
 
     /**
      * Initialize {@link SwerveDrive} with the directory provided.
      *
      * @param directory Directory of swerve drive config files.
      */
-    public SwerveSubsystem(File directory) {
+    public SwerveSubsystem(File directory, LightSubsystem leds) {
         boolean blueAlliance = false;
         Pose2d startingPose = blueAlliance ? new Pose2d(new Translation2d(Meter.of(1),
                 Meter.of(4)),
@@ -109,9 +121,13 @@ public class SwerveSubsystem extends SubsystemBase {
         setupPathPlanner();
         //RobotModeTriggers.autonomous().onTrue(Commands.runOnce(this::zeroGyroWithAlliance));
         m_vision = new Vision(() -> getPose(), m_swerveDrive.field);
+        m_LightSubsystem = leds;
 
         m_orientPID.enableContinuousInput(-180, 180);
         m_orientPID.setIZone(DrivebaseConstants.k_rotateIZone);
+        for(double[] values : DrivebaseConstants.k_shotTimes){
+            m_shotTimeInt.put(values[0], values[1]);
+        }
     }
 
     /**
@@ -131,12 +147,16 @@ public class SwerveSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         m_vision.updatePoseEstimation(m_swerveDrive);
+        m_curPos = m_swerveDrive.getPose();
+        m_curXVel = (m_curPos.getX() - m_pastPos.getX())/0.02;
+        m_curYVel = (m_curPos.getY() - m_pastPos.getY())/0.02;
+        m_pastPos = m_curPos;
     }
 
     @Override
     public void simulationPeriodic() {
-        SmartDashboard.putNumber("x", getPose().getX());
-        SmartDashboard.putNumber("y", getPose().getY());
+        SmartDashboard.putNumber("x", m_curPos.getX());
+        SmartDashboard.putNumber("y", m_curPos.getY());
     }
 
     /**
@@ -242,13 +262,6 @@ public class SwerveSubsystem extends SubsystemBase {
                 constraints,
                 edu.wpi.first.units.Units.MetersPerSecond.of(0) // Goal end velocity in meters/sec
         );
-    }
-
-    public Supplier<Rotation2d> orientPID(DoubleSupplier targetRotation){
-        double setPointDegrees = targetRotation.getAsDouble();
-        double heading = getPose().getRotation().getDegrees();
-        double rotation = MathUtil.clamp(m_orientPID.calculate(heading, setPointDegrees),-0.8, 0.8);
-        return () -> Rotation2d.fromDegrees(rotation);
     }
 
     /**
@@ -704,4 +717,45 @@ public class SwerveSubsystem extends SubsystemBase {
         return m_swerveDrive;
     }
 
+    public boolean getIsPassing(){
+        double curX = m_curPos.getX();
+        if(!m_LightSubsystem.hubIsActive()) {
+            return true;
+        }
+        if(isRedAlliance()){
+            return curX < DrivebaseConstants.k_redZoneX;
+        } else {
+            return curX > DrivebaseConstants.k_blueZoneX;
+        }
+    }
+
+    public Translation2d getAimingTarget(){
+        Translation2d blueTarget = getIsPassing() ? DrivebaseConstants.k_blueOutpost : DrivebaseConstants.k_blueHub;
+        if(isRedAlliance()){
+            return new Translation2d(DrivebaseConstants.k_fieldLengthMeters - blueTarget.getX(), blueTarget.getY());
+        } else {
+            return blueTarget;
+        }
+    }
+
+    public double getTargetDist(){
+        return getAimingTarget().getDistance(m_curPos.getTranslation());
+    }
+
+    public Pose2d getFuturePos() {
+        double xDist = m_curPos.getX() + (m_curXVel * m_shotTimeInt.get(getTargetDist()));
+        double yDist = m_curPos.getY() + (m_curYVel * m_shotTimeInt.get(getTargetDist()));
+        return new Pose2d(m_curPos.getX() + xDist, m_curPos.getY() + yDist, m_curPos.getRotation());
+    }
+
+    public Rotation2d getRotationalAim() {
+        return(Rotation2d.fromRadians(Math.atan2(
+            getFuturePos().getX() - getAimingTarget().getX(),
+            getFuturePos().getY() - getAimingTarget().getY()
+        ) + (isRedAlliance() ? 180 : 0)));
+    }
+
+    public double rotationPID() {
+        return m_orientPID.calculate(getPose().getRotation().getDegrees(), getRotationalAim().getDegrees());
+    }
 }
