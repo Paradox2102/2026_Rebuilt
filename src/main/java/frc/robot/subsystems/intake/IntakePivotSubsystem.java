@@ -23,21 +23,22 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants.CANIDConstants;
 
 public class IntakePivotSubsystem extends SubsystemBase {
-  private SparkFlex m_pivotMotor = new SparkFlex(Constants.CANIDConstants.intake_pivot, MotorType.kBrushless);
+  private SparkFlex m_pivotMotor = new SparkFlex(CANIDConstants.intake_pivot, MotorType.kBrushless);
   private AbsoluteEncoder m_encoder = m_pivotMotor.getAbsoluteEncoder();
   private SparkClosedLoopController m_pid = m_pivotMotor.getClosedLoopController();
 
-  private SingleJointedArmSim m_pivotSim = new SingleJointedArmSim(DCMotor.getNeoVortex(1), Constants.IntakeConstants.k_pivotReduction, Constants.IntakeConstants.k_pivotMOI, Constants.IntakeConstants.k_pivotLength, 0, Constants.IntakeConstants.k_pivotMaxRotation, true, Constants.IntakeConstants.k_pivotMaxRotation);
+  private SingleJointedArmSim m_pivotSim = new SingleJointedArmSim(DCMotor.getNeoVortex(1), IntakeConstants.k_pivotReduction, IntakeConstants.k_pivotMOI, IntakeConstants.k_pivotLength, 0, IntakeConstants.k_pivotMaxRotation, true, IntakeConstants.k_pivotMaxRotation);
   private SparkSim m_pivotMotorSim = new SparkSim(m_pivotMotor, DCMotor.getNeoVortex(1));
   
   private double m_simAngleDegrees = 0;
 
   /** Creates a new IntakePivotSubsystem. */
   public IntakePivotSubsystem() {
-    m_pivotMotor.configure(Constants.IntakeConstants.k_pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    m_pivotMotor.configure(IntakeConstants.k_pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   @Override
@@ -54,7 +55,7 @@ public class IntakePivotSubsystem extends SubsystemBase {
 
   public Command retract() {
     return Commands.runOnce(() -> {
-      m_pid.setSetpoint(Constants.IntakeConstants.k_pivotMaxRotation, ControlType.kPosition);
+      m_pid.setSetpoint(IntakeConstants.k_pivotMaxRotation, ControlType.kPosition);
     }, this);
   }
 

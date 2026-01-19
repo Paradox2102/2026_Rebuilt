@@ -24,13 +24,12 @@ import swervelib.math.Matter;
 public final class Constants
 {
 
-  public static final double k_robotMass = (148 - 20.3) * 0.453592; // 32lbs * kg per pound
-  public static final Matter k_chassis    = new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), k_robotMass);
-  public static final double k_loopTime  = 0.13; //s, 20ms + 110ms sprk max velocity lag
-  public static final double k_maxSpeed  = Units.feetToMeters(14.5);
-
   public static final class DrivebaseConstants
   {
+    public static final double k_robotMass = (148 - 20.3) * 0.453592; // 32lbs * kg per pound
+    public static final Matter k_chassis    = new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), k_robotMass);
+    public static final double k_loopTime  = 0.13; //s, 20ms + 110ms sprk max velocity lag
+    public static final double k_maxSpeed  = Units.feetToMeters(14.5);
 
     // Hold time on motor brakes when disabled
     public static final double k_wheelLockTime = 10; // seconds
@@ -46,26 +45,26 @@ public final class Constants
     public static double k_rollerMOI = 0;
     public static final double k_rollerReduction = 0;
 
-    public static final double k_rollerKV = 0;
-    public static final double k_rollerP = 0;
-
-    public static final int k_rollerCurrent = 60;
-    public static final double k_rollerInSpeed = 0;
-    public static final double k_rollerOutSpeed = 0;
-
     public static final double k_pivotMOI = 0;
     public static final double k_pivotReduction = 0;
     public static final double k_pivotLength = 0;
     public static final double k_pivotMaxRotation = 0;
 
-    public static final SparkFlexConfig k_rollerConfig = new SparkFlexConfig();
+    public static final double k_rollerKV = 0;
+    public static final double k_rollerP = 0;
 
     public static final double k_pivotKCos = 0;
     public static final double k_pivotP = 0;
     public static final double k_pivotI = 0;
     public static final double k_pivotD = 0;
 
+    public static final int k_rollerCurrent = 60;
+    public static final double k_rollerInSpeed = 0;
+    public static final double k_rollerOutSpeed = 0;
+    
     public static final int k_pivotCurrent = 80;
+
+    public static final SparkFlexConfig k_rollerConfig = new SparkFlexConfig();
 
     public static final SparkFlexConfig k_pivotConfig = new SparkFlexConfig();
 
@@ -89,11 +88,9 @@ public final class Constants
 
   public static class IndexerConstants{
     public static final double k_conveyorMOI = 0;
-
-    public static final double k_kickerMOI = 0;
-
     public static final double k_conveyorReduction = 0;
 
+    public static final double k_kickerMOI = 0;
     public static final double k_kickerReduction = 0;
 
     public static final double k_conveyorKV = 0;
@@ -127,7 +124,50 @@ public final class Constants
   }
 
   public static class ClimberConstants{
-    
+    public static final double k_pivotMOI = 0;
+    public static final double k_pivotLength = 0;
+    public static final double k_pivotReduction = 0;
+    public static final double k_pivotMinRotation = 0;
+    public static final double k_pivotMaxRotation = 0;
+
+    public static final double k_elevatorWeight = 0;
+    public static final double k_elevatorDrumWidth = 0;
+    public static final double k_elevatorReduction = 0;
+    public static final double k_elevatorMaxHeight = 0;
+    public static final double k_elevatorRotationsToMeters = 0;
+
+    public static final double k_pivotKCos = 0;
+    public static final double k_pivotP = 0;
+    public static final double k_pivotI = 0;
+    public static final double k_pivotD = 0;
+
+    public static final double k_elevatorP = 0;
+    public static final double k_elevatorI = 0;
+    public static final double k_elevatorD = 0;
+
+    public static final int k_pivotCurrent = 60;
+
+    public static final int k_elevatorCurrent = 80;
+
+    public static final SparkFlexConfig k_leadConfig = new SparkFlexConfig();
+    public static final SparkFlexConfig k_followConfig = new SparkFlexConfig();
+
+    public static final SparkFlexConfig k_elevConfig = new SparkFlexConfig();
+
+    static {
+      k_leadConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_pivotCurrent)
+      .absoluteEncoder.positionConversionFactor(360);
+
+      k_leadConfig.closedLoop.pid(k_pivotP, k_pivotI, k_pivotD).feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+      .feedForward.kCosRatio(1.0/360.0).kCos(k_pivotKCos);
+
+      k_followConfig.apply(k_leadConfig).follow(CANIDConstants.climber_pivot_leader, true);
+
+      k_elevConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_elevatorCurrent)
+      .encoder.positionConversionFactor(k_elevatorRotationsToMeters).velocityConversionFactor(k_elevatorRotationsToMeters / 60);
+
+      k_elevConfig.closedLoop.pid(k_elevatorP, k_elevatorI, k_elevatorD);
+    }
   }
 
   public static class OperatorConstants

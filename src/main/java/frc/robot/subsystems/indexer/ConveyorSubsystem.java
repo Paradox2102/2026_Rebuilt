@@ -24,26 +24,27 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+import frc.robot.Constants.IndexerConstants;
+import frc.robot.Constants.CANIDConstants;;
 
 public class ConveyorSubsystem extends SubsystemBase {
-  private SparkFlex m_conveyorMotor = new SparkFlex(Constants.CANIDConstants.conveyor, MotorType.kBrushless);
+  private SparkFlex m_conveyorMotor = new SparkFlex(CANIDConstants.conveyor, MotorType.kBrushless);
   private SparkClosedLoopController m_pid = m_conveyorMotor.getClosedLoopController();
   private RelativeEncoder m_encoder = m_conveyorMotor.getEncoder();
 
-  private FlywheelSim m_conveyorSim = new FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNeoVortex(1), Constants.IndexerConstants.k_conveyorMOI, Constants.IndexerConstants.k_conveyorReduction), DCMotor.getNeoVortex(1));
+  private FlywheelSim m_conveyorSim = new FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNeoVortex(1), IndexerConstants.k_conveyorMOI, IndexerConstants.k_conveyorReduction), DCMotor.getNeoVortex(1));
   private SparkSim m_conveyorMotorSim = new SparkSim(m_conveyorMotor, DCMotor.getNeoVortex(1));
   
   private double m_simVelocity = 0;
 
   /** Creates a new ConveyorSubsystem. */
   public ConveyorSubsystem() {
-    m_conveyorMotor.configure(Constants.IndexerConstants.k_conveyorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    m_conveyorMotor.configure(IndexerConstants.k_conveyorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   public Command run(boolean in){
     return Commands.runEnd(() -> {
-      m_pid.setSetpoint(in ? Constants.IndexerConstants.k_conveyorInSpeed : Constants.IndexerConstants.k_conveyorOutSpeed , ControlType.kVelocity);
+      m_pid.setSetpoint(in ? IndexerConstants.k_conveyorInSpeed : IndexerConstants.k_conveyorOutSpeed , ControlType.kVelocity);
     }, () -> {
       m_pid.setSetpoint(0, ControlType.kVelocity);
     }, this);
@@ -51,7 +52,7 @@ public class ConveyorSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Flywheel Velocity", RobotBase.isReal() ? m_encoder.getVelocity() : m_simVelocity);
+    SmartDashboard.putNumber("Conveyor Velocity", RobotBase.isReal() ? m_encoder.getVelocity() : m_simVelocity);
   }
 
   public void simulationPeriodic() {

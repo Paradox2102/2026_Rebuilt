@@ -35,7 +35,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
-import frc.robot.Constants;
+import frc.robot.Constants.DrivebaseConstants;
+import frc.robot.Constants.CANIDConstants;
 
 import java.io.File;
 import java.io.IOException;
@@ -63,7 +64,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     private Vision m_vision;
 
-    private PIDController m_orientPID = new PIDController(Constants.DrivebaseConstants.k_rotateP, Constants.DrivebaseConstants.k_rotateI,Constants.DrivebaseConstants.k_rotateD);
+    private PIDController m_orientPID = new PIDController(DrivebaseConstants.k_rotateP, DrivebaseConstants.k_rotateI, DrivebaseConstants.k_rotateD);
 
 
     /**
@@ -83,7 +84,7 @@ public class SwerveSubsystem extends SubsystemBase {
         // objects being created.
         SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
         try {
-            m_swerveDrive = new SwerveParser(directory).createSwerveDrive(Constants.k_maxSpeed, startingPose);
+            m_swerveDrive = new SwerveParser(directory).createSwerveDrive(DrivebaseConstants.k_maxSpeed, startingPose);
             // Alternative method if you don't want to supply the conversion factor via JSON
             // files.
             // m_swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumSpeed,
@@ -110,7 +111,7 @@ public class SwerveSubsystem extends SubsystemBase {
         m_vision = new Vision(() -> getPose(), m_swerveDrive.field);
 
         m_orientPID.enableContinuousInput(-180, 180);
-        m_orientPID.setIZone(Constants.DrivebaseConstants.k_rotateIZone);
+        m_orientPID.setIZone(DrivebaseConstants.k_rotateIZone);
     }
 
     /**
@@ -122,7 +123,7 @@ public class SwerveSubsystem extends SubsystemBase {
     public SwerveSubsystem(SwerveDriveConfiguration driveCfg, SwerveControllerConfiguration controllerCfg) {
         m_swerveDrive = new SwerveDrive(driveCfg,
                 controllerCfg,
-                Constants.k_maxSpeed,
+                DrivebaseConstants.k_maxSpeed,
                 new Pose2d(new Translation2d(Meter.of(2), Meter.of(0)),
                         Rotation2d.fromDegrees(0)));
     }
@@ -612,7 +613,7 @@ public class SwerveSubsystem extends SubsystemBase {
                 headingX,
                 headingY,
                 getHeading().getRadians(),
-                Constants.k_maxSpeed);
+                DrivebaseConstants.k_maxSpeed);
     }
 
     /**
@@ -632,7 +633,7 @@ public class SwerveSubsystem extends SubsystemBase {
                 scaledInputs.getY(),
                 angle.getRadians(),
                 getHeading().getRadians(),
-                Constants.k_maxSpeed);
+                DrivebaseConstants.k_maxSpeed);
     }
 
     /**
