@@ -35,6 +35,8 @@ public class LightSubsystem extends SubsystemBase {
   private final double k_transitionTime = 7.0;
   private final double k_shiftTime = 22.0;
   private final double k_endTime = 27.0;
+
+  private int m_shift = 0;
   private String gameData;
   private static final Time k_blinkMagnitude = Seconds.of(0.3);
 
@@ -45,14 +47,14 @@ public class LightSubsystem extends SubsystemBase {
   private final class ShiftCommand extends Command {
     private final Timer m_blinkTimer = new Timer();
 
-    private final int m_shift;
+    private final int m_commandShift;
     private final boolean m_odd;
     private final double m_endTime;
     private Color m_color;
 
     private final LightSubsystem m_subsystem;
     public ShiftCommand(boolean odd, double endTime, int shift, LightSubsystem subsystem) {
-      m_shift = shift;
+      m_commandShift = shift;
       m_odd = odd;
       m_endTime = endTime;
       m_subsystem = subsystem;
@@ -64,7 +66,7 @@ public class LightSubsystem extends SubsystemBase {
       m_timer.start();
       m_blinkTimer.reset();
       m_blinkTimer.start();
-      if (m_shift != 0 || m_shift != 5){
+      if (m_commandShift != 0 || m_commandShift != 5){
         if (m_odd) {
           m_color = getWonAuto() ? Color.kRed : Color.kGreen;
         }
@@ -79,10 +81,11 @@ public class LightSubsystem extends SubsystemBase {
     }
     @Override
     public boolean isFinished() {
-      switch(m_shift) {
+      m_shift ++;
+      switch(m_commandShift) {
         case 0:
           return m_timer.get() > k_shift1Time;
-
+          
         case 1:
           return m_timer.get() > k_shift2Time;
 
@@ -138,7 +141,24 @@ public class LightSubsystem extends SubsystemBase {
     
     m_led.setData(m_ledBuffer);
   }
-
+  public boolean hubIsActive(){
+    switch (m_shift) {
+      case 0:
+        return true;
+      case 1:
+        return getWonAuto() ? false : true;
+      case 2:
+        return getWonAuto() ? true : false;
+      case 3:
+        return getWonAuto() ? false : true;
+      case 4:
+        return getWonAuto() ? true : false;
+      case 5:
+        return true;
+      default:
+        return false;
+    }
+  }
   private boolean getWonAuto() {
     if (gameData.length() > 0) {
       switch (gameData.charAt(0)) {
