@@ -9,6 +9,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.config.SparkFlexConfig;
 
@@ -102,7 +103,16 @@ public final class Constants
   }
 
   public static class ShooterConstants{
-    
+    public static final int hoodCurrentLimit = 60;
+
+    public static final int k_hoodP = 0;
+    public static final int k_hoodI = 0;
+    public static final int k_hoodD = 0;
+    public static final SparkFlexConfig k_hoodConfig = new SparkFlexConfig();
+    static {
+      k_hoodConfig.closedLoop.pid(k_hoodP, k_hoodI, k_hoodD)
+      .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
+    }
   }
 
   public static class IndexerConstants{

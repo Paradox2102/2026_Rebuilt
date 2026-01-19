@@ -4,14 +4,31 @@
 
 package frc.robot.subsystems.shooter;
 
+
+import com.revrobotics.spark.SparkFlex;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.CANIDConstants;;
 
 public class ShooterSubsystem extends SubsystemBase {
-  /** Creates a new ShooterSubsystem. */
-  public ShooterSubsystem() {}
 
+  private final SparkFlex m_topRightMotor = new SparkFlex(CANIDConstants.shooter_1, MotorType.kBrushless);
+  private final SparkFlex m_topLeftMotor = new SparkFlex(CANIDConstants.shooter_2, MotorType.kBrushless);
+  private final SparkFlex m_bottomRightMotor = new SparkFlex(CANIDConstants.shooter_3, MotorType.kBrushless);
+  private final SparkFlex m_bottomLeftMotor = new SparkFlex(CANIDConstants.shooter_4, MotorType.kBrushless);
+
+  private double m_power = 0.0;
+  
+  public ShooterSubsystem(double power) {
+    m_power = power;
+  }
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    m_topLeftMotor.set(m_power);
+    m_topRightMotor.set(m_power);
+    m_bottomLeftMotor.set(m_power);
+    m_bottomRightMotor.set(m_power);
   }
 }
