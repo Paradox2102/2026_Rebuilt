@@ -103,16 +103,24 @@ public final class Constants
   }
 
   public static class ShooterConstants{
-    public static final int hoodCurrentLimit = 60;
+    public static final double k_hoodGearRatio = 0.0;
+    public static final double k_hoodMomentOfInertia = 0.0;
+    public static final double k_hoodArmLengthMeters = 0.0;
+    
+    public static final double k_shooterMomentOfInertia = 0.0;
+    public static final double k_shooterMotorReduction = 0.0;
 
+    public static final int hoodCurrentLimit = 60;
     public static final int k_hoodP = 0;
     public static final int k_hoodI = 0;
     public static final int k_hoodD = 0;
+
     public static final SparkFlexConfig k_hoodConfig = new SparkFlexConfig();
     static {
       k_hoodConfig.closedLoop.pid(k_hoodP, k_hoodI, k_hoodD)
       .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
     }
+  
   }
 
   public static class IndexerConstants{
