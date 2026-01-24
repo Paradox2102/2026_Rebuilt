@@ -9,18 +9,14 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
-import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.config.SparkFlexConfig;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import swervelib.math.Matter;
 
 /**
@@ -49,6 +45,7 @@ public final class Constants
     public static final double k_rotateD = 0.0008;
 
     public static final double k_rotateIZone = 20;
+    public static final double k_rotateDeadzone = 0;
 
     public static final double k_fieldLengthMeters = 16.541;
     public static final double k_fieldWidthMeters = 8.069;
@@ -110,15 +107,38 @@ public final class Constants
     public static final double k_shooterMomentOfInertia = 0.0;
     public static final double k_shooterMotorReduction = 0.0;
 
-    public static final int hoodCurrentLimit = 60;
-    public static final int k_hoodP = 0;
-    public static final int k_hoodI = 0;
-    public static final int k_hoodD = 0;
+    public static final int k_hoodCurrentLimit = 60;
+    public static final double k_hoodP = 0;
+    public static final double k_hoodI = 0;
+    public static final double k_hoodD = 0;
+    public static final double k_hoodDeadzone = 0;
+
+    public static final int k_shooterCurrent = 40;
+    public static final double k_shooterKV = 0;
+    public static final double k_shooterP = 0;
+    public static final double k_shooterDeadzone = 0;
+
+    public static final double k_staticHoodAngle = 0;
+
+    public static final double k_shooterRevVel = 0;
 
     public static final SparkFlexConfig k_hoodConfig = new SparkFlexConfig();
+    public static final SparkFlexConfig k_leaderConfig = new SparkFlexConfig();
+    public static final SparkFlexConfig k_follower1Config = new SparkFlexConfig();
+    public static final SparkFlexConfig k_follower23Config = new SparkFlexConfig();
+
     static {
+      k_hoodConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_hoodCurrentLimit)
+      .absoluteEncoder.positionConversionFactor(360);
+
       k_hoodConfig.closedLoop.pid(k_hoodP, k_hoodI, k_hoodD)
       .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
+
+      k_leaderConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_shooterCurrent);
+
+      k_leaderConfig.closedLoop.p(k_shooterP).feedForward.kV(k_shooterKV);
+      k_follower1Config.apply(k_leaderConfig).follow(CANIDConstants.shooter_1, false);
+      k_follower23Config.apply(k_leaderConfig).follow(CANIDConstants.shooter_1, true);
     }
   
   }
@@ -161,49 +181,30 @@ public final class Constants
   }
 
   public static class ClimberConstants{
-    public static final double k_pivotMOI = 0;
-    public static final double k_pivotLength = 0;
-    public static final double k_pivotReduction = 0;
-    public static final double k_pivotMinRotation = 0;
-    public static final double k_pivotMaxRotation = 0;
+    public static final double k_climberWeight = 0;
+    public static final double k_climberDrumWidth = 0;
+    public static final double k_climberReduction = 0;
+    public static final double k_climberMaxHeight = 0;
+    public static final double k_climberRotationsToMeters = 0;
 
-    public static final double k_elevatorWeight = 0;
-    public static final double k_elevatorDrumWidth = 0;
-    public static final double k_elevatorReduction = 0;
-    public static final double k_elevatorMaxHeight = 0;
-    public static final double k_elevatorRotationsToMeters = 0;
+    public static final double k_climberDeadzone = 0;
 
-    public static final double k_pivotKCos = 0;
-    public static final double k_pivotP = 0;
-    public static final double k_pivotI = 0;
-    public static final double k_pivotD = 0;
+    public static final double k_climberP = 0;
+    public static final double k_climberI = 0;
+    public static final double k_climberD = 0;
 
-    public static final double k_elevatorP = 0;
-    public static final double k_elevatorI = 0;
-    public static final double k_elevatorD = 0;
-
-    public static final int k_pivotCurrent = 60;
-
-    public static final int k_elevatorCurrent = 80;
+    public static final int k_climberCurrent = 80;
 
     public static final SparkFlexConfig k_leadConfig = new SparkFlexConfig();
     public static final SparkFlexConfig k_followConfig = new SparkFlexConfig();
 
-    public static final SparkFlexConfig k_elevConfig = new SparkFlexConfig();
-
     static {
-      k_leadConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_pivotCurrent)
-      .absoluteEncoder.positionConversionFactor(360);
+      k_leadConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_climberCurrent)
+      .encoder.positionConversionFactor(k_climberRotationsToMeters).velocityConversionFactor(k_climberRotationsToMeters / 60);
 
-      k_leadConfig.closedLoop.pid(k_pivotP, k_pivotI, k_pivotD).feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
-      .feedForward.kCosRatio(1.0/360.0).kCos(k_pivotKCos);
+      k_leadConfig.closedLoop.pid(k_climberP, k_climberI, k_climberD);
 
-      k_followConfig.apply(k_leadConfig).follow(CANIDConstants.climber_pivot_leader, true);
-
-      k_elevConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_elevatorCurrent)
-      .encoder.positionConversionFactor(k_elevatorRotationsToMeters).velocityConversionFactor(k_elevatorRotationsToMeters / 60);
-
-      k_elevConfig.closedLoop.pid(k_elevatorP, k_elevatorI, k_elevatorD);
+      k_followConfig.apply(k_leadConfig).follow(CANIDConstants.climber_leader, true);
     }
   }
 
@@ -236,9 +237,8 @@ public final class Constants
     public static final int shooter_3 = 32;
     public static final int shooter_4 = 33;
     public static final int shooter_hood = 34;
-    public static final int climber_pivot_leader = 40;
-    public static final int climber_pivot_follower = 41;
-    public static final int climber_extension = 42;
+    public static final int climber_leader = 40;
+    public static final int climber_follower = 41;
   }
     public static class LightConstants {
     public static final int k_lightPort = 0; // may be different on actual robot

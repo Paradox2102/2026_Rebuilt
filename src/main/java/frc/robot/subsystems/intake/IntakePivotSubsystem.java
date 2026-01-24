@@ -44,7 +44,7 @@ public class IntakePivotSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Pivot Angle Degrees", RobotBase.isReal() ? m_encoder.getPosition() : m_simAngleDegrees);
+    SmartDashboard.putNumber("Pivot Angle Degrees", getPosition());
   }
 
   public Command extend() {
@@ -57,6 +57,10 @@ public class IntakePivotSubsystem extends SubsystemBase {
     return Commands.runOnce(() -> {
       m_pid.setSetpoint(IntakeConstants.k_pivotMaxRotation, ControlType.kPosition);
     }, this);
+  }
+
+  public double getPosition() {
+    return RobotBase.isReal() ? m_encoder.getPosition() : m_simAngleDegrees;
   }
 
   public void simulationPeriodic() {

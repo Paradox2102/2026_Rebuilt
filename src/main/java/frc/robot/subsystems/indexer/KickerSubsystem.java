@@ -50,9 +50,13 @@ public class KickerSubsystem extends SubsystemBase {
     }, this);
   }
 
+  public double getVelocity(){
+    return RobotBase.isReal() ? m_encoder.getVelocity() : m_simVelocity;
+  }
+
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Kicker Velocity", RobotBase.isReal() ? m_encoder.getVelocity() : m_simVelocity);
+    SmartDashboard.putNumber("Kicker Velocity", getVelocity());
   }
 
   public void simulationPeriodic() {

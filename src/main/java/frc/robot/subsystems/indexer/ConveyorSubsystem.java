@@ -25,7 +25,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IndexerConstants;
-import frc.robot.Constants.CANIDConstants;;
+import frc.robot.Constants.CANIDConstants;
 
 public class ConveyorSubsystem extends SubsystemBase {
   private SparkFlex m_conveyorMotor = new SparkFlex(CANIDConstants.conveyor, MotorType.kBrushless);
@@ -50,9 +50,13 @@ public class ConveyorSubsystem extends SubsystemBase {
     }, this);
   }
 
+  public double getVelocity(){
+    return RobotBase.isReal() ? m_encoder.getVelocity() : m_simVelocity;
+  }
+
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Conveyor Velocity", RobotBase.isReal() ? m_encoder.getVelocity() : m_simVelocity);
+    SmartDashboard.putNumber("Conveyor Velocity", getVelocity());
   }
 
   public void simulationPeriodic() {

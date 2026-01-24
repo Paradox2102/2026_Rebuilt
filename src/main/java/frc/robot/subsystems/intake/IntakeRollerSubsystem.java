@@ -50,9 +50,13 @@ public class IntakeRollerSubsystem extends SubsystemBase {
     }, this);
   }
 
+  public double getVelocity(){
+    return RobotBase.isReal() ? m_encoder.getVelocity() : m_simVelocity;
+  }
+
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Intake Roller Velocity", RobotBase.isReal() ? m_encoder.getVelocity() : m_simVelocity);
+    SmartDashboard.putNumber("Intake Roller Velocity", getVelocity());
   }
 
   public void simulationPeriodic() {
