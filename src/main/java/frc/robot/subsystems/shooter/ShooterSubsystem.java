@@ -47,8 +47,9 @@ public class ShooterSubsystem extends SubsystemBase {
   private InterpolatingDoubleTreeMap m_shooterPowerLerp = new InterpolatingDoubleTreeMap();
 
   private double m_simVelocity = 0;
+  private boolean m_isShooting = false;
 
-  public Trigger isShooterOnTarget = new Trigger(() -> (Math.abs(getVelocity() - m_pid.getSetpoint()) <= ShooterConstants.k_shooterDeadzone));
+  public Trigger isShooterOnTarget = new Trigger(() -> (Math.abs(getVelocity() - m_pid.getSetpoint()) <= ShooterConstants.k_shooterDeadzone) && m_isShooting);
   
   public ShooterSubsystem() {
     m_shooterPowerLerp.put(0.0, 0.0); // add values later
@@ -61,8 +62,10 @@ public class ShooterSubsystem extends SubsystemBase {
   public Command shootCommand(DoubleSupplier distanceToHub){
     return Commands.run(() -> {
       m_pid.setSetpoint(m_shooterPowerLerp.get(distanceToHub.getAsDouble()), ControlType.kVelocity);
+      m_isShooting = true;
     }, this).until(() -> true).finallyDo(() -> {
       m_pid.setSetpoint(ShooterConstants.k_shooterRevVel, ControlType.kVelocity );
+      m_isShooting = false;
     }); // set to whatever is decided for stopping shooting
   }
 

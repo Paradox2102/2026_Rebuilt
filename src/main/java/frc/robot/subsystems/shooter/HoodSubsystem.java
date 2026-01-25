@@ -6,8 +6,8 @@ package frc.robot.subsystems.shooter;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
-import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.PersistMode;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
@@ -31,20 +31,21 @@ import frc.robot.Constants.ShooterConstants;
 
 public class HoodSubsystem extends SubsystemBase {
   private final SparkFlex m_hoodMotor = new SparkFlex(CANIDConstants.shooter_hood, MotorType.kBrushless);
-  private final AbsoluteEncoder m_hoodEncoder = m_hoodMotor.getAbsoluteEncoder();
+  private final RelativeEncoder m_hoodEncoder = m_hoodMotor.getEncoder();
   private SparkClosedLoopController m_pid = m_hoodMotor.getClosedLoopController();
 
   private SingleJointedArmSim m_hoodSim = new SingleJointedArmSim(DCMotor.getNeoVortex(1), ShooterConstants.k_hoodGearRatio, ShooterConstants.k_hoodMomentOfInertia, ShooterConstants.k_hoodArmLengthMeters, 0, Math.toRadians(0.0), true, Math.toRadians(0.0));
   private SparkSim m_hoodMotorSim = new SparkSim(m_hoodMotor, DCMotor.getNeoVortex(1));
 
-  private double m_hoodSimAngle;
+  private double m_hoodSimAngle = 0;
+  private boolean m_isShooting = false;
 
   private double m_autoAlignTrim = 0;
   private double m_staticTrim = 0;
 
   private final InterpolatingDoubleTreeMap m_hoodLerpTable = new InterpolatingDoubleTreeMap();
 
-  public Trigger isHoodOnTarget = new Trigger(() -> (Math.abs(getHoodAngle() - m_pid.getSetpoint()) <= ShooterConstants.k_hoodDeadzone));
+  public Trigger isHoodOnTarget = new Trigger(() -> (Math.abs(getHoodAngle() - m_pid.getSetpoint()) <= ShooterConstants.k_hoodDeadzone) && m_isShooting);
   
   public HoodSubsystem() {
     m_hoodMotor.configure(ShooterConstants.k_hoodConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -65,18 +66,21 @@ public class HoodSubsystem extends SubsystemBase {
   public Command pitchHood(DoubleSupplier distanceToGoal){
     return Commands.run(() -> {
       m_pid.setSetpoint(m_hoodLerpTable.get(distanceToGoal.getAsDouble()) + m_autoAlignTrim, ControlType.kPosition);
+      m_isShooting = true;
     }, this);
   }
 
   public Command staticPitch(){
     return Commands.run(() -> {
       m_pid.setSetpoint(ShooterConstants.k_staticHoodAngle + m_staticTrim, ControlType.kPosition);
+      m_isShooting = true;
     }, this);
   }
 
   public Command returnHood(){
     return Commands.run(() -> {
       m_pid.setSetpoint(0, ControlType.kPosition);
+      m_isShooting = false;
     }, this);
   }
 

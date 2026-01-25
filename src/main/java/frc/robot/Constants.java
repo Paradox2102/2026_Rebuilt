@@ -40,12 +40,14 @@ public final class Constants
     // Hold time on motor brakes when disabled
     public static final double k_wheelLockTime = 10; // seconds
 
-    public static final double k_rotateP = 0.05;
-    public static final double k_rotateI = 0.1;
-    public static final double k_rotateD = 0.0008;
+    public static final double k_rotateP = 0.0035;
+    public static final double k_rotateI = 0;
+    public static final double k_rotateD = 0;
 
-    public static final double k_rotateIZone = 20;
-    public static final double k_rotateDeadzone = 0;
+    public static final double k_rotateIZone = 5;
+    public static final double k_rotateDeadzone = 1;
+
+    public static final double k_maxDtShootingSpeed = 0;
 
     public static final double k_fieldLengthMeters = 16.541;
     public static final double k_fieldWidthMeters = 8.069;
@@ -66,6 +68,7 @@ public final class Constants
     public static final double k_pivotReduction = 0;
     public static final double k_pivotLength = 0;
     public static final double k_pivotMaxRotation = 0;
+    public static final double k_pivotDeadzone = 0;
 
     public static final double k_rollerKV = 0;
     public static final double k_rollerP = 0;
@@ -103,6 +106,7 @@ public final class Constants
     public static final double k_hoodGearRatio = 0.0;
     public static final double k_hoodMomentOfInertia = 0.0;
     public static final double k_hoodArmLengthMeters = 0.0;
+    public static final double k_hoodConversionFactor = 0;
     
     public static final double k_shooterMomentOfInertia = 0.0;
     public static final double k_shooterMotorReduction = 0.0;
@@ -122,6 +126,8 @@ public final class Constants
 
     public static final double k_shooterRevVel = 0;
 
+    public static final int k_maxFuelStorage = 45;
+
     public static final SparkFlexConfig k_hoodConfig = new SparkFlexConfig();
     public static final SparkFlexConfig k_leaderConfig = new SparkFlexConfig();
     public static final SparkFlexConfig k_follower1Config = new SparkFlexConfig();
@@ -129,14 +135,14 @@ public final class Constants
 
     static {
       k_hoodConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_hoodCurrentLimit)
-      .absoluteEncoder.positionConversionFactor(360);
+      .encoder.positionConversionFactor(k_hoodConversionFactor);
 
       k_hoodConfig.closedLoop.pid(k_hoodP, k_hoodI, k_hoodD)
-      .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
+      .feedbackSensor(FeedbackSensor.kPrimaryEncoder);
 
       k_leaderConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_shooterCurrent);
 
-      k_leaderConfig.closedLoop.p(k_shooterP).feedForward.kV(k_shooterKV);
+      k_leaderConfig.closedLoop.p(k_shooterP).feedbackSensor(FeedbackSensor.kPrimaryEncoder).feedForward.kV(k_shooterKV);
       k_follower1Config.apply(k_leaderConfig).follow(CANIDConstants.shooter_1, false);
       k_follower23Config.apply(k_leaderConfig).follow(CANIDConstants.shooter_1, true);
     }

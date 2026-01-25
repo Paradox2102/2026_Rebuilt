@@ -1,0 +1,84 @@
+{
+ "name":"choreo",
+ "version":2,
+ "type":"Swerve",
+ "variables":{
+  "expressions":{},
+  "poses":{}
+ },
+ "config":{
+  "frontLeft":{
+   "x":{
+    "exp":"11.5 in",
+    "val":0.29209999999999997
+   },
+   "y":{
+    "exp":"12.5 in",
+    "val":0.3175
+   }
+  },
+  "backLeft":{
+   "x":{
+    "exp":"-11.5 in",
+    "val":-0.29209999999999997
+   },
+   "y":{
+    "exp":"12.5 in",
+    "val":0.3175
+   }
+  },
+  "mass":{
+   "exp":"150 lbs",
+   "val":68.0388555
+  },
+  "inertia":{
+   "exp":"6 kg m ^ 2",
+   "val":6.0
+  },
+  "gearing":{
+   "exp":"4.71",
+   "val":4.71
+  },
+  "radius":{
+   "exp":"1.5 in",
+   "val":0.038099999999999995
+  },
+  "vmax":{
+   "exp":"6784 RPM",
+   "val":710.4188187317718
+  },
+  "tmax":{
+   "exp":"1.216 N * m",
+   "val":1.216
+  },
+  "cof":{
+   "exp":"1.6",
+   "val":1.6
+  },
+  "bumper":{
+   "front":{
+    "exp":"16.25 in",
+    "val":0.41275
+   },
+   "side":{
+    "exp":"17.25 in",
+    "val":0.43815
+   },
+   "back":{
+    "exp":"16.25 in",
+    "val":0.41275
+   }
+  },
+  "differentialTrackWidth":{
+   "exp":"22 in",
+   "val":0.5588
+  }
+ },
+ "generationFeatures":[],
+ "codegen":{
+  "root":"..\\C:\\Users\\Taem Pradox\\Desktop\\2026_Rebuilt",
+  "genVars":false,
+  "genTrajData":false,
+  "useChoreoLib":false
+ }
+}

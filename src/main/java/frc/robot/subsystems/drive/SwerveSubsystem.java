@@ -28,6 +28,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -67,17 +69,15 @@ public class SwerveSubsystem extends SubsystemBase {
 
     private PIDController m_orientPID = new PIDController(DrivebaseConstants.k_rotateP, DrivebaseConstants.k_rotateI, DrivebaseConstants.k_rotateD);
 
-    private Pose2d m_pastPos = getPose();
-    private Pose2d m_curPos = getPose();
-
-    private double m_curXVel = 0;
-    private double m_curYVel = 0;
-
     private InterpolatingDoubleTreeMap m_shotTimeInt = new InterpolatingDoubleTreeMap();
 
     private LightSubsystem m_LightSubsystem;
 
-    public Trigger isDrivetrainAligned = new Trigger(() -> (Math.abs(getPose().getRotation().minus(getRotationalAim()).getDegrees()) <= DrivebaseConstants.k_rotateDeadzone));
+    private StructPublisher<Translation2d> aimingPosePublisher = NetworkTableInstance.getDefault().getStructTopic("Aim Pose", Translation2d.struct).publish();
+
+
+    //ready to shoot if drivetrain is pointing towards aiming target, also requires chassis to be below a specific speed if shooting into hub
+    public Trigger isDrivetrainAligned = new Trigger(() -> (Math.abs(getPose().getRotation().minus(getRotationalAim()).getDegrees()) <= DrivebaseConstants.k_rotateDeadzone) && ((Math.sqrt(Math.pow(getFieldVelocity().vxMetersPerSecond, 2) + Math.pow(getFieldVelocity().vyMetersPerSecond, 2)) < DrivebaseConstants.k_maxDtShootingSpeed) || getIsPassing()));
 
 
     /**
@@ -148,16 +148,13 @@ public class SwerveSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         m_vision.updatePoseEstimation(m_swerveDrive);
-        m_curPos = m_swerveDrive.getPose();
-        m_curXVel = (m_curPos.getX() - m_pastPos.getX())/0.02;
-        m_curYVel = (m_curPos.getY() - m_pastPos.getY())/0.02;
-        m_pastPos = m_curPos;
+        aimingPosePublisher.set(getAimingTarget());
     }
 
     @Override
     public void simulationPeriodic() {
-        SmartDashboard.putNumber("x", m_curPos.getX());
-        SmartDashboard.putNumber("y", m_curPos.getY());
+        SmartDashboard.putNumber("x", getPose().getX());
+        SmartDashboard.putNumber("y", getPose().getY());
     }
 
     /**
@@ -719,7 +716,7 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public boolean getIsPassing(){
-        double curX = m_curPos.getX();
+        double curX = getPose().getX();
         if(!m_LightSubsystem.hubIsActive()) {
             return true;
         }
@@ -740,13 +737,13 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public double getTargetDist(){
-        return getAimingTarget().getDistance(m_curPos.getTranslation());
+        return getAimingTarget().getDistance(getPose().getTranslation());
     }
 
     public Pose2d getFuturePos() {
-        double xDist = m_curPos.getX() + (m_curXVel * m_shotTimeInt.get(getTargetDist()));
-        double yDist = m_curPos.getY() + (m_curYVel * m_shotTimeInt.get(getTargetDist()));
-        return new Pose2d(m_curPos.getX() + xDist, m_curPos.getY() + yDist, m_curPos.getRotation());
+        double xDist = getPose().getX() + (getFieldVelocity().vxMetersPerSecond * m_shotTimeInt.get(getTargetDist()));
+        double yDist = getPose().getY() + (getFieldVelocity().vyMetersPerSecond * m_shotTimeInt.get(getTargetDist()));
+        return new Pose2d(xDist, yDist, getPose().getRotation());
     }
 
     public Rotation2d getRotationalAim() {

@@ -137,17 +137,17 @@ public class Vision {
   }
 
   private void openSimCameraViews() {
-    if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-      try
-      {
-      Desktop.getDesktop().browse(new URI("http://localhost:1182/"));
-      Desktop.getDesktop().browse(new URI("http://localhost:1184/"));
-      Desktop.getDesktop().browse(new URI("http://localhost:1186/"));
-      } catch (IOException | URISyntaxException e)
-      {
-      e.printStackTrace();
-      }
-    }
+    // if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+    //   try
+    //   {
+    //   // Desktop.getDesktop().browse(new URI("http://localhost:1182/"));
+    //   // Desktop.getDesktop().browse(new URI("http://localhost:1184/"));
+    //   // Desktop.getDesktop().browse(new URI("http://localhost:1186/"));
+    //   } catch (IOException | URISyntaxException e)
+    //   {
+    //   e.printStackTrace();
+    //   }
+    // }
   }
 
   public double getDistanceFromAprilTag(int id) {
@@ -180,7 +180,7 @@ public class Vision {
 
   public enum Cameras {
     EXAMPLE_CAMERA(
-        "example", new Rotation3d(), new Translation3d(), VecBuilder.fill(0, 0, 0), VecBuilder.fill(0, 0, 0));
+        "example", new Rotation3d(), new Translation3d(), VecBuilder.fill(1000, 1000, 1000), VecBuilder.fill(1000, 1000, 1000));
 
     public final PhotonCamera camera;
 

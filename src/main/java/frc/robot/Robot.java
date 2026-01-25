@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -12,6 +15,8 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private final RobotContainer m_robotContainer;
+  private StructPublisher<Pose2d> posePublisher = NetworkTableInstance.getDefault().getStructTopic("Robot Pose", Pose2d.struct).publish();
+  private StructPublisher<Pose2d> futurePosePublisher = NetworkTableInstance.getDefault().getStructTopic("Est Future Robot Pose", Pose2d.struct).publish();
 
   public Robot() {
     m_robotContainer = new RobotContainer();
@@ -20,6 +25,8 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
+    posePublisher.set(m_robotContainer.m_swerveSubsystem.getPose());
+    futurePosePublisher.set(m_robotContainer.m_swerveSubsystem.getFuturePos());
   }
 
   @Override
@@ -69,4 +76,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testExit() {}
+
+  @Override
+  public void simulationPeriodic() {
+    FuelSim.getInstance().updateSim();
+  }
 }

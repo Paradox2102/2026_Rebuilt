@@ -50,7 +50,7 @@ public class LightSubsystem extends SubsystemBase {
     private final int m_commandShift;
     private final boolean m_odd;
     private final double m_endTime;
-    private Color m_color;
+    private Color m_color = Color.kBlack;
 
     private final LightSubsystem m_subsystem;
     public ShiftCommand(boolean odd, double endTime, int shift, LightSubsystem subsystem) {
