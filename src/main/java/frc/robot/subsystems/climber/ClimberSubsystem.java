@@ -67,7 +67,14 @@ public class ClimberSubsystem extends SubsystemBase {
       m_pid.setSetpoint(0, ControlType.kPosition);
     }, this);
   }
-
+  public Command climbingRetract(){
+    return Commands.runOnce(() -> {
+      m_pid.setSetpoint(ClimberConstants.k_climberClimbingStowedHeight, ControlType.kPosition);
+    }, this);
+  }
+  public Command setPower(double power) {
+    return Commands.run(() -> m_pid.setSetpoint(power, ControlType.kVoltage), this);
+  }
   public void simulationPeriodic() {
     m_climberSim.setInput(m_motorSim.getAppliedOutput() * RoboRioSim.getVInVoltage());
     m_climberSim.update(0.02);

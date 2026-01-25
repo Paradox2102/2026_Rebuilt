@@ -5,6 +5,9 @@
 package frc.robot.subsystems.light;
 
 import static edu.wpi.first.units.Units.Seconds;
+
+import java.util.Map;
+
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
@@ -40,9 +43,10 @@ public class LightSubsystem extends SubsystemBase {
   private String gameData;
   private static final Time k_blinkMagnitude = Seconds.of(0.3);
 
-  private final class LedPatterns {
-      private static final LEDPattern m_rainbowPattern = LEDPattern.rainbow(255, 128).scrollAtAbsoluteSpeed(LightConstants.k_rainbowVelocity, LightConstants.k_ledSpacing);
-  }  
+  private final class LedPatterns { // if it doesn't work as third of each team color and scrolling it likely has to do with me not knowing how maps work and it's an issue with k1, 2, and 3
+      private static final LEDPattern m_disabledPattern = LEDPattern.steps(Map.of(0, Color.kRed, 0.33, Color.kBlue, 0.66, Color.kGreen)).scrollAtAbsoluteSpeed(LightConstants.k_disabledVelocity, LightConstants.k_ledSpacing);
+      
+    }  
 
   private final class ShiftCommand extends Command {
     private final Timer m_blinkTimer = new Timer();
@@ -135,7 +139,7 @@ public class LightSubsystem extends SubsystemBase {
   public void periodic() {
     gameData = DriverStation.getGameSpecificMessage();
     if (DriverStation.isDisabled()){
-      m_pattern = LedPatterns.m_rainbowPattern;
+      m_pattern = LedPatterns.m_disabledPattern;
     }
     m_pattern.applyTo(m_ledBuffer);
     

@@ -128,6 +128,8 @@ public final class Constants
 
     public static final int k_maxFuelStorage = 45;
 
+    public static final double k_staticShootPower = 0;
+
     public static final SparkFlexConfig k_hoodConfig = new SparkFlexConfig();
     public static final SparkFlexConfig k_leaderConfig = new SparkFlexConfig();
     public static final SparkFlexConfig k_follower1Config = new SparkFlexConfig();
@@ -163,8 +165,10 @@ public final class Constants
     public static final double k_kickerP = 0;
 
     public static final int k_conveyorCurrent = 40;
-    public static final double k_conveyorInSpeed = 0;
-    public static final double k_conveyorOutSpeed = 0;
+    public static final double k_normalConveyorInSpeed = 0;
+    public static final double k_normalConveyorOutSpeed = 0;
+    public static final double k_slowcCnveyorInSpeed = 0;
+    public static final double k_slowConveyorOutSpeed = 0;
 
     public static final int k_kickerCurrent = 40;
     public static final double k_kickerInSpeed = 0;
@@ -191,9 +195,12 @@ public final class Constants
     public static final double k_climberDrumWidth = 0.106;
     public static final double k_climberReduction = 5;
     public static final double k_climberMaxHeight = 0.388;
+    public static final double k_climberClimbingStowedHeight = 0.1; //arbitrary number
     public static final double k_climberRotationsToMeters = Math.PI*k_climberDrumWidth;
 
     public static final double k_climberDeadzone = 0;
+
+    public static final double k_manualClimbPower = 0.25; //arbitrary number
 
     public static final double k_climberP = 0;
     public static final double k_climberI = 0;
@@ -250,7 +257,7 @@ public final class Constants
     public static final int k_lightPort = 0; // may be different on actual robot
     public static final int k_lightAmount = 60;
 
-    public static LinearVelocity k_rainbowVelocity = MetersPerSecond.of(0.4);
+    public static LinearVelocity k_disabledVelocity = MetersPerSecond.of(0.4);
     public static Distance k_ledSpacing = Meters.of(1 / 120.0);
     
   }

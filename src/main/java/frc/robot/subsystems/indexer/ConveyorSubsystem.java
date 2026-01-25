@@ -42,14 +42,20 @@ public class ConveyorSubsystem extends SubsystemBase {
     m_conveyorMotor.configure(IndexerConstants.k_conveyorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
-  public Command run(boolean in){
+  public Command runNormal(boolean in){
     return Commands.runEnd(() -> {
-      m_pid.setSetpoint(in ? IndexerConstants.k_conveyorInSpeed : IndexerConstants.k_conveyorOutSpeed , ControlType.kVelocity);
+      m_pid.setSetpoint(in ? IndexerConstants.k_normalConveyorInSpeed : IndexerConstants.k_normalConveyorOutSpeed , ControlType.kVelocity);
     }, () -> {
       m_pid.setSetpoint(0, ControlType.kVelocity);
     }, this);
   }
-
+  public Command runSlow(boolean in){
+    return Commands.runEnd(() -> {
+      m_pid.setSetpoint(in ? IndexerConstants.k_slowcCnveyorInSpeed : IndexerConstants.k_slowConveyorOutSpeed , ControlType.kVelocity);
+    }, () -> {
+      m_pid.setSetpoint(0, ControlType.kVelocity);
+    }, this);
+  }
   public double getVelocity(){
     return RobotBase.isReal() ? m_encoder.getVelocity() : m_simVelocity;
   }

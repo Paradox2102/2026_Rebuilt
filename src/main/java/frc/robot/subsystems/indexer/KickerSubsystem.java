@@ -49,7 +49,11 @@ public class KickerSubsystem extends SubsystemBase {
       m_pid.setSetpoint(0, ControlType.kVelocity);
     }, this);
   }
-
+  public Command stop() {
+    return Commands.runOnce(() ->{
+      m_pid.setSetpoint(0, ControlType.kVelocity);
+    }, this);
+  }
   public double getVelocity(){
     return RobotBase.isReal() ? m_encoder.getVelocity() : m_simVelocity;
   }

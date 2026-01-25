@@ -68,7 +68,11 @@ public class ShooterSubsystem extends SubsystemBase {
       m_isShooting = false;
     }); // set to whatever is decided for stopping shooting
   }
-
+  public Command staticShootCommand(){
+    return Commands.run(() ->{
+      m_pid.setSetpoint(ShooterConstants.k_staticShootPower, ControlType.kVelocity);
+    }, this);
+  }
   public Command revCommand(){
     return Commands.run(() -> {
       m_pid.setSetpoint(ShooterConstants.k_shooterRevVel, ControlType.kVelocity);
