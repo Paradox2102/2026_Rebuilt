@@ -34,7 +34,7 @@ public class ClimberSubsystem extends SubsystemBase {
   private RelativeEncoder m_encoder = m_leadMotor.getEncoder();
   private SparkClosedLoopController m_pid = m_leadMotor.getClosedLoopController();
 
-  private ElevatorSim m_climberSim = new ElevatorSim(LinearSystemId.createElevatorSystem(DCMotor.getNeoVortex(1), ClimberConstants.k_climberWeight, ClimberConstants.k_climberDrumWidth, ClimberConstants.k_climberReduction), DCMotor.getNeoVortex(1), 0, ClimberConstants.k_climberMaxHeight, true, 0);
+  private ElevatorSim m_climberSim = new ElevatorSim(LinearSystemId.createElevatorSystem(DCMotor.getNeoVortex(1), ClimberConstants.k_climberWeight, ClimberConstants.k_climberDrumWidth/2.0, ClimberConstants.k_climberReduction), DCMotor.getNeoVortex(1), 0, ClimberConstants.k_climberMaxHeight, true, 0);
   private SparkSim m_motorSim = new SparkSim(m_leadMotor, DCMotor.getNeoVortex(1));
 
   private double m_simHeight = 0;

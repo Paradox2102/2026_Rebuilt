@@ -61,13 +61,13 @@ public final class Constants
   }
 
   public static class IntakeConstants{
-    public static double k_rollerMOI = 0;
-    public static final double k_rollerReduction = 0;
+    public static double k_rollerMOI = 0.00074;
+    public static final double k_rollerReduction = 1.33;
 
-    public static final double k_pivotMOI = 0;
-    public static final double k_pivotReduction = 0;
-    public static final double k_pivotLength = 0;
-    public static final double k_pivotMaxRotation = 0;
+    public static final double k_pivotMOI = 0.5426;
+    public static final double k_pivotReduction = 16;
+    public static final double k_pivotLength = 0.7;
+    public static final double k_pivotMaxRotation = 1.633;
     public static final double k_pivotDeadzone = 0;
 
     public static final double k_rollerKV = 0;
@@ -103,13 +103,13 @@ public final class Constants
   }
 
   public static class ShooterConstants{
-    public static final double k_hoodGearRatio = 0.0;
-    public static final double k_hoodMomentOfInertia = 0.0;
-    public static final double k_hoodArmLengthMeters = 0.0;
-    public static final double k_hoodConversionFactor = 0;
+    public static final double k_hoodGearRatio = 34.6;
+    public static final double k_hoodMomentOfInertia = 0.0642;
+    public static final double k_hoodArmLengthMeters = 0.215;
+    public static final double k_hoodConversionFactor = 1/k_hoodGearRatio;
     
-    public static final double k_shooterMomentOfInertia = 0.0;
-    public static final double k_shooterMotorReduction = 0.0;
+    public static final double k_shooterMomentOfInertia = 0.0196;
+    public static final double k_shooterMotorReduction = 1;
 
     public static final int k_hoodCurrentLimit = 60;
     public static final double k_hoodP = 0;
@@ -150,11 +150,11 @@ public final class Constants
   }
 
   public static class IndexerConstants{
-    public static final double k_conveyorMOI = 0;
-    public static final double k_conveyorReduction = 0;
+    public static final double k_conveyorMOI = 0.000936;
+    public static final double k_conveyorReduction = 1;
 
-    public static final double k_kickerMOI = 0;
-    public static final double k_kickerReduction = 0;
+    public static final double k_kickerMOI = 0.000307;
+    public static final double k_kickerReduction = 1;
 
     public static final double k_conveyorKV = 0;
     public static final double k_conveyorP = 0;
@@ -187,11 +187,11 @@ public final class Constants
   }
 
   public static class ClimberConstants{
-    public static final double k_climberWeight = 0;
-    public static final double k_climberDrumWidth = 0;
-    public static final double k_climberReduction = 0;
-    public static final double k_climberMaxHeight = 0;
-    public static final double k_climberRotationsToMeters = 0;
+    public static final double k_climberWeight = 1.667;
+    public static final double k_climberDrumWidth = 0.106;
+    public static final double k_climberReduction = 5;
+    public static final double k_climberMaxHeight = 0.388;
+    public static final double k_climberRotationsToMeters = Math.PI*k_climberDrumWidth;
 
     public static final double k_climberDeadzone = 0;
 
