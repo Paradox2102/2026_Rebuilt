@@ -1,0 +1,50 @@
+{
+  "name": "2026", 
+  "isFTC": false,
+  "disableSimplification": false,
+  "rotations": [
+    {"axis" : "x", "degrees": 90},
+    {"axis" : "z", "degrees": 180}
+  ], 
+  "position": [
+    0,
+    0,
+    0
+  ],
+  "cameras": [ ],
+  "components": [
+    {
+        "zeroedRotations": [
+          {"axis" : "x", "degrees": 90},
+          {"axis" : "z", "degrees" : 180}
+        ],
+        "zeroedPosition": [
+            0.184,
+            0,
+            -0.137
+        ] 
+    },
+    {
+        "zeroedRotations": [
+          {"axis" : "x", "degrees": 90},
+          {"axis" : "z", "degrees" : 180}
+        ],
+        "zeroedPosition": [
+            -0.298,
+            0,
+            -0.488
+        ] 
+    },
+    {
+        "zeroedRotations": [
+          {"axis" : "x", "degrees": 90},
+          {"axis" : "z", "degrees" : 180}
+        ],
+        "zeroedPosition": [
+            0,
+            0,
+            0
+        ] 
+    }
+  ]
+}
