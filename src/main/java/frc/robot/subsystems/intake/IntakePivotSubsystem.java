@@ -32,7 +32,7 @@ public class IntakePivotSubsystem extends SubsystemBase {
   private AbsoluteEncoder m_encoder = m_pivotMotor.getAbsoluteEncoder();
   private SparkClosedLoopController m_pid = m_pivotMotor.getClosedLoopController();
 
-  private SingleJointedArmSim m_pivotSim = new SingleJointedArmSim(DCMotor.getNeoVortex(1), IntakeConstants.k_pivotReduction, IntakeConstants.k_pivotMOI, IntakeConstants.k_pivotLength, 0, IntakeConstants.k_pivotMaxRotation, true, IntakeConstants.k_pivotMaxRotation);
+  private SingleJointedArmSim m_pivotSim = new SingleJointedArmSim(DCMotor.getNeoVortex(1), IntakeConstants.k_pivotReduction, IntakeConstants.k_pivotMOI, IntakeConstants.k_pivotLength, 0, IntakeConstants.k_pivotMaxRotation, true, 0);
   private SparkSim m_pivotMotorSim = new SparkSim(m_pivotMotor, DCMotor.getNeoVortex(1));
   
   private double m_simAngleDegrees = 0;
@@ -48,6 +48,7 @@ public class IntakePivotSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Pivot Angle Degrees", getPosition());
+    SmartDashboard.putNumber("Pivot Motor Output", m_pivotMotorSim.getAppliedOutput());
   }
 
   public Command extend() {
@@ -58,7 +59,7 @@ public class IntakePivotSubsystem extends SubsystemBase {
 
   public Command retract() {
     return Commands.runOnce(() -> {
-      m_pid.setSetpoint(IntakeConstants.k_pivotMaxRotation, ControlType.kPosition);
+      m_pid.setSetpoint(Math.toDegrees(IntakeConstants.k_pivotMaxRotation), ControlType.kPosition);
     }, this);
   }
 

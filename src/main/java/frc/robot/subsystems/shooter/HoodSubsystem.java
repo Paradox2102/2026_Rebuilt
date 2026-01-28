@@ -34,7 +34,7 @@ public class HoodSubsystem extends SubsystemBase {
   private final RelativeEncoder m_hoodEncoder = m_hoodMotor.getEncoder();
   private SparkClosedLoopController m_pid = m_hoodMotor.getClosedLoopController();
 
-  private SingleJointedArmSim m_hoodSim = new SingleJointedArmSim(DCMotor.getNeoVortex(1), ShooterConstants.k_hoodGearRatio, ShooterConstants.k_hoodMomentOfInertia, ShooterConstants.k_hoodArmLengthMeters, 0, Math.toRadians(0.0), true, Math.toRadians(0.0));
+  private SingleJointedArmSim m_hoodSim = new SingleJointedArmSim(DCMotor.getNeoVortex(1), ShooterConstants.k_hoodGearRatio, ShooterConstants.k_hoodMomentOfInertia, ShooterConstants.k_hoodArmLengthMeters, 0, ShooterConstants.k_hoodMaxAngle, true, Math.toRadians(0.0));
   private SparkSim m_hoodMotorSim = new SparkSim(m_hoodMotor, DCMotor.getNeoVortex(1));
 
   private double m_hoodSimAngle = 0;
@@ -57,6 +57,7 @@ public class HoodSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Hood Angle", getHoodAngle());
     SmartDashboard.putNumber("Auto Aim Hood Trim", m_autoAlignTrim);
     SmartDashboard.putNumber("Static Hood Trim", m_staticTrim);
+    SmartDashboard.putNumber("encoder pos", m_hoodMotorSim.getRelativeEncoderSim().getPosition());
   }
 
   public double getHoodAngle() {

@@ -30,10 +30,8 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
-import edu.wpi.first.units.Unit;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -73,7 +71,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     private InterpolatingDoubleTreeMap m_shotTimeInt = new InterpolatingDoubleTreeMap();
 
-    private LightSubsystem m_LightSubsystem;
+    private LightSubsystem m_lightSubsystem;
 
     private StructPublisher<Translation2d> aimingPosePublisher = NetworkTableInstance.getDefault().getStructTopic("Aim Pose", Translation2d.struct).publish();
     
@@ -124,7 +122,7 @@ public class SwerveSubsystem extends SubsystemBase {
         setupPathPlanner();
         //RobotModeTriggers.autonomous().onTrue(Commands.runOnce(this::zeroGyroWithAlliance));
         m_vision = new Vision(() -> getPose(), m_swerveDrive.field);
-        m_LightSubsystem = leds;
+        m_lightSubsystem = leds;
 
         m_orientPID.enableContinuousInput(-180, 180);
         m_orientPID.setIZone(DrivebaseConstants.k_rotateIZone);
@@ -785,9 +783,5 @@ public class SwerveSubsystem extends SubsystemBase {
             getFuturePos().getX() - getAimingTarget().getX(),
             getFuturePos().getY() - getAimingTarget().getY()
         ) + (isRedAlliance() ? 180 : 0)));
-    }
-
-    public double rotationPID() {
-        return m_orientPID.calculate(getPose().getRotation().getDegrees(), getRotationalAim().getDegrees());
     }
 }

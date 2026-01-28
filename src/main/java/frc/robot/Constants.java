@@ -75,10 +75,10 @@ public final class Constants
     public static final double k_rollerKV = 0;
     public static final double k_rollerP = 0;
 
-    public static final double k_pivotKCos = 0;
-    public static final double k_pivotP = 0;
-    public static final double k_pivotI = 0;
-    public static final double k_pivotD = 0;
+    public static final double k_pivotKCos = 1.5;
+    public static final double k_pivotP = 0.0035;
+    public static final double k_pivotI = 0.001;
+    public static final double k_pivotD = 0.00025;
 
     public static final int k_rollerCurrent = 60;
     public static final double k_rollerInSpeed = 0;
@@ -96,7 +96,7 @@ public final class Constants
       k_rollerConfig.closedLoop.p(k_rollerP).feedbackSensor(FeedbackSensor.kPrimaryEncoder).
       feedForward.kV(k_rollerKV);
 
-      k_pivotConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_pivotCurrent)
+      k_pivotConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_pivotCurrent).inverted(true)
       .absoluteEncoder.positionConversionFactor(360);
 
       k_pivotConfig.closedLoop.pid(k_pivotP, k_pivotI, k_pivotD).feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
@@ -108,13 +108,12 @@ public final class Constants
     public static final double k_hoodGearRatio = 34.6;
     public static final double k_hoodMomentOfInertia = 0.0642;
     public static final double k_hoodArmLengthMeters = 0.215;
-    public static final double k_hoodConversionFactor = 1/k_hoodGearRatio;
     
     public static final double k_shooterMomentOfInertia = 0.0196;
     public static final double k_shooterMotorReduction = 1;
 
     public static final int k_hoodCurrentLimit = 60;
-    public static final double k_hoodP = 0;
+    public static final double k_hoodP = 0.005;
     public static final double k_hoodI = 0;
     public static final double k_hoodD = 0;
     public static final double k_hoodDeadzone = 0;
@@ -124,7 +123,8 @@ public final class Constants
     public static final double k_shooterP = 0;
     public static final double k_shooterDeadzone = 0;
 
-    public static final double k_staticHoodAngle = 0;
+    public static final double k_staticHoodAngle = 25;
+    public static double k_hoodMaxAngle = Math.toRadians(35);
 
     public static final double k_shooterRevVel = 0;
 
@@ -139,7 +139,7 @@ public final class Constants
 
     static {
       k_hoodConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_hoodCurrentLimit)
-      .encoder.positionConversionFactor(k_hoodConversionFactor);
+      .encoder.positionConversionFactor(k_hoodGearRatio);
 
       k_hoodConfig.closedLoop.pid(k_hoodP, k_hoodI, k_hoodD)
       .feedbackSensor(FeedbackSensor.kPrimaryEncoder);
@@ -194,17 +194,17 @@ public final class Constants
 
   public static class ClimberConstants{
     public static final double k_climberWeight = 1.667;
-    public static final double k_climberDrumWidth = 0.106;
+    public static final double k_climberDrumWidth = 0.0127;
     public static final double k_climberReduction = 5;
     public static final double k_climberMaxHeight = 0.388;
     public static final double k_climberClimbingStowedHeight = 0.1; //arbitrary number
-    public static final double k_climberRotationsToMeters = Math.PI*k_climberDrumWidth;
+    public static final double k_climberRotationsToMeters = (0.388/4.152);
 
     public static final double k_climberDeadzone = 0;
 
     public static final double k_manualClimbPower = 0.25; //arbitrary number
 
-    public static final double k_climberP = 0;
+    public static final double k_climberP = 1;
     public static final double k_climberI = 0;
     public static final double k_climberD = 0;
 
