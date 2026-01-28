@@ -106,6 +106,7 @@ public class RobotContainer {
         new ParallelCommandGroup(
           m_conveyorSubsystem.runNormal(true),
           m_kickerSubsystem.run(true),
+          m_swerveSubsystem.rotateToHub(),
           m_hoodSubsystem.pitchHood(() -> m_swerveSubsystem.getTargetDist()),
           m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getTargetDist())
         )
@@ -135,6 +136,7 @@ public class RobotContainer {
           m_conveyorSubsystem.runNormal(false)
       )
    );
+   m_driverController.b().whileTrue(m_swerveSubsystem.rotateToHub());
   }
 
   public Command getAutonomousCommand() {

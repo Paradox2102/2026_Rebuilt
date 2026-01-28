@@ -145,6 +145,10 @@ public class LightSubsystem extends SubsystemBase {
     
     m_led.setData(m_ledBuffer);
   }
+  /**
+   * Using the current shift, estimated through a timer, It will return if the alliance hub is currently active.
+   * @return Boolean returning the current active hub
+   */
   public boolean hubIsActive(){
     switch (m_shift) {
       case 0:
@@ -163,7 +167,12 @@ public class LightSubsystem extends SubsystemBase {
         return false;
     }
   }
-  private boolean getWonAuto() {
+  /**
+   * It gets the game specific message and using that determines what side won auto.
+   * Note: This is untested since we don't have a driver station for testing.
+   * @return Boolean returning whether your current alliance won Auto
+   */
+  public boolean getWonAuto() {
     if (gameData.length() > 0) {
       switch (gameData.charAt(0)) {
         case 'B':

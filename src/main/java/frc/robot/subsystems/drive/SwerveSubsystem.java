@@ -30,8 +30,10 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.units.Unit;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -74,8 +76,8 @@ public class SwerveSubsystem extends SubsystemBase {
     private LightSubsystem m_LightSubsystem;
 
     private StructPublisher<Translation2d> aimingPosePublisher = NetworkTableInstance.getDefault().getStructTopic("Aim Pose", Translation2d.struct).publish();
-
-
+    
+    private StructPublisher<Pose2d> autoAimPosePublisher = NetworkTableInstance.getDefault().getStructTopic("Auto Aim Pose", Pose2d.struct).publish();
     //ready to shoot if drivetrain is pointing towards aiming target, also requires chassis to be below a specific speed if shooting into hub
     public Trigger isDrivetrainAligned = new Trigger(() -> (Math.abs(getPose().getRotation().minus(getRotationalAim()).getDegrees()) <= DrivebaseConstants.k_rotateDeadzone) && ((Math.sqrt(Math.pow(getFieldVelocity().vxMetersPerSecond, 2) + Math.pow(getFieldVelocity().vyMetersPerSecond, 2)) < DrivebaseConstants.k_maxDtShootingSpeed) || getIsPassing()));
 
@@ -155,6 +157,8 @@ public class SwerveSubsystem extends SubsystemBase {
     public void simulationPeriodic() {
         SmartDashboard.putNumber("x", getPose().getX());
         SmartDashboard.putNumber("y", getPose().getY());
+
+        autoAimPosePublisher.set(new Pose2d(getPose().getX(), getPose().getY(), new Rotation2d(computeHubAim())));
     }
 
     /**
@@ -261,7 +265,37 @@ public class SwerveSubsystem extends SubsystemBase {
                 edu.wpi.first.units.Units.MetersPerSecond.of(0) // Goal end velocity in meters/sec
         );
     }
+    
+    public Command rotateToHub() {
+        return Commands.run(() -> {
+            
+            drive(new Translation2d(0.0, 0.0), computeHubAim(), true);
+            
+        }, this);
+    }
+    public double computeHubAim() {
+        var turnRate = normalizeAngle(getHeading().getDegrees() - getHubAngle());
+        if (Math.abs(turnRate) > DrivebaseConstants.k_aimTurnDeadzone){
+            return -DrivebaseConstants.k_rotateP - 0.02 * turnRate;
+        }
+        return 0;
+    }
+    public double getHubAngle() {
+        var dx = getAimingTarget().getX() - getPose().getX();
+        var dy = getAimingTarget().getY() - getPose().getY();
+        var angle = Math.toDegrees(Math.atan2(dy, dx));
+        return angle;
+    }
+    private double normalizeAngle(double angle) {
+        angle = angle % 360;
 
+        if (angle > 180) {
+            angle -= 360;
+        } else if (angle < -180) {
+            angle += 360;
+        }
+        return angle;
+    }
     /**
      * Drive with {@link SwerveSetpointGenerator} from 254, implemented by
      * PathPlanner.
@@ -717,9 +751,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public boolean getIsPassing(){
         double curX = getPose().getX();
-        if(!m_LightSubsystem.hubIsActive()) {
-            return true;
-        }
+        // if(!m_LightSubsystem.hubIsActive()) {
+        //     return true;
+        // }
         if(isRedAlliance()){
             return curX < DrivebaseConstants.k_redZoneX;
         } else {
@@ -730,7 +764,7 @@ public class SwerveSubsystem extends SubsystemBase {
     public Translation2d getAimingTarget(){
         Translation2d blueTarget = getIsPassing() ? DrivebaseConstants.k_blueOutpost : DrivebaseConstants.k_blueHub;
         if(isRedAlliance()){
-            return new Translation2d(DrivebaseConstants.k_fieldLengthMeters - blueTarget.getX(), blueTarget.getY());
+            return new Translation2d(DrivebaseConstants.k_fieldLengthMeters - blueTarget.getX(), DrivebaseConstants.k_fieldWidthMeters - blueTarget.getY());
         } else {
             return blueTarget;
         }

@@ -47,6 +47,8 @@ public final class Constants
     public static final double k_rotateIZone = 5;
     public static final double k_rotateDeadzone = 1;
 
+    public static final double k_aimTurnDeadzone = 0.1;
+    
     public static final double k_maxDtShootingSpeed = 0;
 
     public static final double k_fieldLengthMeters = 16.541;
