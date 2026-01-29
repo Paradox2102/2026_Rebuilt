@@ -113,8 +113,8 @@ public final class Constants
     public static final double k_shooterMotorReduction = 1;
 
     public static final int k_hoodCurrentLimit = 60;
-    public static final double k_hoodP = 0.005;
-    public static final double k_hoodI = 0;
+    public static final double k_hoodP = 0.01;
+    public static final double k_hoodI = 0.005;
     public static final double k_hoodD = 0;
     public static final double k_hoodDeadzone = 0;
 
@@ -139,7 +139,7 @@ public final class Constants
 
     static {
       k_hoodConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_hoodCurrentLimit)
-      .encoder.positionConversionFactor(k_hoodGearRatio);
+      .encoder.positionConversionFactor(k_hoodGearRatio * 10);
 
       k_hoodConfig.closedLoop.pid(k_hoodP, k_hoodI, k_hoodD)
       .feedbackSensor(FeedbackSensor.kPrimaryEncoder);
