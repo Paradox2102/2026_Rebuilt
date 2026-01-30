@@ -69,68 +69,58 @@ public class RobotContainer {
     Command driveFieldOrientedAnglularVelocity = m_swerveSubsystem.driveFieldOriented(driveAngularVelocity);
 
     m_swerveSubsystem.setDefaultCommand(driveFieldOrientedAnglularVelocity);
-    // m_driverController.a().whileTrue(driveFieldOrientedAutoAim);
-  //   m_swerveSubsystem.isDrivetrainAligned.whileTrue(m_fuelLaunchSim.repeatedlyLaunchFuel(() -> 1, () -> 20));
 
-  //   m_conveyorSubsystem.setDefaultCommand(m_conveyorSubsystem.runSlow(true));
-  //   m_shooterSubsystem.setDefaultCommand(m_shooterSubsystem.revCommand());
-  //   m_hoodSubsystem.setDefaultCommand(m_hoodSubsystem.returnHood());
-  //   m_kickerSubsystem.setDefaultCommand(m_kickerSubsystem.stop());
+    m_conveyorSubsystem.setDefaultCommand(m_conveyorSubsystem.runSlow(true));
+    m_shooterSubsystem.setDefaultCommand(m_shooterSubsystem.revCommand());
+    m_hoodSubsystem.setDefaultCommand(m_hoodSubsystem.returnHood());
+    m_kickerSubsystem.setDefaultCommand(m_kickerSubsystem.stop());
 
-  //   m_driverController.leftTrigger().whileTrue(new SequentialCommandGroup(
-  //     new ConditionalCommand(new Command(){}, m_climberSubsystem.retract(), m_climberSubsystem.isClimberRetracted), 
-  //     m_pivotSubsystem.extend(),
-  //     m_rollerSubsystem.run(true)
-  //   )).onFalse(m_rollerSubsystem.stop());
+    m_driverController.leftTrigger().whileTrue(new SequentialCommandGroup(
+      new ConditionalCommand(new Command(){}, m_climberSubsystem.retract(), m_climberSubsystem.isClimberRetracted), 
+      m_pivotSubsystem.extend(),
+      m_rollerSubsystem.run(true)
+    )).onFalse(m_rollerSubsystem.stop());
 
-  //   m_driverController.rightTrigger().whileTrue(new ConditionalCommand(
-  //     new ParallelCommandGroup(
-  //       //align swerve subsystem
-  //       m_hoodSubsystem.pitchHood(() -> m_swerveSubsystem.getTargetDist()),
-  //       m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getTargetDist())
-  //     ),
-  //     new ParallelCommandGroup(
-  //       m_hoodSubsystem.staticPitch(),
-  //       m_shooterSubsystem.staticShootCommand()),
+    m_driverController.rightTrigger().whileTrue(new ConditionalCommand(
+      new ParallelCommandGroup(
+        m_swerveSubsystem.rotateToHub(),
+        m_hoodSubsystem.pitchHood(() -> m_swerveSubsystem.getTargetDist()),
+        m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getTargetDist())
+      ),
+      new ParallelCommandGroup(
+        m_hoodSubsystem.staticPitch(),
+        m_shooterSubsystem.staticShootCommand()),
 
-  //     () -> m_swerveSubsystem.isDrivetrainAligned.getAsBoolean()));
-  //   m_isReadyToShoot.whileTrue(
-  //       new ParallelCommandGroup(
-  //         m_conveyorSubsystem.runNormal(true),
-  //         m_kickerSubsystem.run(true),
-  //         m_swerveSubsystem.rotateToHub(),
-  //         m_hoodSubsystem.pitchHood(() -> m_swerveSubsystem.getTargetDist()),
-  //         m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getTargetDist())
-  //       )
-  //   );
-  //   m_driverController.button(0).whileTrue(new ParallelCommandGroup(
-  //         m_conveyorSubsystem.runNormal(false),
-  //         m_kickerSubsystem.run(false)
-  //         )
-  //   );
-  //   m_driverController.button(1).onTrue(new SequentialCommandGroup(
-  //     m_pivotSubsystem.retract(),
-  //     m_rollerSubsystem.stop(),
-  //     m_climberSubsystem.extend())
-  //   );
-  //   m_driverController.button(2).onTrue(m_climberSubsystem.climbingRetract());
+      shouldAutoAlign));
 
-  //   // shouldAutoAlign.onTrue().onFalse(); //toggle auto align on and off.
+    m_isReadyToShoot.whileTrue(
+        new ParallelCommandGroup(
+          m_conveyorSubsystem.runNormal(true),
+          m_kickerSubsystem.run(true),
+          m_fuelLaunchSim.repeatedlyLaunchFuel(() -> 2, () -> 15)
+        )
+    );
+    
+    m_driverController.leftBumper().whileTrue(new ParallelCommandGroup(
+          m_conveyorSubsystem.runNormal(false),
+          m_kickerSubsystem.run(false),
+          m_rollerSubsystem.run(false)
+          )
+    );
 
-  //   m_driverController.button(3).whileTrue(m_climberSubsystem.setPower(-ClimberConstants.k_manualClimbPower));
-  //   m_driverController.button(4).whileTrue(m_climberSubsystem.setPower(ClimberConstants.k_manualClimbPower));
+    m_driverController.a().onTrue(new SequentialCommandGroup(
+      m_pivotSubsystem.retract(),
+      m_climberSubsystem.extend())
+    );
 
-  //   m_driverController.button(5).whileTrue(
-  //     new SequentialCommandGroup(
-  //       new ParallelCommandGroup(
-  //         m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getTargetDist()),
-  //         m_hoodSubsystem.pitchHood(() -> m_swerveSubsystem.getTargetDist())),
-  //         m_conveyorSubsystem.runNormal(false)
-  //     )
-  //  );
-  //  m_driverController.b().whileTrue(m_swerveSubsystem.rotateToHub());
-    m_driverController.a().whileTrue(m_rollerSubsystem.run(true));
-    m_driverController.b().whileTrue(m_rollerSubsystem.run(false));
+    m_driverController.b().onTrue(m_climberSubsystem.climbingRetract());
+
+    m_driverController.x().onTrue(m_pivotSubsystem.extend());
+
+    // shouldAutoAlign.onTrue().onFalse(); //toggle auto align on and off.
+
+    m_operatorController.button(3).whileTrue(m_climberSubsystem.setPower(-ClimberConstants.k_manualClimbPower));
+    m_operatorController.button(4).whileTrue(m_climberSubsystem.setPower(ClimberConstants.k_manualClimbPower));
   }
 
   public Command getAutonomousCommand() {
@@ -141,7 +131,7 @@ public class RobotContainer {
     FuelSim instance = FuelSim.getInstance();
     instance.spawnStartingFuel();
     instance.registerRobot(0.876, 0.826, 0.152, m_swerveSubsystem::getPose, m_swerveSubsystem::getFieldVelocity);
-    instance.registerIntake(-0.47, -0.595, -0.333, 0.333, () -> true, m_fuelLaunchSim::intakeFuel);
+    instance.registerIntake(-0.47, -0.595, -0.333, 0.333, m_pivotSubsystem.isIntakeExtended, m_fuelLaunchSim::intakeFuel);
 
     instance.start();
     SmartDashboard.putData(Commands.runOnce(() -> {

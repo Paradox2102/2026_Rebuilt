@@ -73,7 +73,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     private LightSubsystem m_lightSubsystem;
 
-    private StructPublisher<Translation2d> aimingPosePublisher = NetworkTableInstance.getDefault().getStructTopic("Aim Pose", Translation2d.struct).publish();
+    private StructPublisher<Pose2d> targetPosePublisher = NetworkTableInstance.getDefault().getStructTopic("Aim Pose", Pose2d.struct).publish();
     
     private StructPublisher<Pose2d> autoAimPosePublisher = NetworkTableInstance.getDefault().getStructTopic("Auto Aim Pose", Pose2d.struct).publish();
     //ready to shoot if drivetrain is pointing towards aiming target, also requires chassis to be below a specific speed if shooting into hub
@@ -148,7 +148,7 @@ public class SwerveSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         m_vision.updatePoseEstimation(m_swerveDrive);
-        aimingPosePublisher.set(getAimingTarget());
+        targetPosePublisher.set(new Pose2d(getAimingTarget(),new Rotation2d()));
     }
 
     @Override
@@ -749,9 +749,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public boolean getIsPassing(){
         double curX = getPose().getX();
-        // if(!m_LightSubsystem.hubIsActive()) {
-        //     return true;
-        // }
+        if(!m_lightSubsystem.hubIsActive()) {
+            return true;
+        }
         if(isRedAlliance()){
             return curX < DrivebaseConstants.k_redZoneX;
         } else {
