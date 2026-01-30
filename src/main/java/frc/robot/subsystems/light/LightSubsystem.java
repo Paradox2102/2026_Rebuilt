@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -57,6 +58,7 @@ public class LightSubsystem extends SubsystemBase {
     private Color m_color = Color.kBlack;
 
     private final LightSubsystem m_subsystem;
+    
     public ShiftCommand(boolean odd, double endTime, int shift, LightSubsystem subsystem) {
       m_commandShift = shift;
       m_odd = odd;
@@ -84,8 +86,11 @@ public class LightSubsystem extends SubsystemBase {
       new SetPattern(m_color, false, m_subsystem);
     }
     @Override
+    public void end(boolean interrupted) {
+        m_shift ++;
+    }
+    @Override
     public boolean isFinished() {
-      m_shift ++;
       switch(m_commandShift) {
         case 0:
           return m_timer.get() > k_shift1Time;
@@ -127,7 +132,7 @@ public class LightSubsystem extends SubsystemBase {
     m_led.setData(m_ledBuffer);
     m_led.start();
     
-    new Trigger(() -> DriverStation.isTeleop() && !DriverStation.isDisabled()).onTrue(new ShiftCommand(false, k_transitionTime, 1, this));
+    new Trigger(() -> DriverStation.isTeleop() && !DriverStation.isDisabled()).onTrue(new ShiftCommand(false, k_transitionTime, 0, this));
     new Trigger(() -> m_timer.get() > k_shift1Time).onTrue(new ShiftCommand(true, k_shiftTime, 1, this));
     new Trigger(() -> m_timer.get() > k_shift2Time).onTrue(new ShiftCommand(false, k_shiftTime, 2, this));
     new Trigger(() -> m_timer.get() > k_shift3Time).onTrue(new ShiftCommand(true, k_shiftTime, 3, this));
