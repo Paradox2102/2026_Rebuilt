@@ -267,7 +267,7 @@ public class SwerveSubsystem extends SubsystemBase {
     public Command rotateToHub(DoubleSupplier xAxis, DoubleSupplier yAxis) {
         return Commands.run(() -> {
             
-            drive(new Translation2d(-xAxis.getAsDouble(), -yAxis.getAsDouble()), computeHubAim(), true);
+            drive(new Translation2d(yAxis.getAsDouble(), xAxis.getAsDouble()), computeHubAim(), true);
             
         }, this);
     }
