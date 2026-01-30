@@ -40,8 +40,8 @@ public final class Constants
     // Hold time on motor brakes when disabled
     public static final double k_wheelLockTime = 10; // seconds
 
-    public static final double k_rotateP = 0.0035;
-    public static final double k_rotateI = 0;
+    public static final double k_rotateP = 0.065;
+    public static final double k_rotateI = 0.1;
     public static final double k_rotateD = 0;
 
     public static final double k_rotateIZone = 5;

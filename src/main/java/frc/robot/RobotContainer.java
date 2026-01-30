@@ -83,7 +83,7 @@ public class RobotContainer {
 
     m_driverController.rightTrigger().whileTrue(new ConditionalCommand(
       new ParallelCommandGroup(
-        m_swerveSubsystem.rotateToHub(),
+        m_swerveSubsystem.rotateToHub(m_driverController::getLeftX, m_driverController::getLeftY),
         m_hoodSubsystem.pitchHood(() -> m_swerveSubsystem.getTargetDist()),
         m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getTargetDist())
       ),

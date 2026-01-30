@@ -156,7 +156,7 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("x", getPose().getX());
         SmartDashboard.putNumber("y", getPose().getY());
 
-        autoAimPosePublisher.set(new Pose2d(getPose().getX(), getPose().getY(), new Rotation2d(computeHubAim())));
+        autoAimPosePublisher.set(new Pose2d(getPose().getX(), getPose().getY(), Rotation2d.fromDegrees(getHubAngle())));
     }
 
     /**
@@ -264,19 +264,15 @@ public class SwerveSubsystem extends SubsystemBase {
         );
     }
     
-    public Command rotateToHub() {
+    public Command rotateToHub(DoubleSupplier xAxis, DoubleSupplier yAxis) {
         return Commands.run(() -> {
             
-            drive(new Translation2d(0.0, 0.0), computeHubAim(), true);
+            drive(new Translation2d(-xAxis.getAsDouble(), -yAxis.getAsDouble()), computeHubAim(), true);
             
         }, this);
     }
     public double computeHubAim() {
-        var turnRate = normalizeAngle(getHeading().getDegrees() - getHubAngle());
-        if (Math.abs(turnRate) > DrivebaseConstants.k_aimTurnDeadzone){
-            return -DrivebaseConstants.k_rotateP - 0.02 * turnRate;
-        }
-        return 0;
+        return m_orientPID.calculate(getPose().getRotation().getDegrees(),getHubAngle());
     }
     public double getHubAngle() {
         var dx = getAimingTarget().getX() - getPose().getX();
@@ -284,16 +280,16 @@ public class SwerveSubsystem extends SubsystemBase {
         var angle = Math.toDegrees(Math.atan2(dy, dx));
         return angle;
     }
-    private double normalizeAngle(double angle) {
-        angle = angle % 360;
+    // private double normalizeAngle(double angle) {
+    //     angle = angle % 360;
 
-        if (angle > 180) {
-            angle -= 360;
-        } else if (angle < -180) {
-            angle += 360;
-        }
-        return angle;
-    }
+    //     if (angle > 180) {
+    //         angle -= 360;
+    //     } else if (angle < -180) {
+    //         angle += 360;
+    //     }
+    //     return angle;
+    // }
     /**
      * Drive with {@link SwerveSetpointGenerator} from 254, implemented by
      * PathPlanner.
