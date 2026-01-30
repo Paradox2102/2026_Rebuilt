@@ -129,8 +129,8 @@ public class RobotContainer {
   //     )
   //  );
   //  m_driverController.b().whileTrue(m_swerveSubsystem.rotateToHub());
-    m_driverController.a().whileTrue(m_hoodSubsystem.returnHood());
-    m_driverController.b().whileTrue(m_hoodSubsystem.staticPitch());
+    m_driverController.a().whileTrue(m_rollerSubsystem.run(true));
+    m_driverController.b().whileTrue(m_rollerSubsystem.run(false));
   }
 
   public Command getAutonomousCommand() {

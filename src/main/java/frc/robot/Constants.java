@@ -72,8 +72,8 @@ public final class Constants
     public static final double k_pivotMaxRotation = 1.633;
     public static final double k_pivotDeadzone = 0;
 
-    public static final double k_rollerKV = 0;
-    public static final double k_rollerP = 0;
+    public static final double k_rollerKV = 0.0023;
+    public static final double k_rollerP = 0.00075;
 
     public static final double k_pivotKCos = 1.5;
     public static final double k_pivotP = 0.0035;
@@ -81,8 +81,8 @@ public final class Constants
     public static final double k_pivotD = 0.00025;
 
     public static final int k_rollerCurrent = 60;
-    public static final double k_rollerInSpeed = 0;
-    public static final double k_rollerOutSpeed = 0;
+    public static final double k_rollerInSpeed = 4500;
+    public static final double k_rollerOutSpeed = -2000;
     
     public static final int k_pivotCurrent = 80;
 
@@ -109,7 +109,7 @@ public final class Constants
     public static final double k_hoodMomentOfInertia = 0.0642;
     public static final double k_hoodArmLengthMeters = 0.215;
     
-    public static final double k_shooterMomentOfInertia = 0.0196;
+    public static final double k_shooterMomentOfInertia = 0.003156;
     public static final double k_shooterMotorReduction = 1;
 
     public static final int k_hoodCurrentLimit = 60;
@@ -118,19 +118,19 @@ public final class Constants
     public static final double k_hoodD = 0;
     public static final double k_hoodDeadzone = 0;
 
-    public static final int k_shooterCurrent = 40;
-    public static final double k_shooterKV = 0;
-    public static final double k_shooterP = 0;
+    public static final int k_shooterCurrent = 80;
+    public static final double k_shooterKV = 0.00175;
+    public static final double k_shooterP = 0.001;
     public static final double k_shooterDeadzone = 0;
 
     public static final double k_staticHoodAngle = 25;
     public static double k_hoodMaxAngle = Math.toRadians(35);
 
-    public static final double k_shooterRevVel = 0;
+    public static final double k_shooterRevVel = 4500;
 
     public static final int k_maxFuelStorage = 45;
 
-    public static final double k_staticShootPower = 0;
+    public static final double k_staticShootVel = 0;
 
     public static final SparkFlexConfig k_hoodConfig = new SparkFlexConfig();
     public static final SparkFlexConfig k_leaderConfig = new SparkFlexConfig();
