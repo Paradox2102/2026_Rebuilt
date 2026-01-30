@@ -160,21 +160,22 @@ public final class Constants
     public static final double k_kickerMOI = 0.000307;
     public static final double k_kickerReduction = 1;
 
-    public static final double k_conveyorKV = 0;
-    public static final double k_conveyorP = 0;
+    public static final double k_conveyorKV = 0.00176;
+    public static final double k_conveyorP = 0.002;
 
-    public static final double k_kickerKV = 0;
-    public static final double k_kickerP = 0;
+    public static final double k_kickerKV = 0.00176;
+    public static final double k_kickerP = 0.00061;
 
     public static final int k_conveyorCurrent = 40;
-    public static final double k_normalConveyorInSpeed = 0;
-    public static final double k_normalConveyorOutSpeed = 0;
-    public static final double k_slowcCnveyorInSpeed = 0;
-    public static final double k_slowConveyorOutSpeed = 0;
+
+    public static final double k_normalConveyorInSpeed = 3000;
+    public static final double k_normalConveyorOutSpeed = -3000;
+    public static final double k_slowcCnveyorInSpeed = 1000;
+    public static final double k_slowConveyorOutSpeed = -1000;
 
     public static final int k_kickerCurrent = 40;
-    public static final double k_kickerInSpeed = 0;
-    public static final double k_kickerOutSpeed = 0;
+    public static final double k_kickerInSpeed = 3000;
+    public static final double k_kickerOutSpeed = 3000;
 
     public static final SparkFlexConfig k_conveyorConfig = new SparkFlexConfig();
 
@@ -187,7 +188,7 @@ public final class Constants
       k_conveyorConfig.closedLoop.p(k_conveyorP).feedbackSensor(FeedbackSensor.kPrimaryEncoder)
       .feedForward.kV(k_conveyorKV);
 
-      k_conveyorConfig.closedLoop.p(k_kickerP).feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+      k_kickerConfig.closedLoop.p(k_kickerP).feedbackSensor(FeedbackSensor.kPrimaryEncoder)
       .feedForward.kV(k_kickerKV);
     }
   }

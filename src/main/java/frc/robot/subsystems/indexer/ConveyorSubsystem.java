@@ -63,6 +63,7 @@ public class ConveyorSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Conveyor Velocity", getVelocity());
+    SmartDashboard.putNumber("Simulation Motor Output", m_conveyorMotorSim.getAppliedOutput());
   }
 
   public void simulationPeriodic() {
