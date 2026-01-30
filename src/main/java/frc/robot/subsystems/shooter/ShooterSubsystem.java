@@ -41,7 +41,7 @@ public class ShooterSubsystem extends SubsystemBase {
   private SparkClosedLoopController  m_pid = m_leadMotor.getClosedLoopController();
   private RelativeEncoder m_encoder = m_leadMotor.getEncoder();
 
-  private FlywheelSim m_shooterSim = new FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNeoVortex(1), ShooterConstants.k_shooterMomentOfInertia, ShooterConstants.k_shooterMotorReduction), DCMotor.getNeoVortex(1));
+  private FlywheelSim m_shooterSim = new FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNeoVortex(4), ShooterConstants.k_shooterMomentOfInertia, ShooterConstants.k_shooterMotorReduction), DCMotor.getNeoVortex(1));
   private SparkSim m_shooterMotorSim = new SparkSim(m_leadMotor, DCMotor.getNeoVortex(4));
   
   private InterpolatingDoubleTreeMap m_shooterPowerLerp = new InterpolatingDoubleTreeMap();
@@ -70,7 +70,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
   public Command staticShootCommand(){
     return Commands.run(() ->{
-      m_pid.setSetpoint(ShooterConstants.k_staticShootPower, ControlType.kVelocity);
+      m_pid.setSetpoint(ShooterConstants.k_staticShootVel, ControlType.kVelocity);
     }, this);
   }
   public Command revCommand(){
