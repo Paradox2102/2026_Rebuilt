@@ -52,11 +52,14 @@ public class ShooterSubsystem extends SubsystemBase {
   public Trigger isShooterOnTarget = new Trigger(() -> (Math.abs(getVelocity() - m_pid.getSetpoint()) <= ShooterConstants.k_shooterDeadzone) && m_isShooting);
   
   public ShooterSubsystem() {
-    m_shooterPowerLerp.put(0.0, 0.0); // add values later
     m_leadMotor.configure(ShooterConstants.k_leaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     m_follow1.configure(ShooterConstants.k_follower1Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     m_follow2.configure(ShooterConstants.k_follower23Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     m_follow3.configure(ShooterConstants.k_follower23Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+    for(double[] shotSpeed : ShooterConstants.k_shotSpeeds){
+      m_shooterPowerLerp.put(shotSpeed[0], shotSpeed[1]);
+    }
   }
 
   public Command shootCommand(DoubleSupplier distanceToHub){

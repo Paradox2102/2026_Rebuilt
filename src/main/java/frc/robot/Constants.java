@@ -105,12 +105,27 @@ public final class Constants
   }
 
   public static class ShooterConstants{
+    public static final double[][] k_shotAngles = {
+      {1.125, 0},
+      {1.25, 0},
+      {1.5, 10},
+      {1.75, 12.5},
+      {2, 15},
+      {2.25, 17.5}
+    };
+
+    public static final double[][] k_shotSpeeds = {
+      {1.125, 4000},
+      {2.25, 4500}
+    };
+
     public static final double k_hoodGearRatio = 34.6;
     public static final double k_hoodMomentOfInertia = 0.0642;
     public static final double k_hoodArmLengthMeters = 0.215;
     
     public static final double k_shooterMomentOfInertia = 0.003156;
     public static final double k_shooterMotorReduction = 1;
+    public static final double k_rpmToSurfaceSpeedMperS = (0.0254*Math.PI)/60;
 
     public static final int k_hoodCurrentLimit = 60;
     public static final double k_hoodP = 0.01;

@@ -11,6 +11,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.IntakeConstants;
@@ -40,6 +41,7 @@ public class Robot extends TimedRobot {
       new Pose3d(-0.184, 0.0, 0.158, new Rotation3d(0, Math.toRadians(m_robotContainer.m_pivotSubsystem.getPosition()) - IntakeConstants.k_pivotMaxRotation,0)),
       new Pose3d(0.298,0, 0.488, new Rotation3d(0, Math.toRadians(m_robotContainer.m_hoodSubsystem.getHoodAngle()),0)),
       new Pose3d(Math.cos(0.814527)*m_robotContainer.m_climberSubsystem.getHeight(), 0, Math.sin(0.814527)*m_robotContainer.m_climberSubsystem.getHeight(), new Rotation3d(0,0,0))});
+      SmartDashboard.putNumber("fuel sim fuel amount", m_robotContainer.m_fuelLaunchSim.getFuelStored());
   }
 
   @Override

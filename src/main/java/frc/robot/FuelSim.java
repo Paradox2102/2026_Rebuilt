@@ -571,15 +571,15 @@ public class FuelSim {
 
         private boolean shouldIntake(Fuel fuel, Pose2d robotPose) {
             if (!ableToIntake.getAsBoolean() || fuel.pos.getZ() > bumperHeight) return false;
-
             Translation2d fuelRelativePos = new Pose2d(fuel.pos.toTranslation2d(), Rotation2d.kZero)
                     .relativeTo(robotPose)
-                    .getTranslation();
+                    .getTranslation();        
 
             boolean result = fuelRelativePos.getX() >= xMin
                     && fuelRelativePos.getX() <= xMax
                     && fuelRelativePos.getY() >= yMin
                     && fuelRelativePos.getY() <= yMax;
+
             if (result) {
                 callback.run();
             }

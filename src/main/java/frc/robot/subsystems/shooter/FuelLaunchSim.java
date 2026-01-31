@@ -51,6 +51,10 @@ public class FuelLaunchSim {
         fuelStored++;
     }
 
+    public double getFuelStored(){
+        return fuelStored;
+    }
+
     public void launchFuel(double vel, double angle) {
         if (fuelStored == 0)
             return;

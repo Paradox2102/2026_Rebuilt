@@ -149,6 +149,7 @@ public class SwerveSubsystem extends SubsystemBase {
     public void periodic() {
         m_vision.updatePoseEstimation(m_swerveDrive);
         targetPosePublisher.set(new Pose2d(getAimingTarget(),new Rotation2d()));
+        SmartDashboard.putNumber("hub distance", getTargetDist());
     }
 
     @Override
@@ -745,9 +746,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public boolean getIsPassing(){
         double curX = getPose().getX();
-        if(!m_lightSubsystem.hubIsActive()) {
-            return true;
-        }
+        // if(!m_lightSubsystem.hubIsActive()) {
+        //     return true;
+        // }
         if(isRedAlliance()){
             return curX < DrivebaseConstants.k_redZoneX;
         } else {

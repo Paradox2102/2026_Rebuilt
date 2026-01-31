@@ -51,7 +51,7 @@ public class RobotContainer {
       return m_swerveSubsystem.isDrivetrainAligned.getAsBoolean() && m_shooterSubsystem.isShooterOnTarget.getAsBoolean() && m_hoodSubsystem.isHoodOnTarget.getAsBoolean();
   });
 
-  public Trigger shouldAutoAlign = new Trigger(() -> m_operatorController.getThrottle() < 0);
+  public Trigger shouldAutoAlign = new Trigger(() -> m_operatorController.getThrottle() <= 0);
   
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(m_swerveSubsystem.getSwerveDrive(),
       () -> m_driverController.getLeftY() * -1,
@@ -85,7 +85,8 @@ public class RobotContainer {
       new ParallelCommandGroup(
         m_swerveSubsystem.rotateToHub(m_driverController::getLeftX, m_driverController::getLeftY),
         m_hoodSubsystem.pitchHood(() -> m_swerveSubsystem.getTargetDist()),
-        m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getTargetDist())
+        m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getTargetDist()),
+        m_fuelLaunchSim.repeatedlyLaunchFuel(() -> (m_shooterSubsystem.getVelocity() * Constants.ShooterConstants.k_rpmToSurfaceSpeedMperS), () -> (90 - (m_hoodSubsystem.getHoodAngle()+7.8)))
       ),
       new ParallelCommandGroup(
         m_hoodSubsystem.staticPitch(),
@@ -96,8 +97,7 @@ public class RobotContainer {
     m_isReadyToShoot.whileTrue(
         new ParallelCommandGroup(
           m_conveyorSubsystem.runNormal(true),
-          m_kickerSubsystem.run(true),
-          m_fuelLaunchSim.repeatedlyLaunchFuel(() -> 2, () -> 15)
+          m_kickerSubsystem.run(true)
         )
     );
     
@@ -130,8 +130,8 @@ public class RobotContainer {
   private void configureFuelSim() {
     FuelSim instance = FuelSim.getInstance();
     instance.spawnStartingFuel();
-    instance.registerRobot(0.876, 0.826, 0.152, m_swerveSubsystem::getPose, m_swerveSubsystem::getFieldVelocity);
-    instance.registerIntake(-0.47, -0.595, -0.333, 0.333, m_pivotSubsystem.isIntakeExtended, m_fuelLaunchSim::intakeFuel);
+    instance.registerRobot(0.876, 0.826, 0.4, m_swerveSubsystem::getPose, m_swerveSubsystem::getFieldVelocity);
+    instance.registerIntake(-0.595, -0.438, -0.333, 0.333, () -> (m_fuelLaunchSim.canIntake()), m_fuelLaunchSim::intakeFuel);
 
     instance.start();
     SmartDashboard.putData(Commands.runOnce(() -> {

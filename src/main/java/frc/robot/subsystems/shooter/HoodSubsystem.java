@@ -49,7 +49,9 @@ public class HoodSubsystem extends SubsystemBase {
   
   public HoodSubsystem() {
     m_hoodMotor.configure(ShooterConstants.k_hoodConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    m_hoodLerpTable.put(0.0, 0.0); // add values later
+    for(double[] shotAngle : ShooterConstants.k_shotAngles){
+      m_hoodLerpTable.put(shotAngle[0], shotAngle[1]);
+    }
   }
 
   @Override
