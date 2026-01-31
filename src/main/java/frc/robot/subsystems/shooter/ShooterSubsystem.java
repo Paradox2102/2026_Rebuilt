@@ -41,12 +41,13 @@ public class ShooterSubsystem extends SubsystemBase {
   private SparkClosedLoopController  m_pid = m_leadMotor.getClosedLoopController();
   private RelativeEncoder m_encoder = m_leadMotor.getEncoder();
 
-  private FlywheelSim m_shooterSim = new FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNeoVortex(4), ShooterConstants.k_shooterMomentOfInertia, ShooterConstants.k_shooterMotorReduction), DCMotor.getNeoVortex(1));
+  private FlywheelSim m_shooterSim = new FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNeoVortex(4), ShooterConstants.k_shooterMomentOfInertia, ShooterConstants.k_shooterMotorReduction), DCMotor.getNeoVortex(4));
   private SparkSim m_shooterMotorSim = new SparkSim(m_leadMotor, DCMotor.getNeoVortex(4));
   
   private InterpolatingDoubleTreeMap m_shooterPowerLerp = new InterpolatingDoubleTreeMap();
 
   private double m_simVelocity = 0;
+  private double m_RPMSetPoint = 0;
   private boolean m_isShooting = false;
 
   public Trigger isShooterOnTarget = new Trigger(() -> (Math.abs(getVelocity() - m_pid.getSetpoint()) <= ShooterConstants.k_shooterDeadzone) && m_isShooting);
@@ -66,20 +67,38 @@ public class ShooterSubsystem extends SubsystemBase {
     return Commands.run(() -> {
       m_pid.setSetpoint(m_shooterPowerLerp.get(distanceToHub.getAsDouble()), ControlType.kVelocity);
       m_isShooting = true;
-    }, this).until(() -> true).finallyDo(() -> {
+    }, this).finallyDo(() -> {
       m_pid.setSetpoint(ShooterConstants.k_shooterRevVel, ControlType.kVelocity );
       m_isShooting = false;
-    }); // set to whatever is decided for stopping shooting
+    });
   }
+
   public Command staticShootCommand(){
     return Commands.run(() ->{
       m_pid.setSetpoint(ShooterConstants.k_staticShootVel, ControlType.kVelocity);
     }, this);
   }
+
   public Command revCommand(){
     return Commands.run(() -> {
       m_pid.setSetpoint(ShooterConstants.k_shooterRevVel, ControlType.kVelocity);
     }, this);
+  }
+
+  private void bangBang(double targetRPM){
+    m_RPMSetPoint = targetRPM;
+    if(getVelocity() < m_RPMSetPoint){
+      m_leadMotor.setVoltage(12);
+      m_follow1.setVoltage(12);
+      m_follow2.setVoltage(12);
+      m_follow3.setVoltage(12);
+    } else {
+      m_leadMotor.setVoltage(m_RPMSetPoint * ShooterConstants.k_shooterKV);
+      m_follow1.setVoltage(m_RPMSetPoint * ShooterConstants.k_shooterKV);
+      m_follow2.setVoltage(m_RPMSetPoint * ShooterConstants.k_shooterKV);
+      m_follow3.setVoltage(m_RPMSetPoint * ShooterConstants.k_shooterKV);
+
+    }
   }
 
   public double getVelocity() {
@@ -89,6 +108,8 @@ public class ShooterSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Shooter Velocity", getVelocity());
+    SmartDashboard.putBoolean("shooter revved", isShooterOnTarget.getAsBoolean());
+    SmartDashboard.putNumber("battery volts", RoboRioSim.getVInVoltage());
   }
 
   @Override

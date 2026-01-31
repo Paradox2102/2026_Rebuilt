@@ -123,7 +123,7 @@ public final class Constants
     public static final double k_hoodMomentOfInertia = 0.0642;
     public static final double k_hoodArmLengthMeters = 0.215;
     
-    public static final double k_shooterMomentOfInertia = 0.003156;
+    public static final double k_shooterMomentOfInertia = 0.0003156;
     public static final double k_shooterMotorReduction = 1;
     public static final double k_rpmToSurfaceSpeedMperS = (0.0254*Math.PI)/60;
 
