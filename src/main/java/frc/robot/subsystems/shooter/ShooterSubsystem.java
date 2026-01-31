@@ -20,6 +20,7 @@ import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
@@ -67,7 +68,13 @@ public class ShooterSubsystem extends SubsystemBase {
     return Commands.run(() -> {
       m_pid.setSetpoint(m_shooterPowerLerp.get(distanceToHub.getAsDouble()), ControlType.kVelocity);
       m_isShooting = true;
-    }, this).finallyDo(() -> {
+    }, this).until(() -> {
+      if (DriverStation.isAutonomous()) {
+        return true; // timer to detect time between shots. if it's too high then stop command.
+      }else {
+        return false;
+      }
+    }).finallyDo(() -> {
       m_pid.setSetpoint(ShooterConstants.k_shooterRevVel, ControlType.kVelocity );
       m_isShooting = false;
     });
