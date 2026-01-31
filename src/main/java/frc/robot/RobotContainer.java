@@ -6,6 +6,9 @@ package frc.robot;
 
 import java.io.File;
 
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -66,6 +69,10 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
+
+    NamedCommands.registerCommand("Shoot", m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getTargetDist())); 
+    NamedCommands.registerCommand("RevShooter", m_shooterSubsystem.revCommand()); 
+    PathPlannerAuto m_testPathPlannerAuto = new PathPlannerAuto("DepotShootClimb");
     Command driveFieldOrientedAnglularVelocity = m_swerveSubsystem.driveFieldOriented(driveAngularVelocity);
 
     m_swerveSubsystem.setDefaultCommand(driveFieldOrientedAnglularVelocity);
