@@ -111,12 +111,23 @@ public final class Constants
       {1.5, 10},
       {1.75, 12.5},
       {2, 15},
-      {2.25, 17.5}
+      {2.25, 17.5},
+      {2.5, 19},
+      {2.75, 21},
+      {3, 22},
+      {4, 22},
+      {4.5, 23},
+      {5, 25},
+      {10, 35}
     };
 
     public static final double[][] k_shotSpeeds = {
       {1.125, 4000},
-      {2.25, 4500}
+      {2.25, 4500},
+      {2.75, 4750},
+      {3.25, 5000},
+      {4, 5500},
+      {4.75, 6000}
     };
 
     public static final double k_hoodGearRatio = 34.6;
@@ -131,12 +142,12 @@ public final class Constants
     public static final double k_hoodP = 0.01;
     public static final double k_hoodI = 0.005;
     public static final double k_hoodD = 0;
-    public static final double k_hoodDeadzone = 0;
+    public static final double k_hoodDeadzone = 1;
 
     public static final int k_shooterCurrent = 80;
     public static final double k_shooterKV = 0.00175;
-    public static final double k_shooterP = 0.001;
-    public static final double k_shooterDeadzone = 0;
+    public static final double k_shooterP = 0.00005;
+    public static final double k_shooterDeadzone = 100;
 
     public static final double k_staticHoodAngle = 25;
     public static double k_hoodMaxAngle = Math.toRadians(35);
@@ -145,7 +156,7 @@ public final class Constants
 
     public static final int k_maxFuelStorage = 45;
 
-    public static final double k_staticShootVel = 0;
+    public static final double k_staticShootVel = 4500;
 
     public static final SparkFlexConfig k_hoodConfig = new SparkFlexConfig();
     public static final SparkFlexConfig k_leaderConfig = new SparkFlexConfig();

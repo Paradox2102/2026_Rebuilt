@@ -92,8 +92,7 @@ public class RobotContainer {
       new ParallelCommandGroup(
         m_swerveSubsystem.rotateToHub(m_driverController::getLeftX, m_driverController::getLeftY),
         m_hoodSubsystem.pitchHood(() -> m_swerveSubsystem.getTargetDist()),
-        m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getTargetDist()),
-        m_fuelLaunchSim.repeatedlyLaunchFuel(() -> (m_shooterSubsystem.getVelocity() * Constants.ShooterConstants.k_rpmToSurfaceSpeedMperS), () -> (90 - (m_hoodSubsystem.getHoodAngle()+7.8)))
+        m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getTargetDist())
       ),
       new ParallelCommandGroup(
         m_hoodSubsystem.staticPitch(),
@@ -104,7 +103,8 @@ public class RobotContainer {
     m_isReadyToShoot.whileTrue(
         new ParallelCommandGroup(
           m_conveyorSubsystem.runNormal(true),
-          m_kickerSubsystem.run(true)
+          m_kickerSubsystem.run(true),
+          m_fuelLaunchSim.repeatedlyLaunchFuel(() -> (m_shooterSubsystem.getVelocity() * Constants.ShooterConstants.    k_rpmToSurfaceSpeedMperS), () -> (90 - (m_hoodSubsystem.getHoodAngle()+7.8)))
         )
     );
     

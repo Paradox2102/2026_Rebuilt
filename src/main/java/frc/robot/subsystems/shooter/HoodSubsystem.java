@@ -59,7 +59,7 @@ public class HoodSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Hood Angle", getHoodAngle());
     SmartDashboard.putNumber("Auto Aim Hood Trim", m_autoAlignTrim);
     SmartDashboard.putNumber("Static Hood Trim", m_staticTrim);
-    SmartDashboard.putNumber("encoder pos", m_hoodMotorSim.getRelativeEncoderSim().getPosition());
+    SmartDashboard.putBoolean("hood align", isHoodOnTarget.getAsBoolean());
   }
 
   public double getHoodAngle() {

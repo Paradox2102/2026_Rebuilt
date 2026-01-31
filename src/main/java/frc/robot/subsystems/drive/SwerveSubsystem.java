@@ -77,7 +77,7 @@ public class SwerveSubsystem extends SubsystemBase {
     
     private StructPublisher<Pose2d> autoAimPosePublisher = NetworkTableInstance.getDefault().getStructTopic("Auto Aim Pose", Pose2d.struct).publish();
     //ready to shoot if drivetrain is pointing towards aiming target, also requires chassis to be below a specific speed if shooting into hub
-    public Trigger isDrivetrainAligned = new Trigger(() -> (Math.abs(getPose().getRotation().minus(getRotationalAim()).getDegrees()) <= DrivebaseConstants.k_rotateDeadzone) && ((Math.sqrt(Math.pow(getFieldVelocity().vxMetersPerSecond, 2) + Math.pow(getFieldVelocity().vyMetersPerSecond, 2)) < DrivebaseConstants.k_maxDtShootingSpeed) || getIsPassing()));
+    public Trigger isDrivetrainAligned = new Trigger(() -> (Math.abs(getPose().getRotation().getDegrees() - getHubAngle()) <= DrivebaseConstants.k_rotateDeadzone));
 
 
     /**
@@ -147,9 +147,10 @@ public class SwerveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        m_vision.updatePoseEstimation(m_swerveDrive);
+        // m_vision.updatePoseEstimation(m_swerveDrive);
         targetPosePublisher.set(new Pose2d(getAimingTarget(),new Rotation2d()));
         SmartDashboard.putNumber("hub distance", getTargetDist());
+        SmartDashboard.putBoolean("drivetrain align", isDrivetrainAligned.getAsBoolean());
     }
 
     @Override
@@ -773,12 +774,5 @@ public class SwerveSubsystem extends SubsystemBase {
         double xDist = getPose().getX() + (getFieldVelocity().vxMetersPerSecond * m_shotTimeInt.get(getTargetDist()));
         double yDist = getPose().getY() + (getFieldVelocity().vyMetersPerSecond * m_shotTimeInt.get(getTargetDist()));
         return new Pose2d(xDist, yDist, getPose().getRotation());
-    }
-
-    public Rotation2d getRotationalAim() {
-        return(Rotation2d.fromRadians(Math.atan2(
-            getFuturePos().getX() - getAimingTarget().getX(),
-            getFuturePos().getY() - getAimingTarget().getY()
-        ) + (isRedAlliance() ? 180 : 0)));
     }
 }
