@@ -59,7 +59,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
   public Command extend(){
     return Commands.runOnce(() -> {
-      m_pid.setSetpoint(10* ClimberConstants.k_climberMaxHeight, ControlType.kPosition);
+      m_pid.setSetpoint(10 * ClimberConstants.k_climberMaxHeight, ControlType.kPosition);
     }, this);
   }
 
