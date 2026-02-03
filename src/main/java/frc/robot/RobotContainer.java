@@ -54,7 +54,7 @@ public class RobotContainer {
       return m_swerveSubsystem.isDrivetrainAligned.getAsBoolean() && m_shooterSubsystem.isShooterOnTarget.getAsBoolean() && m_hoodSubsystem.isHoodOnTarget.getAsBoolean();
   });
 
-  public Trigger shouldAutoAlign = new Trigger(() -> m_operatorController.getThrottle() <= 0);
+  public Trigger shouldAutoAlign = new Trigger(() -> m_swerveSubsystem.isAutoAlignOn());
   
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(m_swerveSubsystem.getSwerveDrive(),
       () -> m_driverController.getLeftY() * -1,
@@ -99,6 +99,8 @@ public class RobotContainer {
         m_shooterSubsystem.staticShootCommand()),
 
       shouldAutoAlign));
+
+    m_driverController.y().onTrue(m_swerveSubsystem.toggleAutoAlign());
 
     m_isReadyToShoot.whileTrue(
         new ParallelCommandGroup(
