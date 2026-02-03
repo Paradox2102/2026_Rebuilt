@@ -758,21 +758,41 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public Translation2d getAimingTarget(){
-        Translation2d blueTarget = getIsPassing() ? DrivebaseConstants.k_blueOutpost : DrivebaseConstants.k_blueHub;
+        Translation2d target = getIsPassing() ? DrivebaseConstants.k_blueOutpost : DrivebaseConstants.k_blueHub;
+        Pose2d curPos = getPose();
         if(isRedAlliance()){
-            return new Translation2d(DrivebaseConstants.k_fieldLengthMeters - blueTarget.getX(), DrivebaseConstants.k_fieldWidthMeters - blueTarget.getY());
+            if(curPos.getX() < DrivebaseConstants.k_blueZoneX){
+                target = DrivebaseConstants.k_midField;
+            }
+            target = new Translation2d(DrivebaseConstants.k_fieldLengthMeters - target.getX() ,target.getY());
         } else {
-            return blueTarget;
+            if(curPos.getY() > DrivebaseConstants.k_redZoneX){
+                target = DrivebaseConstants.k_midField;
+            }
         }
+        if(curPos.getY() > (DrivebaseConstants.k_fieldWidthMeters/2.0)){
+            target = new Translation2d(target.getX(), DrivebaseConstants.k_fieldWidthMeters - target.getY());
+        }
+        return target;
     }
 
     public double getTargetDist(){
         return getAimingTarget().getDistance(getPose().getTranslation());
     }
 
-    public Pose2d getFuturePos() {
-        double xDist = getPose().getX() + (getFieldVelocity().vxMetersPerSecond * m_shotTimeInt.get(getTargetDist()));
-        double yDist = getPose().getY() + (getFieldVelocity().vyMetersPerSecond * m_shotTimeInt.get(getTargetDist()));
+    public Pose2d getFuturePos(double lookAhead) {
+        double xDist = getPose().getX() + (getFieldVelocity().vxMetersPerSecond * lookAhead);
+        double yDist = getPose().getY() + (getFieldVelocity().vyMetersPerSecond * lookAhead);
         return new Pose2d(xDist, yDist, getPose().getRotation());
+    }
+
+    //iteratively look forward in time to find aiming pose for shoot on the move
+    public Pose2d sotmLookAhead(int iterations){
+        Pose2d futurePos = getFuturePos(m_shotTimeInt.get(getTargetDist()));
+        for(int i = 0; i < iterations; i++){
+            double futureShotTime = m_shotTimeInt.get(getAimingTarget().getDistance(futurePos.getTranslation()));
+            futurePos = getFuturePos(futureShotTime);
+        }
+        return futurePos;
     }
 }

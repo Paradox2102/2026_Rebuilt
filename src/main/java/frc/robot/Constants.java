@@ -55,11 +55,16 @@ public final class Constants
     public static final double k_fieldWidthMeters = 8.069;
 
     public static final Translation2d k_blueHub = new Translation2d(4.625, 4.05);
-    public static final Translation2d k_blueOutpost = new Translation2d(0.365, 0.675);
+    public static final Translation2d k_blueOutpost = new Translation2d(0.7, 0.675);
+    public static final Translation2d k_midField = new Translation2d(k_fieldLengthMeters/2.0, 1.5);
+
     public static final double k_blueZoneX = 4.625;
     public static final double k_redZoneX = 11.925;
 
-    public static final double[][] k_shotTimes = {{0,0},{0,0}};
+    public static final double[][] k_shotTimes = {
+      {0,0},
+      {0,0}
+    };
   }
 
   public static class IntakeConstants{

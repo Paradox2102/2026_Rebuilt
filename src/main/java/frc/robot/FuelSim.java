@@ -23,7 +23,7 @@ public class FuelSim {
     private static final double FUEL_RADIUS = 0.075;
     private static final double FIELD_LENGTH = 16.51;
     private static final double FIELD_WIDTH = 8.04;
-    private static final double FRICTION = 0.1; // proportion of horizontal velocity to lose per second while on ground
+    private static final double FRICTION = 0.8; // proportion of horizontal velocity to lose per second while on ground
 
     private static FuelSim instance = null;
 
@@ -310,10 +310,10 @@ public class FuelSim {
                 fuel.update();
             }
 
-            // handleFuelCollisions(fuels);
+            handleFuelCollisions(fuels);
 
             if (robotSupplier != null) {
-                //handleRobotCollisions(fuels);
+                handleRobotCollisions(fuels);
                 handleIntakes(fuels);
             }
         }
