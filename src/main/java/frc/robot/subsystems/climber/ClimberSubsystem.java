@@ -64,7 +64,7 @@ public class ClimberSubsystem extends SubsystemBase {
   }
 
   public Command retract(){
-    return Commands.runOnce(() -> {
+    return Commands.run(() -> {
       m_pid.setSetpoint(0, ControlType.kPosition);
     }, this);
   }

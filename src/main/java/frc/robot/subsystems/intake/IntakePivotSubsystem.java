@@ -37,7 +37,7 @@ public class IntakePivotSubsystem extends SubsystemBase {
   
   private double m_simAngleDegrees = 0;
 
-  public Trigger isIntakeExtended = new Trigger(() -> Math.abs(getPosition() - IntakeConstants.k_pivotMaxRotation) < IntakeConstants.k_pivotDeadzone);
+  public Trigger isIntakeRetracted = new Trigger(() -> Math.abs(getPosition() - Math.toDegrees(IntakeConstants.k_pivotMaxRotation)) < IntakeConstants.k_pivotDeadzone);
 
   /** Creates a new IntakePivotSubsystem. */
   public IntakePivotSubsystem() {
@@ -49,6 +49,7 @@ public class IntakePivotSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Pivot Angle Degrees", getPosition());
     SmartDashboard.putNumber("Pivot Motor Output", m_pivotMotorSim.getAppliedOutput());
+    SmartDashboard.putBoolean("retracted", isIntakeRetracted.getAsBoolean());
   }
 
   public Command extend() {
@@ -58,7 +59,7 @@ public class IntakePivotSubsystem extends SubsystemBase {
   }
 
   public Command retract() {
-    return Commands.runOnce(() -> {
+    return Commands.run(() -> {
       m_pid.setSetpoint(Math.toDegrees(IntakeConstants.k_pivotMaxRotation), ControlType.kPosition);
     }, this);
   }

@@ -269,9 +269,11 @@ public class SwerveSubsystem extends SubsystemBase {
     
     public Command rotateToHub(DoubleSupplier xAxis, DoubleSupplier yAxis) {
         return Commands.run(() -> {
-            
-            drive(new Translation2d(yAxis.getAsDouble(), xAxis.getAsDouble()), computeHubAim(), true);
-            
+            if(isRedAlliance()){
+                drive(new Translation2d(2*yAxis.getAsDouble(), 2*xAxis.getAsDouble()), computeHubAim(), true);
+            } else {
+                drive(new Translation2d(-2*yAxis.getAsDouble(), -2*xAxis.getAsDouble()), computeHubAim(), true);
+            }
         }, this);
     }
     public double computeHubAim() {
@@ -767,7 +769,7 @@ public class SwerveSubsystem extends SubsystemBase {
             }
             target = new Translation2d(DrivebaseConstants.k_fieldLengthMeters - target.getX() ,target.getY());
         } else {
-            if(curPos.getY() > DrivebaseConstants.k_redZoneX){
+            if(curPos.getX() > DrivebaseConstants.k_redZoneX){
                 target = DrivebaseConstants.k_midField;
             }
         }

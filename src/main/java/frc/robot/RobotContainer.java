@@ -83,7 +83,7 @@ public class RobotContainer {
     m_kickerSubsystem.setDefaultCommand(m_kickerSubsystem.stop());
 
     m_driverController.leftTrigger().whileTrue(new SequentialCommandGroup(
-      new ConditionalCommand(new Command(){}, m_climberSubsystem.retract(), m_climberSubsystem.isClimberRetracted), 
+      m_climberSubsystem.retract().until(m_climberSubsystem.isClimberRetracted),
       m_pivotSubsystem.extend(),
       m_rollerSubsystem.run(true)
     )).onFalse(m_rollerSubsystem.stop());
@@ -110,7 +110,7 @@ public class RobotContainer {
         )
     );
     
-    m_driverController.leftBumper().whileTrue(new ParallelCommandGroup(
+    m_driverController.rightBumper().whileTrue(new ParallelCommandGroup(
           m_conveyorSubsystem.runNormal(false),
           m_kickerSubsystem.run(false),
           m_rollerSubsystem.run(false)
@@ -118,13 +118,11 @@ public class RobotContainer {
     );
 
     m_driverController.a().onTrue(new SequentialCommandGroup(
-      m_pivotSubsystem.retract(),
+      m_pivotSubsystem.retract().until(m_pivotSubsystem.isIntakeRetracted),
       m_climberSubsystem.extend())
     );
 
     m_driverController.b().onTrue(m_climberSubsystem.climbingRetract());
-
-    m_driverController.x().onTrue(m_pivotSubsystem.extend());
 
     // shouldAutoAlign.onTrue().onFalse(); //toggle auto align on and off.
 
