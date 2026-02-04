@@ -22,7 +22,10 @@ import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.CANIDConstants;
@@ -61,7 +64,17 @@ public class IntakePivotSubsystem extends SubsystemBase {
   public Command retract() {
     return Commands.run(() -> {
       m_pid.setSetpoint(Math.toDegrees(IntakeConstants.k_pivotMaxRotation), ControlType.kPosition);
+    }, this).until(isIntakeRetracted);
+  }
+
+  public Command quickRaise(){
+    return Commands.runOnce(() -> {
+      m_pid.setSetpoint(Math.toDegrees(IntakeConstants.k_pivotMaxRotation), ControlType.kPosition);
     }, this);
+  }
+
+  public RepeatCommand agitate(){
+    return new SequentialCommandGroup(quickRaise(), new WaitCommand(0.25), extend(), new WaitCommand(0.5)).repeatedly();
   }
 
   public double getPosition() {

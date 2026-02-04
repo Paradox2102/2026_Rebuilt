@@ -87,7 +87,7 @@ public class RobotContainer {
     m_kickerSubsystem.setDefaultCommand(m_kickerSubsystem.stop());
 
     m_driverController.leftTrigger().whileTrue(new SequentialCommandGroup(
-      m_climberSubsystem.retract().until(m_climberSubsystem.isClimberRetracted),
+      m_climberSubsystem.retract(),
       m_pivotSubsystem.extend(),
       m_rollerSubsystem.run(true)
     )).onFalse(m_rollerSubsystem.stop());
@@ -110,6 +110,7 @@ public class RobotContainer {
         new ParallelCommandGroup(
           m_conveyorSubsystem.runNormal(true),
           m_kickerSubsystem.run(true),
+          m_pivotSubsystem.agitate(),
           m_fuelLaunchSim.repeatedlyLaunchFuel(() -> (m_shooterSubsystem.getVelocity() * Constants.ShooterConstants.    k_rpmToSurfaceSpeedMperS), () -> (90 - (m_hoodSubsystem.getHoodAngle()+7.8)))
         )
     );
@@ -122,7 +123,7 @@ public class RobotContainer {
     );
 
     m_driverController.a().onTrue(new SequentialCommandGroup(
-      m_pivotSubsystem.retract().until(m_pivotSubsystem.isIntakeRetracted),
+      m_pivotSubsystem.retract(),
       m_climberSubsystem.extend())
     );
 
