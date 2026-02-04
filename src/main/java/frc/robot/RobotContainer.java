@@ -138,7 +138,7 @@ public class RobotContainer {
     FuelSim instance = FuelSim.getInstance();
     instance.spawnStartingFuel();
     instance.registerRobot(0.876, 0.826, 0.4, m_swerveSubsystem::getPose, m_swerveSubsystem::getFieldVelocity);
-    instance.registerIntake(-0.595, -0.438, -0.333, 0.333, () -> (m_fuelLaunchSim.canIntake()), m_fuelLaunchSim::intakeFuel);
+    instance.registerIntake(-0.595, -0.438, -0.333, 0.333, () -> (m_fuelLaunchSim.canIntake() && !m_pivotSubsystem.isIntakeRetracted.getAsBoolean()), m_fuelLaunchSim::intakeFuel);
 
     instance.start();
     SmartDashboard.putData(Commands.runOnce(() -> {
