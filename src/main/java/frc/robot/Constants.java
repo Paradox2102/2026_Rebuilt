@@ -77,7 +77,7 @@ public final class Constants
     public static final double k_pivotReduction = 16;
     public static final double k_pivotLength = 0.7;
     public static final double k_pivotMaxRotation = 1.633;
-    public static final double k_pivotDeadzone = 0;
+    public static final double k_pivotDeadzone = 1;
 
     public static final double k_rollerKV = 0.0023;
     public static final double k_rollerP = 0.00075;
@@ -234,7 +234,7 @@ public final class Constants
     public static final double k_climberClimbingStowedHeight = 0.1; //arbitrary number
     public static final double k_climberRotationsToMeters = (0.388/4.152);
 
-    public static final double k_climberDeadzone = 0;
+    public static final double k_climberDeadzone = 0.01;
 
     public static final double k_manualClimbPower = 0.25; //arbitrary number
 
