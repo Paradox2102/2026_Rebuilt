@@ -79,7 +79,7 @@ public class SwerveSubsystem extends SubsystemBase {
     //ready to shoot if drivetrain is pointing towards aiming target, also requires chassis to be below a specific speed if shooting into hub
     public Trigger isDrivetrainAligned = new Trigger(() -> (Math.abs(getPose().getRotation().getDegrees() - getHubAngle()) <= DrivebaseConstants.k_rotateDeadzone));
 
-    private boolean m_autoAlignOn = false;
+    private boolean m_autoAlignOn = true;
 
     /**
      * Initialize {@link SwerveDrive} with the directory provided.
