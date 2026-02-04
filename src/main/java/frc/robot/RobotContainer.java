@@ -57,8 +57,12 @@ public class RobotContainer {
   public Trigger shouldAutoAlign = new Trigger(() -> m_swerveSubsystem.isAutoAlignOn());
   
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(m_swerveSubsystem.getSwerveDrive(),
-      () -> m_driverController.getLeftY() * -1,
-      () -> m_driverController.getLeftX() * -1)
+      () -> m_driverController.getLeftY() * -1 * 
+          (m_driverController.leftBumper().getAsBoolean() ? Constants.DrivebaseConstants.k_slowmodeMultiplier : 1),
+
+      () -> m_driverController.getLeftX() * -1 *
+          (m_driverController.leftBumper().getAsBoolean() ? Constants.DrivebaseConstants.k_slowmodeMultiplier : 1)
+      )
       .withControllerRotationAxis(() -> -m_driverController.getRightX())
       .deadband(OperatorConstants.k_deadBand)
       .allianceRelativeControl(true);
