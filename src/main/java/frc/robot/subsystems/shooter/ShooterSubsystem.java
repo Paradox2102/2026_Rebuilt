@@ -63,9 +63,9 @@ public class ShooterSubsystem extends SubsystemBase {
       m_shooterPowerLerp.put(shotSpeed[0], shotSpeed[1]);
     }
   }
-
   public Command shootCommand(DoubleSupplier distanceToHub){
     return Commands.run(() -> {
+      SmartDashboard.putBoolean("shooting", true);
       m_pid.setSetpoint(m_shooterPowerLerp.get(distanceToHub.getAsDouble()), ControlType.kVelocity);
       m_isShooting = true;
     }, this).until(() -> {
@@ -75,6 +75,7 @@ public class ShooterSubsystem extends SubsystemBase {
         return false;
       }
     }).finallyDo(() -> {
+      SmartDashboard.putBoolean("shooting", false);
       m_pid.setSetpoint(ShooterConstants.k_shooterRevVel, ControlType.kVelocity );
       m_isShooting = false;
     });

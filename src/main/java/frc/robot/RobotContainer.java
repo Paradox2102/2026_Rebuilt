@@ -4,12 +4,15 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Ounce;
+
 import java.io.File;
 
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -48,6 +51,9 @@ public class RobotContainer {
   final HoodSubsystem m_hoodSubsystem = new HoodSubsystem();
   final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
 
+  public final Timer shootDoublePressTimer = new Timer();
+  public final double doublePressThreshold = 0.9; 
+  public double shootDoublePressTimerWhenNotActivelyClickingItWoahThisVariableNameIsLongButIKindaJustWantToSeeThisWork;
   final FuelLaunchSim m_fuelLaunchSim = new FuelLaunchSim(m_swerveSubsystem::getPose, m_swerveSubsystem::getFieldVelocity);
 
   final Trigger m_isReadyToShoot = new Trigger(() -> {
@@ -71,9 +77,18 @@ public class RobotContainer {
     configureBindings();
     configureFuelSim();
   }
-
+  private Command resetShootOverrideTimer(){
+    return Commands.run(() ->
+      shootDoublePressTimer.reset()
+    );
+  }
+  private Command setThatOneLongVariable(){
+    return Commands.run(() ->
+      shootDoublePressTimerWhenNotActivelyClickingItWoahThisVariableNameIsLongButIKindaJustWantToSeeThisWork = shootDoublePressTimer.get()
+    );
+  }
   private void configureBindings() {
-
+    shootDoublePressTimer.start();
     NamedCommands.registerCommand("Shoot", m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getTargetDist())); 
     NamedCommands.registerCommand("RevShooter", m_shooterSubsystem.revCommand()); 
     PathPlannerAuto m_testPathPlannerAuto = new PathPlannerAuto("DepotShootClimb");
@@ -92,12 +107,17 @@ public class RobotContainer {
       m_rollerSubsystem.run(true)
     )).onFalse(m_rollerSubsystem.stop());
 
-    m_driverController.rightTrigger().whileTrue(new ConditionalCommand(
-      new ParallelCommandGroup(
-        m_swerveSubsystem.rotateToHub(m_driverController::getLeftX, m_driverController::getLeftY),
-        m_hoodSubsystem.pitchHood(() -> m_swerveSubsystem.getTargetDist()),
-        m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getTargetDist())
-      ),
+    m_driverController.rightTrigger().whileFalse(setThatOneLongVariable()).whileTrue(
+      new ConditionalCommand(
+        new ConditionalCommand(
+          m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getTargetDist()),
+          new ParallelCommandGroup(
+            resetShootOverrideTimer(),
+            m_swerveSubsystem.rotateToHub(m_driverController::getLeftX, m_driverController::getLeftY),
+            m_hoodSubsystem.pitchHood(() -> m_swerveSubsystem.getTargetDist()),
+            m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getTargetDist())
+          ),
+          () -> shootDoublePressTimerWhenNotActivelyClickingItWoahThisVariableNameIsLongButIKindaJustWantToSeeThisWork < doublePressThreshold),
       new ParallelCommandGroup(
         m_hoodSubsystem.staticPitch(),
         m_shooterSubsystem.staticShootCommand()),
