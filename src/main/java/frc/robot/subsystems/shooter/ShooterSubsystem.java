@@ -65,17 +65,15 @@ public class ShooterSubsystem extends SubsystemBase {
   }
   public Command shootCommand(DoubleSupplier distanceToHub){
     return Commands.run(() -> {
-      SmartDashboard.putBoolean("shooting", true);
       m_pid.setSetpoint(m_shooterPowerLerp.get(distanceToHub.getAsDouble()), ControlType.kVelocity);
       m_isShooting = true;
     }, this).until(() -> {
       if (DriverStation.isAutonomous()) {
-        return true; // timer to detect time between shots. if it's too high then stop command.
+        return false; // timer to detect time between shots. if it's too high then stop command.
       }else {
         return false;
       }
     }).finallyDo(() -> {
-      SmartDashboard.putBoolean("shooting", false);
       m_pid.setSetpoint(ShooterConstants.k_shooterRevVel, ControlType.kVelocity );
       m_isShooting = false;
     });
@@ -115,9 +113,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Shooter Velocity", getVelocity());
     SmartDashboard.putBoolean("shooter revved", isShooterOnTarget.getAsBoolean());
-    SmartDashboard.putNumber("battery volts", RoboRioSim.getVInVoltage());
   }
 
   @Override

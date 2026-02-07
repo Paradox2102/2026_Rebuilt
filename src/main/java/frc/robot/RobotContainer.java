@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Ounce;
-
 import java.io.File;
 
 import com.pathplanner.lib.auto.NamedCommands;
@@ -13,6 +11,7 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -61,6 +60,8 @@ public class RobotContainer {
   });
 
   public Trigger shouldAutoAlign = new Trigger(() -> m_swerveSubsystem.isAutoAlignOn());
+
+  SendableChooser<PathPlannerAuto> m_autoChooser = new SendableChooser<>();
   
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(m_swerveSubsystem.getSwerveDrive(),
       () -> m_driverController.getLeftY() * -1 * 
@@ -75,7 +76,8 @@ public class RobotContainer {
 
   public RobotContainer() {
     configureBindings();
-    configureFuelSim();
+    // configureFuelSim();
+    setupAuto();
   }
   private Command resetShootOverrideTimer(){
     return Commands.run(() ->
@@ -89,9 +91,6 @@ public class RobotContainer {
   }
   private void configureBindings() {
     shootDoublePressTimer.start();
-    NamedCommands.registerCommand("Shoot", m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getTargetDist())); 
-    NamedCommands.registerCommand("RevShooter", m_shooterSubsystem.revCommand()); 
-    PathPlannerAuto m_testPathPlannerAuto = new PathPlannerAuto("DepotShootClimb");
     Command driveFieldOrientedAnglularVelocity = m_swerveSubsystem.driveFieldOriented(driveAngularVelocity);
 
     m_swerveSubsystem.setDefaultCommand(driveFieldOrientedAnglularVelocity);
@@ -130,7 +129,7 @@ public class RobotContainer {
         new ParallelCommandGroup(
           m_conveyorSubsystem.runNormal(true),
           m_kickerSubsystem.run(true),
-          m_pivotSubsystem.agitate(),
+          //m_pivotSubsystem.agitate(),
           m_fuelLaunchSim.repeatedlyLaunchFuel(() -> (m_shooterSubsystem.getVelocity() * Constants.ShooterConstants.    k_rpmToSurfaceSpeedMperS), () -> (90 - (m_hoodSubsystem.getHoodAngle()+7.8)))
         )
     );
@@ -155,15 +154,33 @@ public class RobotContainer {
     m_operatorController.button(4).whileTrue(m_climberSubsystem.setPower(ClimberConstants.k_manualClimbPower));
   }
 
+  public void setupAuto(){
+    NamedCommands.registerCommand("Shoot", m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getTargetDist()).alongWith(m_hoodSubsystem.pitchHood(() -> m_swerveSubsystem.getTargetDist()), m_swerveSubsystem.rotateToHub(() -> 0, () -> 0))); 
+    NamedCommands.registerCommand("Intake", new SequentialCommandGroup(
+      m_climberSubsystem.retract(),
+      m_pivotSubsystem.extend(),
+      m_rollerSubsystem.run(true)));
+    NamedCommands.registerCommand("RevShooter", m_shooterSubsystem.revCommand()); 
+    NamedCommands.registerCommand("Climber Out", new SequentialCommandGroup(
+      m_pivotSubsystem.retract(),
+      m_climberSubsystem.extend()));
+    NamedCommands.registerCommand("Climb", m_climberSubsystem.climbingRetract());
+    
+    m_autoChooser.addOption("auto1", new PathPlannerAuto("auto1"));
+    m_autoChooser.addOption("depot shoot climb", new PathPlannerAuto("DepotShootClimb"));
+
+    SmartDashboard.putData("auto choice", m_autoChooser);
+  }
+
   public Command getAutonomousCommand() {
-    return Commands.print("No autonomous command configured");
+    return m_autoChooser.getSelected();
   }
 
   private void configureFuelSim() {
     FuelSim instance = FuelSim.getInstance();
     instance.spawnStartingFuel();
     instance.registerRobot(0.876, 0.826, 0.4, m_swerveSubsystem::getPose, m_swerveSubsystem::getFieldVelocity);
-    instance.registerIntake(-0.595, -0.438, -0.333, 0.333, () -> (m_fuelLaunchSim.canIntake() && !m_pivotSubsystem.isIntakeRetracted.getAsBoolean()), m_fuelLaunchSim::intakeFuel);
+    instance.registerIntake(-0.595, -0.438, -0.333, 0.333, () -> (m_fuelLaunchSim.canIntake() && !m_pivotSubsystem.isIntakeRetracted.getAsBoolean() && m_rollerSubsystem.getVelocity() > 0), m_fuelLaunchSim::intakeFuel);
 
     instance.start();
     SmartDashboard.putData(Commands.runOnce(() -> {

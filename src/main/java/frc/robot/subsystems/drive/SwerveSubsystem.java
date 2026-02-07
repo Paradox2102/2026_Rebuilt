@@ -28,8 +28,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -73,11 +71,10 @@ public class SwerveSubsystem extends SubsystemBase {
 
     private LightSubsystem m_lightSubsystem;
 
-    private StructPublisher<Pose2d> targetPosePublisher = NetworkTableInstance.getDefault().getStructTopic("Aim Pose", Pose2d.struct).publish();
+    private Pose2d m_curPos = new Pose2d();
     
-    private StructPublisher<Pose2d> autoAimPosePublisher = NetworkTableInstance.getDefault().getStructTopic("Auto Aim Pose", Pose2d.struct).publish();
     //ready to shoot if drivetrain is pointing towards aiming target, also requires chassis to be below a specific speed if shooting into hub
-    public Trigger isDrivetrainAligned = new Trigger(() -> (Math.abs(getPose().getRotation().getDegrees() - getHubAngle()) <= DrivebaseConstants.k_rotateDeadzone));
+    public Trigger isDrivetrainAligned = new Trigger(() -> (Math.abs(m_curPos.getRotation().getDegrees() - getHubAngle()) <= DrivebaseConstants.k_rotateDeadzone));
 
     private boolean m_autoAlignOn = true;
 
@@ -149,18 +146,14 @@ public class SwerveSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         // m_vision.updatePoseEstimation(m_swerveDrive);
-        targetPosePublisher.set(new Pose2d(getAimingTarget(),new Rotation2d()));
-        SmartDashboard.putNumber("hub distance", getTargetDist());
         SmartDashboard.putBoolean("drivetrain align", isDrivetrainAligned.getAsBoolean());
+        m_curPos = getPose();
     }
 
     @Override
     public void simulationPeriodic() {
-        SmartDashboard.putNumber("x", getPose().getX());
-        SmartDashboard.putNumber("y", getPose().getY());
 
-        autoAimPosePublisher.set(new Pose2d(getPose().getX(), getPose().getY(), Rotation2d.fromDegrees(getHubAngle())));
-    }
+        }
 
     /**
      * Setup AutoBuilder for PathPlanner.
@@ -277,11 +270,11 @@ public class SwerveSubsystem extends SubsystemBase {
         }, this);
     }
     public double computeHubAim() {
-        return m_orientPID.calculate(getPose().getRotation().getDegrees(),getHubAngle());
+        return m_orientPID.calculate(m_curPos.getRotation().getDegrees(),getHubAngle());
     }
     public double getHubAngle() {
-        var dx = getAimingTarget().getX() - getPose().getX();
-        var dy = getAimingTarget().getY() - getPose().getY();
+        var dx = getAimingTarget().getX() - m_curPos.getX();
+        var dy = getAimingTarget().getY() - m_curPos.getY();
         var angle = Math.toDegrees(Math.atan2(dy, dx));
         return angle;
     }
@@ -612,7 +605,7 @@ public class SwerveSubsystem extends SubsystemBase {
         if (isRedAlliance()) {
             zeroGyro();
             // Set the pose 180 degrees
-            resetOdometry(new Pose2d(getPose().getTranslation(), Rotation2d.fromDegrees(180)));
+            resetOdometry(new Pose2d(m_curPos.getTranslation(), Rotation2d.fromDegrees(180)));
         } else {
             zeroGyro();
         }
@@ -636,7 +629,7 @@ public class SwerveSubsystem extends SubsystemBase {
      * @return The yaw angle
      */
     public Rotation2d getHeading() {
-        return getPose().getRotation();
+        return m_curPos.getRotation();
     }
 
     /**
@@ -749,7 +742,7 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public boolean getIsPassing(){
-        double curX = getPose().getX();
+        double curX = m_curPos.getX();
         // if(!m_lightSubsystem.hubIsActive()) {
         //     return true;
         // }
@@ -762,31 +755,30 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public Translation2d getAimingTarget(){
         Translation2d target = getIsPassing() ? DrivebaseConstants.k_blueOutpost : DrivebaseConstants.k_blueHub;
-        Pose2d curPos = getPose();
         if(isRedAlliance()){
-            if(curPos.getX() < DrivebaseConstants.k_blueZoneX){
+            if(m_curPos.getX() < DrivebaseConstants.k_blueZoneX){
                 target = DrivebaseConstants.k_midField;
             }
             target = new Translation2d(DrivebaseConstants.k_fieldLengthMeters - target.getX() ,target.getY());
         } else {
-            if(curPos.getX() > DrivebaseConstants.k_redZoneX){
+            if(m_curPos.getX() > DrivebaseConstants.k_redZoneX){
                 target = DrivebaseConstants.k_midField;
             }
         }
-        if(curPos.getY() > (DrivebaseConstants.k_fieldWidthMeters/2.0)){
+        if(m_curPos.getY() > (DrivebaseConstants.k_fieldWidthMeters/2.0)){
             target = new Translation2d(target.getX(), DrivebaseConstants.k_fieldWidthMeters - target.getY());
         }
         return target;
     }
 
     public double getTargetDist(){
-        return getAimingTarget().getDistance(getPose().getTranslation());
+        return getAimingTarget().getDistance(m_curPos.getTranslation());
     }
 
     public Pose2d getFuturePos(double lookAhead) {
-        double xDist = getPose().getX() + (getFieldVelocity().vxMetersPerSecond * lookAhead);
-        double yDist = getPose().getY() + (getFieldVelocity().vyMetersPerSecond * lookAhead);
-        return new Pose2d(xDist, yDist, getPose().getRotation());
+        double xDist = m_curPos.getX() + (getFieldVelocity().vxMetersPerSecond * lookAhead);
+        double yDist = m_curPos.getY() + (getFieldVelocity().vyMetersPerSecond * lookAhead);
+        return new Pose2d(xDist, yDist, m_curPos.getRotation());
     }
 
     //iteratively look forward in time to find aiming pose for shoot on the move

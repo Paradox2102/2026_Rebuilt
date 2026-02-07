@@ -310,10 +310,10 @@ public class FuelSim {
                 fuel.update();
             }
 
-            handleFuelCollisions(fuels);
+            //handleFuelCollisions(fuels);
 
             if (robotSupplier != null) {
-                handleRobotCollisions(fuels);
+                //handleRobotCollisions(fuels);
                 handleIntakes(fuels);
             }
         }

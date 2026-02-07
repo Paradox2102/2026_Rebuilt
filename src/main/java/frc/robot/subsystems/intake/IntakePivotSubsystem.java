@@ -50,8 +50,6 @@ public class IntakePivotSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Pivot Angle Degrees", getPosition());
-    SmartDashboard.putNumber("Pivot Motor Output", m_pivotMotorSim.getAppliedOutput());
     SmartDashboard.putBoolean("retracted", isIntakeRetracted.getAsBoolean());
   }
 

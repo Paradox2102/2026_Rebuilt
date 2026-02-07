@@ -56,7 +56,6 @@ public class HoodSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Hood Angle", getHoodAngle());
     SmartDashboard.putNumber("Auto Aim Hood Trim", m_autoAlignTrim);
     SmartDashboard.putNumber("Static Hood Trim", m_staticTrim);
     SmartDashboard.putBoolean("hood align", isHoodOnTarget.getAsBoolean());
