@@ -94,6 +94,6 @@ public class Robot extends TimedRobot {
 
   @Override
   public void simulationPeriodic() {
-    // FuelSim.getInstance().updateSim();
+    FuelSim.getInstance().updateSim();
   }
 }

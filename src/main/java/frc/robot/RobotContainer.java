@@ -76,7 +76,7 @@ public class RobotContainer {
 
   public RobotContainer() {
     configureBindings();
-    // configureFuelSim();
+    configureFuelSim();
     setupAuto();
   }
   private Command resetShootOverrideTimer(){
@@ -168,6 +168,8 @@ public class RobotContainer {
     
     m_autoChooser.addOption("auto1", new PathPlannerAuto("auto1"));
     m_autoChooser.addOption("depot shoot climb", new PathPlannerAuto("DepotShootClimb"));
+    m_autoChooser.addOption("auto2", new PathPlannerAuto("auto2"));
+    m_autoChooser.addOption("auto3", new PathPlannerAuto("auto3"));
 
     SmartDashboard.putData("auto choice", m_autoChooser);
   }
