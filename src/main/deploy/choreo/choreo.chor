@@ -3,7 +3,15 @@
  "version":2,
  "type":"Swerve",
  "variables":{
-  "expressions":{},
+  "expressions":{
+   "fieldLength":{
+    "dimension":"Length",
+    "var":{
+     "exp":"16.541 m",
+     "val":16.541
+    }
+   }
+  },
   "poses":{}
  },
  "config":{

@@ -166,10 +166,10 @@ public class RobotContainer {
       m_climberSubsystem.extend()));
     NamedCommands.registerCommand("Climb", m_climberSubsystem.climbingRetract());
     
-    m_autoChooser.addOption("auto1", new PathPlannerAuto("auto1"));
-    m_autoChooser.addOption("depot shoot climb", new PathPlannerAuto("DepotShootClimb"));
-    m_autoChooser.addOption("auto2", new PathPlannerAuto("auto2"));
-    m_autoChooser.addOption("auto3", new PathPlannerAuto("auto3"));
+    m_autoChooser.addOption("depot", new PathPlannerAuto("auto1"));
+    m_autoChooser.addOption("sweep", new PathPlannerAuto("auto2"));
+    m_autoChooser.addOption("centerL", new PathPlannerAuto("auto3"));
+    m_autoChooser.addOption("centerR", new PathPlannerAuto("auto4"));
 
     SmartDashboard.putData("auto choice", m_autoChooser);
   }
