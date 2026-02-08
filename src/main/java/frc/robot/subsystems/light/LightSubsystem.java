@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.LightConstants;
@@ -38,6 +39,9 @@ public class LightSubsystem extends SubsystemBase {
   private final double k_transitionTime = 7.0;
   private final double k_shiftTime = 22.0;
   private final double k_endTime = 27.0;
+
+  private boolean m_autoWinOverride = false;
+  private boolean m_overrideWon = false;
 
   private int m_shift = 0;
   private String gameData;
@@ -177,6 +181,9 @@ public class LightSubsystem extends SubsystemBase {
    * @return Boolean returning whether your current alliance won Auto
    */
   public boolean getWonAuto() {
+    if (m_autoWinOverride){
+      return m_overrideWon;
+    }
     if (gameData.length() > 0) {
       switch (gameData.charAt(0)) {
         case 'B':
@@ -200,5 +207,12 @@ public class LightSubsystem extends SubsystemBase {
     else {
       return true;
     }
+  }
+
+  public Command overrideWonAuto(boolean wonAuto){
+    return Commands.runOnce(() -> {
+      m_autoWinOverride = true;
+      m_overrideWon = wonAuto;
+    });
   }
 }

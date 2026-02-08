@@ -150,8 +150,17 @@ public class RobotContainer {
 
     // shouldAutoAlign.onTrue().onFalse(); //toggle auto align on and off.
 
+    m_operatorController.button(1).whileTrue(new ParallelCommandGroup(
+          m_conveyorSubsystem.runNormal(true),
+          m_kickerSubsystem.run(true),
+          //m_pivotSubsystem.agitate(),
+          m_fuelLaunchSim.repeatedlyLaunchFuel(() -> (m_shooterSubsystem.getVelocity() * Constants.ShooterConstants.    k_rpmToSurfaceSpeedMperS), () -> (90 - (m_hoodSubsystem.getHoodAngle()+7.8)))
+        ));
+    m_operatorController.button(2).onTrue(m_pivotSubsystem.retract());    
     m_operatorController.button(3).whileTrue(m_climberSubsystem.setPower(-ClimberConstants.k_manualClimbPower));
     m_operatorController.button(4).whileTrue(m_climberSubsystem.setPower(ClimberConstants.k_manualClimbPower));
+    m_operatorController.button(5).onTrue(m_lightSubsystem.overrideWonAuto(false));
+    m_operatorController.button(6).onTrue(m_lightSubsystem.overrideWonAuto(true));
   }
 
   public void setupAuto(){
