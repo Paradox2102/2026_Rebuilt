@@ -109,21 +109,36 @@ public class RobotContainer {
     m_driverController.rightTrigger().whileFalse(setThatOneLongVariable()).whileTrue(
       new ConditionalCommand(
         new ConditionalCommand(
-          m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getTargetDist()),
+          m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getHubDist()),
           new ParallelCommandGroup(
             resetShootOverrideTimer(),
             m_swerveSubsystem.rotateToHub(m_driverController::getLeftX, m_driverController::getLeftY),
-            m_hoodSubsystem.pitchHood(() -> m_swerveSubsystem.getTargetDist()),
-            m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getTargetDist())
+            m_hoodSubsystem.pitchHood(() -> m_swerveSubsystem.getHubDist()),
+            m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getHubDist())
           ),
           () -> shootDoublePressTimerWhenNotActivelyClickingItWoahThisVariableNameIsLongButIKindaJustWantToSeeThisWork < doublePressThreshold),
       new ParallelCommandGroup(
         m_hoodSubsystem.staticPitch(),
         m_shooterSubsystem.staticShootCommand()),
+        shouldAutoAlign));
 
-      shouldAutoAlign));
+    m_driverController.rightBumper().whileFalse(setThatOneLongVariable()).whileTrue(
+      new ConditionalCommand(
+        new ConditionalCommand(
+          m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getPassDist()),
+          new ParallelCommandGroup(
+            resetShootOverrideTimer(),
+            m_swerveSubsystem.rotateToPass(m_driverController::getLeftX, m_driverController::getLeftY),
+            m_hoodSubsystem.pitchHood(() -> m_swerveSubsystem.getPassDist()),
+            m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getPassDist())
+          ),
+          () -> shootDoublePressTimerWhenNotActivelyClickingItWoahThisVariableNameIsLongButIKindaJustWantToSeeThisWork < doublePressThreshold),
+      new ParallelCommandGroup(
+        m_hoodSubsystem.staticPitch(),
+        m_shooterSubsystem.staticShootCommand()),
+        shouldAutoAlign));
 
-    m_driverController.y().onTrue(m_swerveSubsystem.toggleAutoAlign());
+    m_driverController.povDown().onTrue(m_swerveSubsystem.toggleAutoAlign());
 
     m_isReadyToShoot.whileTrue(
         new ParallelCommandGroup(
@@ -134,19 +149,19 @@ public class RobotContainer {
         )
     );
     
-    m_driverController.rightBumper().whileTrue(new ParallelCommandGroup(
+    m_driverController.povUp().whileTrue(new ParallelCommandGroup(
           m_conveyorSubsystem.runNormal(false),
           m_kickerSubsystem.run(false),
           m_rollerSubsystem.run(false)
           )
     );
 
-    m_driverController.a().onTrue(new SequentialCommandGroup(
+    m_driverController.povLeft().onTrue(new SequentialCommandGroup(
       m_pivotSubsystem.retract(),
       m_climberSubsystem.extend())
     );
 
-    m_driverController.b().onTrue(m_climberSubsystem.climbingRetract());
+    m_driverController.povRight().onTrue(m_climberSubsystem.climbingRetract());
 
     // shouldAutoAlign.onTrue().onFalse(); //toggle auto align on and off.
 
@@ -164,7 +179,7 @@ public class RobotContainer {
   }
 
   public void setupAuto(){
-    NamedCommands.registerCommand("Shoot", m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getTargetDist()).alongWith(m_hoodSubsystem.pitchHood(() -> m_swerveSubsystem.getTargetDist()), m_swerveSubsystem.rotateToHub(() -> 0, () -> 0))); 
+    NamedCommands.registerCommand("Shoot", m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getHubDist()).alongWith(m_hoodSubsystem.pitchHood(() -> m_swerveSubsystem.getHubDist()), m_swerveSubsystem.rotateToHub(() -> 0, () -> 0))); 
     NamedCommands.registerCommand("Intake", new SequentialCommandGroup(
       m_climberSubsystem.retract(),
       m_pivotSubsystem.extend(),

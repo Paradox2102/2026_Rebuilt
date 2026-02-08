@@ -72,6 +72,7 @@ public class SwerveSubsystem extends SubsystemBase {
     private LightSubsystem m_lightSubsystem;
 
     private Pose2d m_curPos = new Pose2d();
+    private Pose2d m_sotmPos = new Pose2d();
     
     //ready to shoot if drivetrain is pointing towards aiming target, also requires chassis to be below a specific speed if shooting into hub
     public Trigger isDrivetrainAligned = new Trigger(() -> (Math.abs(m_curPos.getRotation().getDegrees() - getHubAngle()) <= DrivebaseConstants.k_rotateDeadzone));
@@ -148,6 +149,7 @@ public class SwerveSubsystem extends SubsystemBase {
         // m_vision.updatePoseEstimation(m_swerveDrive);
         SmartDashboard.putBoolean("drivetrain align", isDrivetrainAligned.getAsBoolean());
         m_curPos = getPose();
+        m_sotmPos = sotmLookAhead(5);
     }
 
     @Override
@@ -269,12 +271,35 @@ public class SwerveSubsystem extends SubsystemBase {
             }
         }, this);
     }
-    public double computeHubAim() {
-        return m_orientPID.calculate(m_curPos.getRotation().getDegrees(),getHubAngle());
+
+    public Command rotateToPass(DoubleSupplier xAxis, DoubleSupplier yAxis){
+        return Commands.run(() -> {
+            if(isRedAlliance()){
+                drive(new Translation2d(2*yAxis.getAsDouble(), 2*xAxis.getAsDouble()), computeHubAim(), true);
+            } else {
+                drive(new Translation2d(-2*yAxis.getAsDouble(), -2*xAxis.getAsDouble()), computeHubAim(), true);
+            }
+        }, this);
     }
+
+    public double computeHubAim() {
+        return m_orientPID.calculate(m_sotmPos.getRotation().getDegrees(), getHubAngle());
+    }
+
+    public double computePassAim() {
+        return m_orientPID.calculate(m_curPos.getRotation().getDegrees(), getPassAngle());
+    }
+
     public double getHubAngle() {
-        var dx = getAimingTarget().getX() - m_curPos.getX();
-        var dy = getAimingTarget().getY() - m_curPos.getY();
+        var dx = getHubTarget().getX() - m_sotmPos.getX();
+        var dy = getHubTarget().getY() - m_sotmPos.getY();
+        var angle = Math.toDegrees(Math.atan2(dy, dx));
+        return angle;
+    }
+
+    public double getPassAngle() {
+        var dx = getPassTarget().getX() - m_curPos.getX();
+        var dy = getPassTarget().getY() - m_curPos.getY();
         var angle = Math.toDegrees(Math.atan2(dy, dx));
         return angle;
     }
@@ -741,20 +766,14 @@ public class SwerveSubsystem extends SubsystemBase {
         return m_swerveDrive;
     }
 
-    public boolean getIsPassing(){
-        double curX = m_curPos.getX();
-        // if(!m_lightSubsystem.hubIsActive()) {
-        //     return true;
-        // }
-        if(isRedAlliance()){
-            return curX < DrivebaseConstants.k_redZoneX;
-        } else {
-            return curX > DrivebaseConstants.k_blueZoneX;
-        }
+    public Translation2d getHubTarget(){
+        return isRedAlliance() ?
+         new Translation2d(DrivebaseConstants.k_fieldLengthMeters - DrivebaseConstants.k_blueHub.getX(), DrivebaseConstants.k_blueHub.getY()) :
+         DrivebaseConstants.k_blueHub;
     }
 
-    public Translation2d getAimingTarget(){
-        Translation2d target = getIsPassing() ? DrivebaseConstants.k_blueOutpost : DrivebaseConstants.k_blueHub;
+    public Translation2d getPassTarget(){
+        Translation2d target = DrivebaseConstants.k_blueOutpost;
         if(isRedAlliance()){
             if(m_curPos.getX() < DrivebaseConstants.k_blueZoneX){
                 target = DrivebaseConstants.k_midField;
@@ -771,8 +790,12 @@ public class SwerveSubsystem extends SubsystemBase {
         return target;
     }
 
-    public double getTargetDist(){
-        return getAimingTarget().getDistance(m_curPos.getTranslation());
+    public double getHubDist(){
+        return getHubTarget().getDistance(m_sotmPos.getTranslation());
+    }
+
+    public double getPassDist(){
+        return getPassTarget().getDistance(m_curPos.getTranslation());
     }
 
     public Pose2d getFuturePos(double lookAhead) {
@@ -783,9 +806,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
     //iteratively look forward in time to find aiming pose for shoot on the move
     public Pose2d sotmLookAhead(int iterations){
-        Pose2d futurePos = getFuturePos(m_shotTimeInt.get(getTargetDist()));
+        Pose2d futurePos = getFuturePos(m_shotTimeInt.get(getHubDist()));
         for(int i = 0; i < iterations; i++){
-            double futureShotTime = m_shotTimeInt.get(getAimingTarget().getDistance(futurePos.getTranslation()));
+            double futureShotTime = m_shotTimeInt.get(getHubTarget().getDistance(futurePos.getTranslation()));
             futurePos = getFuturePos(futureShotTime);
         }
         return futurePos;
