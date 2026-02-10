@@ -41,7 +41,7 @@ public class RobotContainer {
 
   final LightSubsystem m_lightSubsystem = new LightSubsystem();
   final SwerveSubsystem m_swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
-      "swerve"), m_lightSubsystem);
+      "swerve"));
   final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
   final ConveyorSubsystem m_conveyorSubsystem = new ConveyorSubsystem();
   final KickerSubsystem m_kickerSubsystem = new KickerSubsystem();

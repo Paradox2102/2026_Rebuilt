@@ -37,7 +37,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants.DrivebaseConstants;
-import frc.robot.subsystems.light.LightSubsystem;
 
 import java.io.File;
 import java.io.IOException;
@@ -69,8 +68,6 @@ public class SwerveSubsystem extends SubsystemBase {
 
     private InterpolatingDoubleTreeMap m_shotTimeInt = new InterpolatingDoubleTreeMap();
 
-    private LightSubsystem m_lightSubsystem;
-
     private Pose2d m_curPos = new Pose2d();
     private Pose2d m_sotmPos = new Pose2d();
     
@@ -84,7 +81,7 @@ public class SwerveSubsystem extends SubsystemBase {
      *
      * @param directory Directory of swerve drive config files.
      */
-    public SwerveSubsystem(File directory, LightSubsystem leds) {
+    public SwerveSubsystem(File directory) {
         boolean blueAlliance = false;
         Pose2d startingPose = blueAlliance ? new Pose2d(new Translation2d(Meter.of(1),
                 Meter.of(4)),
@@ -121,7 +118,6 @@ public class SwerveSubsystem extends SubsystemBase {
         setupPathPlanner();
         //RobotModeTriggers.autonomous().onTrue(Commands.runOnce(this::zeroGyroWithAlliance));
         m_vision = new Vision(() -> getPose(), m_swerveDrive.field);
-        m_lightSubsystem = leds;
 
         m_orientPID.enableContinuousInput(-180, 180);
         m_orientPID.setIZone(DrivebaseConstants.k_rotateIZone);
