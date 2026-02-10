@@ -75,7 +75,7 @@ public class SwerveSubsystem extends SubsystemBase {
     private Pose2d m_sotmPos = new Pose2d();
     
     //ready to shoot if drivetrain is pointing towards aiming target, also requires chassis to be below a specific speed if shooting into hub
-    public Trigger isDrivetrainAligned = new Trigger(() -> (Math.abs(m_curPos.getRotation().getDegrees() - getHubAngle()) <= DrivebaseConstants.k_rotateDeadzone));
+    public Trigger isDrivetrainAligned = new Trigger(() -> (Math.abs(m_curPos.getRotation().getDegrees() - getHubAngle()) <= DrivebaseConstants.k_rotateDeadzone) || (Math.abs(m_curPos.getRotation().getDegrees() - getPassAngle()) <= DrivebaseConstants.k_rotateDeadzone));
 
     private boolean m_autoAlignOn = true;
 
@@ -275,9 +275,9 @@ public class SwerveSubsystem extends SubsystemBase {
     public Command rotateToPass(DoubleSupplier xAxis, DoubleSupplier yAxis){
         return Commands.run(() -> {
             if(isRedAlliance()){
-                drive(new Translation2d(2*yAxis.getAsDouble(), 2*xAxis.getAsDouble()), computeHubAim(), true);
+                drive(new Translation2d(2*yAxis.getAsDouble(), 2*xAxis.getAsDouble()), computePassAim(), true);
             } else {
-                drive(new Translation2d(-2*yAxis.getAsDouble(), -2*xAxis.getAsDouble()), computeHubAim(), true);
+                drive(new Translation2d(-2*yAxis.getAsDouble(), -2*xAxis.getAsDouble()), computePassAim(), true);
             }
         }, this);
     }

@@ -56,10 +56,12 @@ public class FuelSim {
     private class Fuel {
         private Translation3d pos;
         private Translation3d vel;
+        private boolean isLaunched = false;
 
         private Fuel(Translation3d pos, Translation3d vel) {
             this.pos = pos;
             this.vel = vel;
+            this.isLaunched = true;
         }
 
         private Fuel(Translation3d pos) {
@@ -71,8 +73,12 @@ public class FuelSim {
             if (pos.getZ() > FUEL_RADIUS) {
                 vel = vel.plus(GRAVITY.times(PERIOD / subticks));
             }
-            if (Math.abs(vel.getZ()) < 0.05 && pos.getZ() <= FUEL_RADIUS + 0.03) {
+            if (pos.getZ() <= FUEL_RADIUS + 0.03) {
                 vel = new Translation3d(vel.getX(), vel.getY(), 0);
+                if(isLaunched){
+                    vel = vel.times(0.25);
+                    isLaunched = false;
+                }
                 vel = vel.times(1 - FRICTION * PERIOD / subticks);
                 // pos = new Translation3d(pos.getX(), pos.getY(), FUEL_RADIUS);
             }
