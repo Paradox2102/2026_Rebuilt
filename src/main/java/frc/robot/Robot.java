@@ -34,14 +34,14 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
-    posePublisher.set(m_robotContainer.m_swerveSubsystem.getPose());
-    futurePosePublisher.set(m_robotContainer.m_swerveSubsystem.sotmLookAhead(3));
-    zeroedComponentPoses.set(new Pose3d[] {new Pose3d(), new Pose3d(), new Pose3d()});
-    finalComponentPoses.set(new Pose3d[] {
-      new Pose3d(-0.184, 0.0, 0.158, new Rotation3d(0, Math.toRadians(m_robotContainer.m_pivotSubsystem.getPosition()) - IntakeConstants.k_pivotMaxRotation,0)),
-      new Pose3d(0.298,0, 0.488, new Rotation3d(0, Math.toRadians(m_robotContainer.m_hoodSubsystem.getHoodAngle()),0)),
-      new Pose3d(Math.cos(0.814527)*m_robotContainer.m_climberSubsystem.getHeight(), 0, Math.sin(0.814527)*m_robotContainer.m_climberSubsystem.getHeight(), new Rotation3d(0,0,0))});
-    SmartDashboard.putNumber("fuel sim fuel amount", m_robotContainer.m_fuelLaunchSim.getFuelStored());
+    // posePublisher.set(m_robotContainer.m_swerveSubsystem.getPose());
+    // futurePosePublisher.set(m_robotContainer.m_swerveSubsystem.sotmLookAhead(3));
+    // zeroedComponentPoses.set(new Pose3d[] {new Pose3d(), new Pose3d(), new Pose3d()});
+    // finalComponentPoses.set(new Pose3d[] {
+    //   new Pose3d(-0.184, 0.0, 0.158, new Rotation3d(0, Math.toRadians(m_robotContainer.m_pivotSubsystem.getPosition()) - IntakeConstants.k_pivotMaxRotation,0)),
+    //   new Pose3d(0.298,0, 0.488, new Rotation3d(0, Math.toRadians(m_robotContainer.m_hoodSubsystem.getHoodAngle()),0)),
+    //   new Pose3d(Math.cos(0.814527)*m_robotContainer.m_climberSubsystem.getHeight(), 0, Math.sin(0.814527)*m_robotContainer.m_climberSubsystem.getHeight(), new Rotation3d(0,0,0))});
+    // SmartDashboard.putNumber("fuel sim fuel amount", m_robotContainer.m_fuelLaunchSim.getFuelStored());
   }
 
   @Override

@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
@@ -39,36 +40,36 @@ public class RobotContainer {
   final CommandXboxController m_driverController = new CommandXboxController(0);
   final CommandJoystick m_operatorController = new CommandJoystick(1);
 
-  final LightSubsystem m_lightSubsystem = new LightSubsystem();
-  final SwerveSubsystem m_swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
-      "swerve"));
+  // final LightSubsystem m_lightSubsystem = new LightSubsystem();
+  // final SwerveSubsystem m_swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
+  //     "swerve"));
   final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
-  final ConveyorSubsystem m_conveyorSubsystem = new ConveyorSubsystem();
-  final KickerSubsystem m_kickerSubsystem = new KickerSubsystem();
-  final IntakePivotSubsystem m_pivotSubsystem = new IntakePivotSubsystem();
-  final IntakeRollerSubsystem m_rollerSubsystem = new IntakeRollerSubsystem();
-  final HoodSubsystem m_hoodSubsystem = new HoodSubsystem();
-  final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
-  final FuelLaunchSim m_fuelLaunchSim = new FuelLaunchSim(m_swerveSubsystem::getPose, m_swerveSubsystem::getFieldVelocity);
+  // final ConveyorSubsystem m_conveyorSubsystem = new ConveyorSubsystem();
+  // final KickerSubsystem m_kickerSubsystem = new KickerSubsystem();
+  // final IntakePivotSubsystem m_pivotSubsystem = new IntakePivotSubsystem();
+  // final IntakeRollerSubsystem m_rollerSubsystem = new IntakeRollerSubsystem();
+  // final HoodSubsystem m_hoodSubsystem = new HoodSubsystem();
+  // final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
+  // final FuelLaunchSim m_fuelLaunchSim = new FuelLaunchSim(m_swerveSubsystem::getPose, m_swerveSubsystem::getFieldVelocity);
 
-  final Trigger m_isReadyToShoot = new Trigger(() -> {
-      return m_swerveSubsystem.isDrivetrainAligned.getAsBoolean() && m_shooterSubsystem.isShooterOnTarget.getAsBoolean() && m_hoodSubsystem.isHoodOnTarget.getAsBoolean();
-  });
+  // final Trigger m_isReadyToShoot = new Trigger(() -> {
+  //     return m_swerveSubsystem.isDrivetrainAligned.getAsBoolean() && m_shooterSubsystem.isShooterOnTarget.getAsBoolean() && m_hoodSubsystem.isHoodOnTarget.getAsBoolean();
+  // });
 
-  public Trigger shouldAutoAlign = new Trigger(() -> m_swerveSubsystem.isAutoAlignOn());
+  // public Trigger shouldAutoAlign = new Trigger(() -> m_swerveSubsystem.isAutoAlignOn());
 
   SendableChooser<PathPlannerAuto> m_autoChooser = new SendableChooser<>();
   
-  SwerveInputStream driveAngularVelocity = SwerveInputStream.of(m_swerveSubsystem.getSwerveDrive(),
-      () -> m_driverController.getLeftY() * -1 * 
-          (m_driverController.leftBumper().getAsBoolean() ? Constants.DrivebaseConstants.k_slowmodeMultiplier : 1),
+  // SwerveInputStream driveAngularVelocity = SwerveInputStream.of(m_swerveSubsystem.getSwerveDrive(),
+  //     () -> m_driverController.getLeftY() * -1 * 
+  //         (m_driverController.leftBumper().getAsBoolean() ? Constants.DrivebaseConstants.k_slowmodeMultiplier : 1),
 
-      () -> m_driverController.getLeftX() * -1 *
-          (m_driverController.leftBumper().getAsBoolean() ? Constants.DrivebaseConstants.k_slowmodeMultiplier : 1)
-      )
-      .withControllerRotationAxis(() -> -m_driverController.getRightX())
-      .deadband(OperatorConstants.k_deadBand)
-      .allianceRelativeControl(true);
+  //     () -> m_driverController.getLeftX() * -1 *
+  //         (m_driverController.leftBumper().getAsBoolean() ? Constants.DrivebaseConstants.k_slowmodeMultiplier : 1)
+  //     )
+  //     .withControllerRotationAxis(() -> -m_driverController.getRightX())
+  //     .deadband(OperatorConstants.k_deadBand)
+  //     .allianceRelativeControl(true);
 
   public RobotContainer() {
     configureBindings();
@@ -157,41 +158,42 @@ public class RobotContainer {
   }
 
   public void setupAuto(){
-    NamedCommands.registerCommand("Shoot", m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getHubDist()).alongWith(m_hoodSubsystem.pitchHood(() -> m_swerveSubsystem.getHubDist()), m_swerveSubsystem.rotateToHub(() -> 0, () -> 0))); 
-    NamedCommands.registerCommand("Intake", new SequentialCommandGroup(
-      m_climberSubsystem.retract(),
-      m_pivotSubsystem.extend(),
-      m_rollerSubsystem.run(true)));
-    NamedCommands.registerCommand("RevShooter", m_shooterSubsystem.revCommand()); 
-    NamedCommands.registerCommand("Climber Out", new SequentialCommandGroup(
-      m_pivotSubsystem.retract(),
-      m_climberSubsystem.extend()));
-    NamedCommands.registerCommand("Climb", m_climberSubsystem.climbingRetract());
+    // NamedCommands.registerCommand("Shoot", m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getHubDist()).alongWith(m_hoodSubsystem.pitchHood(() -> m_swerveSubsystem.getHubDist()), m_swerveSubsystem.rotateToHub(() -> 0, () -> 0))); 
+    // NamedCommands.registerCommand("Intake", new SequentialCommandGroup(
+    //   m_climberSubsystem.retract(),
+    //   m_pivotSubsystem.extend(),
+    //   m_rollerSubsystem.run(true)));
+    // NamedCommands.registerCommand("RevShooter", m_shooterSubsystem.revCommand()); 
+    // NamedCommands.registerCommand("Climber Out", new SequentialCommandGroup(
+    //   m_pivotSubsystem.retract(),
+      // m_climberSubsystem.extend()));
+    // NamedCommands.registerCommand("Climb", m_climberSubsystem.climbingRetract());
     
-    m_autoChooser.addOption("depot", new PathPlannerAuto("auto1"));
-    m_autoChooser.addOption("sweep", new PathPlannerAuto("auto2"));
-    m_autoChooser.addOption("centerL", new PathPlannerAuto("auto3"));
-    m_autoChooser.addOption("centerR", new PathPlannerAuto("auto4"));
+    // m_autoChooser.addOption("depot", new PathPlannerAuto("auto1"));
+    // m_autoChooser.addOption("sweep", new PathPlannerAuto("auto2"));
+    // m_autoChooser.addOption("centerL", new PathPlannerAuto("auto3"));
+    // m_autoChooser.addOption("centerR", new PathPlannerAuto("auto4"));
 
-    SmartDashboard.putData("auto choice", m_autoChooser);
+    // SmartDashboard.putData("auto choice", m_autoChooser);
   }
 
   public Command getAutonomousCommand() {
-    return m_autoChooser.getSelected();
+    // return m_autoChooser.getSelected();
+    return new InstantCommand();
   }
 
   private void configureFuelSim() {
-    FuelSim instance = FuelSim.getInstance();
-    instance.spawnStartingFuel();
-    instance.registerRobot(0.876, 0.826, 0.4, m_swerveSubsystem::getPose, m_swerveSubsystem::getFieldVelocity);
-    instance.registerIntake(-0.595, -0.438, -0.333, 0.333, () -> (m_fuelLaunchSim.canIntake() && !m_pivotSubsystem.isIntakeRetracted.getAsBoolean() && m_rollerSubsystem.getVelocity() > 0), m_fuelLaunchSim::intakeFuel);
+    // FuelSim instance = FuelSim.getInstance();
+    // instance.spawnStartingFuel();
+    // instance.registerRobot(0.876, 0.826, 0.4, m_swerveSubsystem::getPose, m_swerveSubsystem::getFieldVelocity);
+    // instance.registerIntake(-0.595, -0.438, -0.333, 0.333, () -> (m_fuelLaunchSim.canIntake() && !m_pivotSubsystem.isIntakeRetracted.getAsBoolean() && m_rollerSubsystem.getVelocity() > 0), m_fuelLaunchSim::intakeFuel);
 
-    instance.start();
-    SmartDashboard.putData(Commands.runOnce(() -> {
-                FuelSim.getInstance().clearFuel();
-                FuelSim.getInstance().spawnStartingFuel();
-            })
-            .withName("Reset Fuel")
-            .ignoringDisable(true));
+    // instance.start();
+    // SmartDashboard.putData(Commands.runOnce(() -> {
+    //             FuelSim.getInstance().clearFuel();
+    //             FuelSim.getInstance().spawnStartingFuel();
+    //         })
+    //         .withName("Reset Fuel")
+    //         .ignoringDisable(true));
   }
 }

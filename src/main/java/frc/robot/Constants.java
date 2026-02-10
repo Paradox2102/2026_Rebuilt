@@ -232,7 +232,7 @@ public final class Constants
     public static final double k_climberReduction = 5;
     public static final double k_climberMaxHeight = 0.388;
     public static final double k_climberClimbingStowedHeight = 0.1; //arbitrary number
-    public static final double k_climberRotationsToMeters = (0.388/4.152);
+    public static final double k_climberRotationsToMeters = (0.388/41.52);
 
     public static final double k_climberDeadzone = 0.01;
 
@@ -248,12 +248,12 @@ public final class Constants
     public static final SparkFlexConfig k_followConfig = new SparkFlexConfig();
 
     static {
-      k_leadConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_climberCurrent)
+      k_leadConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_climberCurrent).inverted(true)
       .encoder.positionConversionFactor(k_climberRotationsToMeters).velocityConversionFactor(k_climberRotationsToMeters / 60);
 
       k_leadConfig.closedLoop.pid(k_climberP, k_climberI, k_climberD);
 
-      k_followConfig.apply(k_leadConfig).follow(CANIDConstants.climber_leader, true);
+      k_followConfig.apply(k_leadConfig).follow(CANIDConstants.climber_leader, false);
     }
   }
 
