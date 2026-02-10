@@ -49,10 +49,6 @@ public class RobotContainer {
   final IntakeRollerSubsystem m_rollerSubsystem = new IntakeRollerSubsystem();
   final HoodSubsystem m_hoodSubsystem = new HoodSubsystem();
   final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
-
-  public final Timer shootDoublePressTimer = new Timer();
-  public final double doublePressThreshold = 0.2; 
-  public double shootDoublePressTimerWhenNotActivelyClickingItWoahThisVariableNameIsLongButIKindaJustWantToSeeThisWork;
   final FuelLaunchSim m_fuelLaunchSim = new FuelLaunchSim(m_swerveSubsystem::getPose, m_swerveSubsystem::getFieldVelocity);
 
   final Trigger m_isReadyToShoot = new Trigger(() -> {
@@ -79,18 +75,8 @@ public class RobotContainer {
     configureFuelSim();
     setupAuto();
   }
-  private Command resetShootOverrideTimer(){
-    return Commands.run(() ->
-      shootDoublePressTimer.reset()
-    );
-  }
-  private Command setThatOneLongVariable(){
-    return Commands.run(() ->
-      shootDoublePressTimerWhenNotActivelyClickingItWoahThisVariableNameIsLongButIKindaJustWantToSeeThisWork = shootDoublePressTimer.get()
-    );
-  }
+
   private void configureBindings() {
-    shootDoublePressTimer.start();
     Command driveFieldOrientedAnglularVelocity = m_swerveSubsystem.driveFieldOriented(driveAngularVelocity);
 
     m_swerveSubsystem.setDefaultCommand(driveFieldOrientedAnglularVelocity);
@@ -106,40 +92,25 @@ public class RobotContainer {
       m_rollerSubsystem.run(true)
     )).onFalse(m_rollerSubsystem.stop());
 
-    m_driverController.rightTrigger().whileFalse(setThatOneLongVariable()).whileTrue(
+    m_driverController.rightTrigger().whileTrue(
       new ConditionalCommand(
-        new ConditionalCommand(
           new ParallelCommandGroup(
-            m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getHubDist()),
-            m_conveyorSubsystem.runNormal(true),
-            m_kickerSubsystem.run(true),
-            m_hoodSubsystem.pitchHood(() -> m_swerveSubsystem.getHubDist()),
-            m_swerveSubsystem.rotateToHub(m_driverController::getLeftX, m_driverController::getLeftY),
-            m_fuelLaunchSim.repeatedlyLaunchFuel(() -> (m_shooterSubsystem.getVelocity() * Constants.ShooterConstants.    k_rpmToSurfaceSpeedMperS), () -> (90 - (m_hoodSubsystem.getHoodAngle()+7.8)))
-          ),
-          new ParallelCommandGroup(
-            resetShootOverrideTimer(),
             m_swerveSubsystem.rotateToHub(m_driverController::getLeftX, m_driverController::getLeftY),
             m_hoodSubsystem.pitchHood(() -> m_swerveSubsystem.getHubDist()),
             m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getHubDist())
           ),
-          () -> shootDoublePressTimerWhenNotActivelyClickingItWoahThisVariableNameIsLongButIKindaJustWantToSeeThisWork < doublePressThreshold),
       new ParallelCommandGroup(
         m_hoodSubsystem.staticPitch(),
         m_shooterSubsystem.staticShootCommand()),
         shouldAutoAlign));
 
-    m_driverController.rightBumper().whileFalse(setThatOneLongVariable()).whileTrue(
+    m_driverController.rightBumper().whileTrue(
       new ConditionalCommand(
-        new ConditionalCommand(
-          m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getPassDist()),
           new ParallelCommandGroup(
-            resetShootOverrideTimer(),
             m_swerveSubsystem.rotateToPass(m_driverController::getLeftX, m_driverController::getLeftY),
             m_hoodSubsystem.pitchHood(() -> m_swerveSubsystem.getPassDist()),
             m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getPassDist())
           ),
-          () -> shootDoublePressTimerWhenNotActivelyClickingItWoahThisVariableNameIsLongButIKindaJustWantToSeeThisWork < doublePressThreshold),
       new ParallelCommandGroup(
         m_hoodSubsystem.staticPitch(),
         m_shooterSubsystem.staticShootCommand()),
