@@ -146,10 +146,10 @@ public final class Constants
     public static final double k_rpmToSurfaceSpeedMperS = (0.0254*Math.PI)/60;
 
     public static final int k_hoodCurrentLimit = 60;
-    public static final double k_hoodP = 0.03;
+    public static final double k_hoodP = 0.035;
     public static final double k_hoodI = 0.005;
     public static final double k_hoodD = 0;
-    public static final double k_hoodDeadzone = 1;
+    public static final double k_hoodDeadzone = 1.5;
 
     public static final int k_shooterCurrent = 80;
     public static final double k_shooterKV = 0.00175;
