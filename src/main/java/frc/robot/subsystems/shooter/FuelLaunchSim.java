@@ -56,8 +56,8 @@ public class FuelLaunchSim {
     }
 
     public void launchFuel(double vel, double angle) {
-        if (fuelStored == 0)
-            return;
+        // if (fuelStored == 0)
+        //     return;
         fuelStored--;
         Transform2d leftShotTransform = new Transform2d(0.213, 0.08, new Rotation2d());
         Pose2d shotLeft = poseSupplier.get().transformBy(leftShotTransform);
