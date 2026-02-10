@@ -236,7 +236,7 @@ public final class Constants
 
     public static final double k_climberDeadzone = 0.01;
 
-    public static final double k_manualClimbPower = 0.25; //arbitrary number
+    public static final double k_manualClimbPower = 3; //arbitrary number
 
     public static final double k_climberP = 1;
     public static final double k_climberI = 0;
