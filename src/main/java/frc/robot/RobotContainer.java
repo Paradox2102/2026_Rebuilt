@@ -51,7 +51,7 @@ public class RobotContainer {
   final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
 
   public final Timer shootDoublePressTimer = new Timer();
-  public final double doublePressThreshold = 0.9; 
+  public final double doublePressThreshold = 0.2; 
   public double shootDoublePressTimerWhenNotActivelyClickingItWoahThisVariableNameIsLongButIKindaJustWantToSeeThisWork;
   final FuelLaunchSim m_fuelLaunchSim = new FuelLaunchSim(m_swerveSubsystem::getPose, m_swerveSubsystem::getFieldVelocity);
 
@@ -109,7 +109,12 @@ public class RobotContainer {
     m_driverController.rightTrigger().whileFalse(setThatOneLongVariable()).whileTrue(
       new ConditionalCommand(
         new ConditionalCommand(
-          m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getHubDist()),
+          new ParallelCommandGroup(
+            m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getHubDist()),
+            m_conveyorSubsystem.runNormal(true),
+            m_kickerSubsystem.run(true),
+            m_fuelLaunchSim.repeatedlyLaunchFuel(() -> (m_shooterSubsystem.getVelocity() * Constants.ShooterConstants.    k_rpmToSurfaceSpeedMperS), () -> (90 - (m_hoodSubsystem.getHoodAngle()+7.8)))
+          ),
           new ParallelCommandGroup(
             resetShootOverrideTimer(),
             m_swerveSubsystem.rotateToHub(m_driverController::getLeftX, m_driverController::getLeftY),
