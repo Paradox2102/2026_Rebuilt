@@ -32,6 +32,7 @@ public class ClimberSubsystem extends SubsystemBase {
   private SparkFlex m_leadMotor = new SparkFlex(CANIDConstants.climber_leader, MotorType.kBrushless);
   private SparkFlex m_followMotor = new SparkFlex(CANIDConstants.climber_follower, MotorType.kBrushless);
   private RelativeEncoder m_encoder = m_leadMotor.getEncoder();
+  //TODO: create fterm, multiple control values, or switch to just power
   private SparkClosedLoopController m_pid = m_leadMotor.getClosedLoopController();
 
   private ElevatorSim m_climberSim = new ElevatorSim(LinearSystemId.createElevatorSystem(DCMotor.getNeoVortex(1), ClimberConstants.k_climberWeight, ClimberConstants.k_climberDrumWidth/2.0, ClimberConstants.k_climberReduction), DCMotor.getNeoVortex(1), 0, ClimberConstants.k_climberMaxHeight, false, 0);

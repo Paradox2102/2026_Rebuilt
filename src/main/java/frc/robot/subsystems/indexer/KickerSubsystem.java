@@ -48,6 +48,15 @@ public class KickerSubsystem extends SubsystemBase {
       m_pid.setSetpoint(0, ControlType.kVelocity);
     }, this);
   }
+
+  public Command runVoltage(double voltage){
+    return Commands.runEnd(() -> {
+      m_pid.setSetpoint(voltage, ControlType.kVoltage);
+    }, () -> {
+      m_pid.setSetpoint(0, ControlType.kVoltage);
+    }, this);
+  }
+
   public Command stop() {
     return Commands.runOnce(() ->{
       m_pid.setSetpoint(0, ControlType.kVelocity);

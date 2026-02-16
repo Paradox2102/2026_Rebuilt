@@ -28,6 +28,7 @@ import frc.robot.Constants.CANIDConstants;
 
 public class ConveyorSubsystem extends SubsystemBase {
   private SparkFlex m_conveyorMotor = new SparkFlex(CANIDConstants.conveyor, MotorType.kBrushless);
+  //todo: see if we can do this with just setting voltage
   private SparkClosedLoopController m_pid = m_conveyorMotor.getClosedLoopController();
   private RelativeEncoder m_encoder = m_conveyorMotor.getEncoder();
 

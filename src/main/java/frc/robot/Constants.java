@@ -80,7 +80,6 @@ public final class Constants
     public static final double k_pivotDeadzone = 1;
 
     public static final double k_rollerKV = 0.0023;
-    public static final double k_rollerP = 0.00075;
 
     public static final double k_pivotKCos = 1.5;
     public static final double k_pivotP = 0.0035;
@@ -100,7 +99,7 @@ public final class Constants
     static {
       k_rollerConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_rollerCurrent);
 
-      k_rollerConfig.closedLoop.p(k_rollerP).feedbackSensor(FeedbackSensor.kPrimaryEncoder).
+      k_rollerConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).
       feedForward.kV(k_rollerKV);
 
       k_pivotConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_pivotCurrent).inverted(true)
@@ -152,7 +151,7 @@ public final class Constants
     public static final double k_hoodDeadzone = 1.5;
 
     public static final int k_shooterCurrent = 80;
-    public static final double k_shooterKV = 0.00175;
+    public static final double k_shooterKV = 0.00195;
     public static final double k_shooterP = 0.00005;
     public static final double k_shooterDeadzone = 100;
 
@@ -168,7 +167,8 @@ public final class Constants
     public static final SparkFlexConfig k_hoodConfig = new SparkFlexConfig();
     public static final SparkFlexConfig k_leaderConfig = new SparkFlexConfig();
     public static final SparkFlexConfig k_follower1Config = new SparkFlexConfig();
-    public static final SparkFlexConfig k_follower23Config = new SparkFlexConfig();
+    public static final SparkFlexConfig k_leader2Config = new SparkFlexConfig();
+    public static final SparkFlexConfig k_follower2Config = new SparkFlexConfig();
 
     static {
       k_hoodConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_hoodCurrentLimit)
@@ -177,11 +177,13 @@ public final class Constants
       k_hoodConfig.closedLoop.pid(k_hoodP, k_hoodI, k_hoodD)
       .feedbackSensor(FeedbackSensor.kPrimaryEncoder);
 
-      k_leaderConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_shooterCurrent);
+      k_leaderConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(k_shooterCurrent).inverted(true);
 
       k_leaderConfig.closedLoop.p(k_shooterP).feedbackSensor(FeedbackSensor.kPrimaryEncoder).feedForward.kV(k_shooterKV);
+      k_leader2Config.apply(k_leaderConfig);
+
       k_follower1Config.apply(k_leaderConfig).follow(CANIDConstants.shooter_1, false);
-      k_follower23Config.apply(k_leaderConfig).follow(CANIDConstants.shooter_1, true);
+      k_follower2Config.apply(k_leaderConfig).follow(CANIDConstants.shooter_3, false);
     }
   
   }
@@ -194,10 +196,8 @@ public final class Constants
     public static final double k_kickerReduction = 1;
 
     public static final double k_conveyorKV = 0.00176;
-    public static final double k_conveyorP = 0.002;
 
     public static final double k_kickerKV = 0.00176;
-    public static final double k_kickerP = 0.00061;
 
     public static final int k_conveyorCurrent = 40;
 
@@ -216,12 +216,12 @@ public final class Constants
     static {
       k_conveyorConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_conveyorCurrent);
 
-      k_kickerConfig.apply(k_conveyorConfig);
+      k_kickerConfig.apply(k_conveyorConfig).inverted(true);
 
-      k_conveyorConfig.closedLoop.p(k_conveyorP).feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+      k_conveyorConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
       .feedForward.kV(k_conveyorKV);
 
-      k_kickerConfig.closedLoop.p(k_kickerP).feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+      k_kickerConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
       .feedForward.kV(k_kickerKV);
     }
   }
