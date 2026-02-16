@@ -291,7 +291,7 @@ public final class Constants
   }
   public static class LightConstants {
     public static final int k_lightPort = 0; // may be different on actual robot
-    public static final int k_lightAmount = 50;
+    public static final int k_lightAmount = 100;
 
     public static LinearVelocity k_disabledVelocity = MetersPerSecond.of(0.2);
     public static Distance k_ledSpacing = Meters.of(1 / 120.0);

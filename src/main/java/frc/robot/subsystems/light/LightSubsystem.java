@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -75,6 +76,7 @@ public class LightSubsystem extends SubsystemBase {
       m_color = getColor();
       applyPattern(m_color, false);
     }
+    
     public Color getColor(){
       Color color;
       if ((m_commandShift != 0 && m_commandShift != 5) && gameData != null){
@@ -94,25 +96,38 @@ public class LightSubsystem extends SubsystemBase {
     public void end(boolean interrupted) {
         m_shift ++;
     }
+    public void putShiftTime(double shift) {
+      SmartDashboard.putNumber("Time Until Shift", round(shift - m_timer.get()));
+    }
+    public double round(double number) {
+      int biigerNumber = (int) (number * 100);
+      return ((double) biigerNumber) / 100;
+    }
     @Override
     public boolean isFinished() {
       switch(m_commandShift) {
         case 0:
+          putShiftTime(k_shift1Time);
           return m_timer.get() > k_shift1Time;
           
         case 1:
+          putShiftTime(k_shift2Time);
           return m_timer.get() > k_shift2Time;
 
         case 2:
+          putShiftTime(k_shift3Time);
           return m_timer.get() > k_shift3Time;
 
         case 3:
+          putShiftTime(k_shift4Time);
           return m_timer.get() > k_shift4Time;
 
         case 4:
+          putShiftTime(k_endShiftTime);
           return m_timer.get() > k_endShiftTime;
 
         case 5:
+          putShiftTime(k_matchEndTime);
           return m_timer.get() > k_matchEndTime;
 
         default:
