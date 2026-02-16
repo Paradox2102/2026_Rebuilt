@@ -289,11 +289,11 @@ public final class Constants
     public static final int climber_leader = 40;
     public static final int climber_follower = 41;
   }
-    public static class LightConstants {
+  public static class LightConstants {
     public static final int k_lightPort = 0; // may be different on actual robot
-    public static final int k_lightAmount = 60;
+    public static final int k_lightAmount = 50;
 
-    public static LinearVelocity k_disabledVelocity = MetersPerSecond.of(0.4);
+    public static LinearVelocity k_disabledVelocity = MetersPerSecond.of(0.2);
     public static Distance k_ledSpacing = Meters.of(1 / 120.0);
     
   }
