@@ -12,8 +12,12 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.config.SparkFlexConfig;
 
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
@@ -67,6 +71,20 @@ public final class Constants
       {0,0},
       {0,0}
     };
+  }
+
+  public static class VisionConstants{
+    public static final Vector<N3> k_visionBaseSDev = VecBuilder.fill(0.1, 0.1, 0.1);
+    public static final Vector<N3> k_multiTagSDev = VecBuilder.fill(0.1, 0.1, 0.1);
+
+    public static final Translation3d k_flTranslation = new Translation3d(0.327, 0.180, 0.246);
+    public static final Rotation3d k_flRotation = new Rotation3d(0, -Math.toRadians(25), -Math.toRadians(30));
+    public static final Translation3d k_frTranslation = new Translation3d(0.327, -0.180, 0.233);
+    public static final Rotation3d k_frRotation = new Rotation3d(0, -Math.toRadians(25), Math.toRadians(30));
+    public static final Translation3d k_slTranslation = new Translation3d(0.111, 0.343, 0.490);
+    public static final Rotation3d k_slRotation = new Rotation3d(0, -Math.toRadians(15), Math.toRadians(90));
+    public static final Translation3d k_srTranslation = new Translation3d(0.111, -0.343, 0.490);
+    public static final Rotation3d k_srRotation = new Rotation3d(0, -Math.toRadians(15), -Math.toRadians(90));
   }
 
   public static class IntakeConstants{

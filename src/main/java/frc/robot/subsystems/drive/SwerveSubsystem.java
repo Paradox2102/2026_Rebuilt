@@ -17,6 +17,8 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.swerve.SwerveSetpoint;
 import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -142,7 +144,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // m_vision.updatePoseEstimation(m_swerveDrive);
+        m_vision.updatePoseEstimation(m_swerveDrive);
         SmartDashboard.putBoolean("drivetrain align", isDrivetrainAligned.getAsBoolean());
         m_curPos = getPose();
         m_sotmPos = sotmLookAhead(5);

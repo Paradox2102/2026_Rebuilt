@@ -40,7 +40,7 @@ public class RobotContainer {
   final CommandXboxController m_driverController = new CommandXboxController(0);
   final CommandJoystick m_operatorController = new CommandJoystick(1);
 
-  // final LightSubsystem m_lightSubsystem = new LightSubsystem();
+  final LightSubsystem m_lightSubsystem = new LightSubsystem();
   final SwerveSubsystem m_swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
       "swerve"));
   final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
@@ -60,16 +60,16 @@ public class RobotContainer {
 
   SendableChooser<PathPlannerAuto> m_autoChooser = new SendableChooser<>();
   
-  // SwerveInputStream driveAngularVelocity = SwerveInputStream.of(m_swerveSubsystem.getSwerveDrive(),
-  //     () -> m_driverController.getLeftY() * -1 * 
-  //         (m_driverController.leftBumper().getAsBoolean() ? Constants.DrivebaseConstants.k_slowmodeMultiplier : 1),
+  SwerveInputStream driveAngularVelocity = SwerveInputStream.of(m_swerveSubsystem.getSwerveDrive(),
+      () -> m_driverController.getLeftY() * 1 * 
+          (m_driverController.leftBumper().getAsBoolean() ? Constants.DrivebaseConstants.k_slowmodeMultiplier : 1),
 
-  //     () -> m_driverController.getLeftX() * -1 *
-  //         (m_driverController.leftBumper().getAsBoolean() ? Constants.DrivebaseConstants.k_slowmodeMultiplier : 1)
-  //     )
-  //     .withControllerRotationAxis(() -> -m_driverController.getRightX())
-  //     .deadband(OperatorConstants.k_deadBand)
-  //     .allianceRelativeControl(true);
+      () -> m_driverController.getLeftX() * -1 *
+          (m_driverController.leftBumper().getAsBoolean() ? Constants.DrivebaseConstants.k_slowmodeMultiplier : 1)
+      )
+      .withControllerRotationAxis(() -> m_driverController.getRightX())
+      .deadband(OperatorConstants.k_deadBand)
+      .allianceRelativeControl(true);
 
   public RobotContainer() {
     configureBindings();
@@ -78,14 +78,17 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    // Command driveFieldOrientedAnglularVelocity = m_swerveSubsystem.driveFieldOriented(driveAngularVelocity);
+    Command driveFieldOrientedAnglularVelocity = m_swerveSubsystem.driveFieldOriented(driveAngularVelocity);
 
-    // m_swerveSubsystem.setDefaultCommand(driveFieldOrientedAnglularVelocity);
+    m_swerveSubsystem.setDefaultCommand(driveFieldOrientedAnglularVelocity);
+
+    m_driverController.a().onTrue(m_swerveSubsystem.centerModulesCommand());
+    m_driverController.b().onTrue(Commands.runOnce(() -> m_swerveSubsystem.zeroGyro()));
 
     // m_conveyorSubsystem.setDefaultCommand(m_conveyorSubsystem.runSlow(true));
     // m_shooterSubsystem.setDefaultCommand(m_shooterSubsystem.revCommand());
     // m_hoodSubsystem.setDefaultCommand(m_hoodSubsystem.returnHood());
-    // m_kickerSubsystem.setDefaultCommand(m_kickerSubsystem.stop());
+    // m_kickerSubsystem.setDefaultCommand(m_kickerSubsystem.run(false));
 
     // m_driverController.leftTrigger().whileTrue(new SequentialCommandGroup(
     //   m_climberSubsystem.retract(),
