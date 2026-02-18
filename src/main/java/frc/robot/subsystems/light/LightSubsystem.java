@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -36,81 +37,97 @@ public class LightSubsystem extends SubsystemBase {
   private final double k_endShiftTime = 110.0;
   private final double k_matchEndTime = 140.0;
 
-  private final double k_transitionTime = 7.0;
-  private final double k_shiftTime = 22.0;
-  private final double k_endTime = 27.0;
-
   private boolean m_autoWinOverride = false;
   private boolean m_overrideWon = false;
 
   private int m_shift = 0;
   private String gameData;
-  private static final Time k_blinkMagnitude = Seconds.of(0.3);
+  private static final Time k_blinkMagnitude = Seconds.of(0.4);
 
   private final class LedPatterns { // if it doesn't work as third of each team color and scrolling it likely has to do with me not knowing how maps work and it's an issue with k1, 2, and 3
-      private static final LEDPattern m_disabledPattern = LEDPattern.steps(Map.of(0, Color.kRed, 0.33, Color.kBlue, 0.66, Color.kGreen)).scrollAtAbsoluteSpeed(LightConstants.k_disabledVelocity, LightConstants.k_ledSpacing);
+      private static final LEDPattern m_disabledPattern = LEDPattern.steps(Map.of(0, Color.kRed, 0.33, Color.kBlue, 0.66, Color.kOrange)).scrollAtAbsoluteSpeed(LightConstants.k_disabledVelocity, LightConstants.k_ledSpacing);
       
     }  
 
   private final class ShiftCommand extends Command {
-    private final Timer m_blinkTimer = new Timer();
 
     private final int m_commandShift;
     private final boolean m_odd;
     private final double m_endTime;
     private Color m_color = Color.kBlack;
-
-    private final LightSubsystem m_subsystem;
     
-    public ShiftCommand(boolean odd, double endTime, int shift, LightSubsystem subsystem) {
+    public ShiftCommand(boolean odd, double endTime, int shift) {
       m_commandShift = shift;
       m_odd = odd;
       m_endTime = endTime;
-      m_subsystem = subsystem;
-      new Trigger(() -> m_blinkTimer.get() > m_endTime).onTrue(new SetPattern(m_color, true, m_subsystem));
+      System.out.println(String.format("ShiftCommand (%b, %f, %d)", odd, endTime, shift));
+      if (shift != 5){
+        new Trigger(() -> m_timer.get() > m_endTime - 3.0).onTrue(new SetPattern(Color.kBlue, true));
+      }
     }
     
     @Override
     public void initialize() {
+      System.out.println("initialize");
+      if (m_commandShift == 0){
+        m_timer.reset();
+      }
       m_timer.start();
-      m_blinkTimer.reset();
-      m_blinkTimer.start();
-      if (m_commandShift != 0 || m_commandShift != 5){
+      m_color = getColor();
+      applyPattern(m_color, false);
+    }
+    
+    public Color getColor(){
+      Color color;
+      if ((m_commandShift != 0 && m_commandShift != 5) && gameData != null){
         if (m_odd) {
-          m_color = getWonAuto() ? Color.kRed : Color.kGreen;
+          color = getWonAuto() ? Color.kRed : Color.kGreen;
         }
         else {
-          m_color = getWonAuto() ? Color.kGreen : Color.kRed;
+          color = getWonAuto() ? Color.kGreen : Color.kRed;
         }
       }
       else{
-        m_color = Color.kGreen;
+        color = Color.kGreen;
       }
-      new SetPattern(m_color, false, m_subsystem);
+      return color;
     }
     @Override
     public void end(boolean interrupted) {
         m_shift ++;
     }
+    public void putShiftTime(double shift) {
+      SmartDashboard.putNumber("Time Until Shift", round(shift - m_timer.get()));
+    }
+    public double round(double number) {
+      int biigerNumber = (int) (number * 100);
+      return ((double) biigerNumber) / 100;
+    }
     @Override
     public boolean isFinished() {
       switch(m_commandShift) {
         case 0:
+          putShiftTime(k_shift1Time);
           return m_timer.get() > k_shift1Time;
           
         case 1:
+          putShiftTime(k_shift2Time);
           return m_timer.get() > k_shift2Time;
 
         case 2:
+          putShiftTime(k_shift3Time);
           return m_timer.get() > k_shift3Time;
 
         case 3:
+          putShiftTime(k_shift4Time);
           return m_timer.get() > k_shift4Time;
 
         case 4:
+          putShiftTime(k_endShiftTime);
           return m_timer.get() > k_endShiftTime;
 
         case 5:
+          putShiftTime(k_matchEndTime);
           return m_timer.get() > k_matchEndTime;
 
         default:
@@ -121,26 +138,37 @@ public class LightSubsystem extends SubsystemBase {
   }
 
   public class SetPattern extends Command {
-    public SetPattern(Color color, boolean blinking, LightSubsystem subsystem) {
-      m_pattern = LEDPattern.solid(color);
-      if (blinking) {
-        m_pattern.blink(k_blinkMagnitude);
-      }
-      m_pattern.applyTo(m_ledBuffer);
+    private Color m_color;
+    private boolean m_blinking;
+    public SetPattern(Color color, boolean blinking) {
+      m_color = color;
+      m_blinking = blinking;
+    }
+    @Override
+    public void initialize() {
+      applyPattern(m_color, m_blinking);
     }
   }
-
+  public void applyPattern(Color color, boolean blinking) {
+    m_pattern = LEDPattern.solid(color);
+      if (blinking) {
+        m_pattern = m_pattern.blink(k_blinkMagnitude);
+        System.out.println("Setting Pattern to Blinking");
+      }
+      System.out.println("applying pattern to LED");
+      m_pattern.applyTo(m_ledBuffer);
+  }
   public LightSubsystem() {
     m_led.setLength(LightConstants.k_lightAmount);
     m_led.setData(m_ledBuffer);
     m_led.start();
-    
-    new Trigger(() -> DriverStation.isTeleop() && !DriverStation.isDisabled()).onTrue(new ShiftCommand(false, k_transitionTime, 0, this));
-    new Trigger(() -> m_timer.get() > k_shift1Time).onTrue(new ShiftCommand(true, k_shiftTime, 1, this));
-    new Trigger(() -> m_timer.get() > k_shift2Time).onTrue(new ShiftCommand(false, k_shiftTime, 2, this));
-    new Trigger(() -> m_timer.get() > k_shift3Time).onTrue(new ShiftCommand(true, k_shiftTime, 3, this));
-    new Trigger(() -> m_timer.get() > k_shift4Time).onTrue(new ShiftCommand(false, k_shiftTime, 4, this));
-    new Trigger(() -> m_timer.get() > k_endShiftTime).onTrue(new ShiftCommand(false, k_endTime, 5, this));
+    // new Trigger(() -> DriverStation.isEnabled()).onTrue();
+    new Trigger(() -> DriverStation.isTeleop() && !DriverStation.isDisabled()).onTrue(new ShiftCommand(false, k_shift1Time, 0));
+    new Trigger(() -> m_timer.get() > k_shift1Time).onTrue(new ShiftCommand(true, k_shift2Time, 1));
+    new Trigger(() -> m_timer.get() > k_shift2Time).onTrue(new ShiftCommand(false, k_shift3Time, 2));
+    new Trigger(() -> m_timer.get() > k_shift3Time).onTrue(new ShiftCommand(true, k_shift4Time, 3));
+    new Trigger(() -> m_timer.get() > k_shift4Time).onTrue(new ShiftCommand(false, k_endShiftTime, 4));
+    new Trigger(() -> m_timer.get() > k_endShiftTime).onTrue(new ShiftCommand(false, k_matchEndTime, 5));
   }
 
   @Override
@@ -205,7 +233,7 @@ public class LightSubsystem extends SubsystemBase {
       }
     }
     else {
-      return true;
+      return false;
     }
   }
 
