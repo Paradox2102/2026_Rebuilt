@@ -61,7 +61,7 @@ public class RobotContainer {
   SendableChooser<PathPlannerAuto> m_autoChooser = new SendableChooser<>();
   
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(m_swerveSubsystem.getSwerveDrive(),
-      () -> m_driverController.getLeftY() * 1 * 
+      () -> m_driverController.getLeftY() * -1 * 
           (m_driverController.leftBumper().getAsBoolean() ? Constants.DrivebaseConstants.k_slowmodeMultiplier : 1),
 
       () -> m_driverController.getLeftX() * -1 *
@@ -82,8 +82,7 @@ public class RobotContainer {
 
     m_swerveSubsystem.setDefaultCommand(driveFieldOrientedAnglularVelocity);
 
-    m_driverController.a().onTrue(m_swerveSubsystem.centerModulesCommand());
-    m_driverController.b().onTrue(Commands.runOnce(() -> m_swerveSubsystem.zeroGyro()));
+    m_driverController.a().whileTrue(m_kickerSubsystem.run(true).alongWith(m_conveyorSubsystem.runNormal(true), m_rollerSubsystem.run(true), m_shooterSubsystem.setRPM(3000)));
 
     // m_conveyorSubsystem.setDefaultCommand(m_conveyorSubsystem.runSlow(true));
     // m_shooterSubsystem.setDefaultCommand(m_shooterSubsystem.revCommand());

@@ -50,6 +50,7 @@ import org.json.simple.parser.ParseException;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
+import swervelib.SwerveModule;
 import swervelib.math.SwerveMath;
 import swervelib.parser.SwerveControllerConfiguration;
 import swervelib.parser.SwerveDriveConfiguration;
@@ -114,9 +115,6 @@ public class SwerveSubsystem extends SubsystemBase {
         m_swerveDrive.setModuleEncoderAutoSynchronize(false,
                 1); // Enable if you want to resynchronize your absolute encoders and motor encoders
                     // periodically when they are not moving.
-        // m_swerveDrive.pushOffsetsToEncoders(); // Set the absolute encoder to be used
-        // over the internal encoder and push the offsets onto it. Throws warning if not
-        // possible
         setupPathPlanner();
         //RobotModeTriggers.autonomous().onTrue(Commands.runOnce(this::zeroGyroWithAlliance));
         m_vision = new Vision(() -> getPose(), m_swerveDrive.field);
@@ -819,6 +817,14 @@ public class SwerveSubsystem extends SubsystemBase {
     public Command toggleAutoAlign(){
         return Commands.runOnce(() -> {
             m_autoAlignOn = !m_autoAlignOn;
+        }, this);
+    }
+
+    public Command runManual(){
+        return Commands.run(() -> {
+            for (SwerveModule module : m_swerveDrive.getModules()){
+                module.getAngleMotor().set(0.1);
+            }
         }, this);
     }
 }
