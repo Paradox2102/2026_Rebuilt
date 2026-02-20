@@ -67,7 +67,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
   public Command shootCommand(DoubleSupplier distanceToHub){
     return Commands.run(() -> {
-      setVelocity(m_shooterPowerLerp.get(distanceToHub.getAsDouble()));
+      bangBang(m_shooterPowerLerp.get(distanceToHub.getAsDouble()));
       m_isShooting = true;
     }, this).until(() -> {
       if (DriverStation.isAutonomous()) {
@@ -76,20 +76,20 @@ public class ShooterSubsystem extends SubsystemBase {
         return false;
       }
     }).finallyDo(() -> {
-      setVelocity(ShooterConstants.k_shooterRevVel);
+      bangBang(ShooterConstants.k_shooterRevVel);
       m_isShooting = false;
     });
   }
 
   public Command staticShootCommand(){
     return Commands.run(() ->{
-      setVelocity(ShooterConstants.k_staticShootVel);
+      bangBang(ShooterConstants.k_staticShootVel);
     }, this);
   }
 
   public Command revCommand(){
     return Commands.run(() -> {
-      setVelocity(ShooterConstants.k_shooterRevVel);
+       bangBang(ShooterConstants.k_shooterRevVel);
     }, this);
   }
 
@@ -110,10 +110,10 @@ public class ShooterSubsystem extends SubsystemBase {
     }
   }
 
-  private void setVelocity(double rpm){
-    m_pid.setSetpoint(rpm, ControlType.kVelocity);
-    m_pid2.setSetpoint(-rpm, ControlType.kVelocity);
-  }
+  // private void setVelocity(double rpm){
+  //   m_pid.setSetpoint(rpm, ControlType.kVelocity);
+  //   m_pid2.setSetpoint(-rpm, ControlType.kVelocity);
+  // }
 
   private void setVolts(double volts){
     m_pid.setSetpoint(volts, ControlType.kVoltage);

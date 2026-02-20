@@ -52,7 +52,7 @@ public class ConveyorSubsystem extends SubsystemBase {
   }
   public Command runSlow(boolean in){
     return Commands.runEnd(() -> {
-      m_pid.setSetpoint(in ? IndexerConstants.k_slowcCnveyorInSpeed : IndexerConstants.k_slowConveyorOutSpeed , ControlType.kVelocity);
+      m_pid.setSetpoint(in ? IndexerConstants.k_slowcConveyorInSpeed : IndexerConstants.k_slowConveyorOutSpeed , ControlType.kVelocity);
     }, () -> {
       m_pid.setSetpoint(0, ControlType.kVelocity);
     }, this);
