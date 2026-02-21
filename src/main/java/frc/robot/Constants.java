@@ -213,7 +213,7 @@ public final class Constants
     public static final double k_kickerMOI = 0.000307;
     public static final double k_kickerReduction = 1;
 
-    public static final double k_conveyorKV = 0.0035;
+    public static final double k_conveyorKV = 0.0035; // Needs to be changed since gear ration increased
 
     public static final double k_kickerKV = 0.00176;
 

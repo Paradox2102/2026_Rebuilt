@@ -44,7 +44,7 @@ public class RobotContainer {
   final SwerveSubsystem m_swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
       "swerve"));
   final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
-  final ConveyorSubsystem m_conveyorSubsystem = new ConveyorSubsystem();
+  // final ConveyorSubsystem m_conveyorSubsystem = new ConveyorSubsystem();
   final KickerSubsystem m_kickerSubsystem = new KickerSubsystem();
   final IntakePivotSubsystem m_pivotSubsystem = new IntakePivotSubsystem();
   final IntakeRollerSubsystem m_rollerSubsystem = new IntakeRollerSubsystem();
@@ -85,7 +85,8 @@ public class RobotContainer {
     m_driverController.a().whileTrue(m_rollerSubsystem.run(true));
     m_driverController.b().onTrue(Commands.runOnce(() -> m_swerveSubsystem.zeroGyroWithAlliance()));
     m_driverController.x().onTrue(m_hoodSubsystem.staticPitch());
-    m_driverController.y().onTrue(m_hoodSubsystem.returnHood());
+    // m_driverController.y().onTrue(m_hoodSubsystem.returnHood());
+    m_driverController.y().onTrue(m_shooterSubsystem.staticShootCommand());
 
     // m_conveyorSubsystem.setDefaultCommand(m_conveyorSubsystem.runSlow(true));
     // m_shooterSubsystem.setDefaultCommand(m_shooterSubsystem.revCommand());
