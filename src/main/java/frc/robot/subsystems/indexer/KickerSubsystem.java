@@ -48,6 +48,13 @@ public class KickerSubsystem extends SubsystemBase {
       m_pid.setSetpoint(0, ControlType.kVelocity);
     }, this);
   }
+  public Command runPassiveOut(){
+    return Commands.runEnd(() -> {
+      m_pid.setSetpoint(IndexerConstants.k_kickerPassiveOutSpeed , ControlType.kVelocity);
+    }, () -> {
+      m_pid.setSetpoint(0, ControlType.kVelocity);
+    }, this);
+  }
   public Command stop() {
     return Commands.runOnce(() ->{
       m_pid.setSetpoint(0, ControlType.kVelocity);

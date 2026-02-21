@@ -208,7 +208,8 @@ public final class Constants
 
     public static final int k_kickerCurrent = 40;
     public static final double k_kickerInSpeed = 3000;
-    public static final double k_kickerOutSpeed = 3000;
+    public static final double k_kickerOutSpeed = -3000;
+    public static final double k_kickerPassiveOutSpeed = -1000;
 
     public static final SparkFlexConfig k_conveyorConfig = new SparkFlexConfig();
 

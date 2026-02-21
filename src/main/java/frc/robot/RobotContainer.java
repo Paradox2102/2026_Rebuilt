@@ -84,7 +84,7 @@ public class RobotContainer {
     m_conveyorSubsystem.setDefaultCommand(m_conveyorSubsystem.runSlow(true));
     m_shooterSubsystem.setDefaultCommand(m_shooterSubsystem.revCommand());
     m_hoodSubsystem.setDefaultCommand(m_hoodSubsystem.returnHood());
-    m_kickerSubsystem.setDefaultCommand(m_kickerSubsystem.stop());
+    m_kickerSubsystem.setDefaultCommand(m_kickerSubsystem.runPassiveOut());
 
     m_driverController.leftTrigger().whileTrue(new SequentialCommandGroup(
       m_climberSubsystem.retract(),
