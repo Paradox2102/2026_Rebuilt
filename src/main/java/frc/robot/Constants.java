@@ -94,18 +94,18 @@ public final class Constants
     public static final double k_pivotMOI = 0.5426;
     public static final double k_pivotReduction = 16;
     public static final double k_pivotLength = 0.7;
-    public static final double k_pivotMaxRotation = 1.633;
+    public static final double k_pivotMaxRotation = 93.5;
     public static final double k_pivotDeadzone = 1;
+    public static final double k_pivotConversionFactor = 93.5/3.94322;
 
-    public static final double k_rollerKV = 0.0023;
+    public static final double k_rollerKV = 0.002;
 
-    public static final double k_pivotKCos = 1.5;
     public static final double k_pivotP = 0.0035;
-    public static final double k_pivotI = 0.001;
-    public static final double k_pivotD = 0.00025;
+    public static final double k_pivotI = 0;
+    public static final double k_pivotD = 0;
 
     public static final int k_rollerCurrent = 60;
-    public static final double k_rollerInSpeed = 4500;
+    public static final double k_rollerInSpeed = 2000;
     public static final double k_rollerOutSpeed = -2000;
     
     public static final int k_pivotCurrent = 80;
@@ -115,16 +115,15 @@ public final class Constants
     public static final SparkFlexConfig k_pivotConfig = new SparkFlexConfig();
 
     static {
-      k_rollerConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_rollerCurrent);
+      k_rollerConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_rollerCurrent).inverted(true);
 
       k_rollerConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).
       feedForward.kV(k_rollerKV);
 
-      k_pivotConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_pivotCurrent).inverted(true)
-      .absoluteEncoder.positionConversionFactor(360);
+      k_pivotConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_pivotCurrent).inverted(false)
+      .encoder.positionConversionFactor(k_pivotConversionFactor);
 
-      k_pivotConfig.closedLoop.pid(k_pivotP, k_pivotI, k_pivotD).feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
-      .feedForward.kCosRatio(1.0/360.0).kCos(k_pivotKCos);
+      k_pivotConfig.closedLoop.pid(k_pivotP, k_pivotI, k_pivotD).feedbackSensor(FeedbackSensor.kPrimaryEncoder);
     }
   }
 
@@ -157,6 +156,7 @@ public final class Constants
     public static final double k_hoodGearRatio = 34.6;
     public static final double k_hoodMomentOfInertia = 0.0642;
     public static final double k_hoodArmLengthMeters = 0.215;
+    public static final double k_hoodTicksToDegrees = 35/3.46;
     
     public static final double k_shooterMomentOfInertia = 0.0003156;
     public static final double k_shooterMotorReduction = 1;
@@ -164,7 +164,7 @@ public final class Constants
 
     public static final int k_hoodCurrentLimit = 60;
     public static final double k_hoodP = 0.035;
-    public static final double k_hoodI = 0.005;
+    public static final double k_hoodI = 0;
     public static final double k_hoodD = 0;
     public static final double k_hoodDeadzone = 1.5;
 
@@ -173,8 +173,8 @@ public final class Constants
     public static final double k_shooterP = 0.00005;
     public static final double k_shooterDeadzone = 100;
 
-    public static final double k_staticHoodAngle = 25;
-    public static double k_hoodMaxAngle = Math.toRadians(35);
+    public static final double k_staticHoodAngle = 35;
+    public static double k_hoodMaxAngle = 35;
 
     public static final double k_shooterRevVel = 4500;
 
@@ -189,8 +189,8 @@ public final class Constants
     public static final SparkFlexConfig k_follower2Config = new SparkFlexConfig();
 
     static {
-      k_hoodConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_hoodCurrentLimit)
-      .encoder.positionConversionFactor(k_hoodGearRatio * 10);
+      k_hoodConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_hoodCurrentLimit).inverted(true)
+      .encoder.positionConversionFactor(k_hoodTicksToDegrees);
 
       k_hoodConfig.closedLoop.pid(k_hoodP, k_hoodI, k_hoodD)
       .feedbackSensor(FeedbackSensor.kPrimaryEncoder);
@@ -213,26 +213,26 @@ public final class Constants
     public static final double k_kickerMOI = 0.000307;
     public static final double k_kickerReduction = 1;
 
-    public static final double k_conveyorKV = 0.00176;
+    public static final double k_conveyorKV = 0.0035;
 
     public static final double k_kickerKV = 0.00176;
 
     public static final int k_conveyorCurrent = 40;
 
-    public static final double k_normalConveyorInSpeed = 3000;
-    public static final double k_normalConveyorOutSpeed = -3000;
-    public static final double k_slowcCnveyorInSpeed = 1000;
-    public static final double k_slowConveyorOutSpeed = -1000;
+    public static final double k_normalConveyorInSpeed = 2000;
+    public static final double k_normalConveyorOutSpeed = -2000;
+    public static final double k_slowcConveyorInSpeed = 250;
+    public static final double k_slowConveyorOutSpeed = -250;
 
     public static final int k_kickerCurrent = 40;
-    public static final double k_kickerInSpeed = 3000;
-    public static final double k_kickerOutSpeed = 3000;
+    public static final double k_kickerInSpeed = 6000;
+    public static final double k_kickerOutSpeed = -6000;
 
     public static final SparkFlexConfig k_conveyorConfig = new SparkFlexConfig();
 
     public static final SparkFlexConfig k_kickerConfig = new SparkFlexConfig();
     static {
-      k_conveyorConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_conveyorCurrent);
+      k_conveyorConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_conveyorCurrent).inverted(true);
 
       k_kickerConfig.apply(k_conveyorConfig).inverted(true);
 
@@ -249,29 +249,31 @@ public final class Constants
     public static final double k_climberDrumWidth = 0.0127;
     public static final double k_climberReduction = 5;
     public static final double k_climberMaxHeight = 0.388;
-    public static final double k_climberClimbingStowedHeight = 0.1; //arbitrary number
-    public static final double k_climberRotationsToMeters = (0.388/41.52);
+    public static final double k_climberClimbingStowedHeight = 0.2; //arbitrary number
+    public static final double k_climberRotationsToMeters = 0.388/40;
 
     public static final double k_climberDeadzone = 0.01;
 
     public static final double k_manualClimbPower = 3; //arbitrary number
 
-    public static final double k_climberP = 1;
+    public static final double k_climberP = 5;
     public static final double k_climberI = 0;
     public static final double k_climberD = 0;
 
     public static final int k_climberCurrent = 80;
 
-    public static final SparkFlexConfig k_leadConfig = new SparkFlexConfig();
-    public static final SparkFlexConfig k_followConfig = new SparkFlexConfig();
+    
+    public static final SparkFlexConfig k_leftConfig = new SparkFlexConfig();
+    public static final SparkFlexConfig k_rightConfig = new SparkFlexConfig();
 
     static {
-      k_leadConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_climberCurrent).inverted(true)
-      .encoder.positionConversionFactor(k_climberRotationsToMeters).velocityConversionFactor(k_climberRotationsToMeters / 60);
+      k_leftConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_climberCurrent).inverted(true);
 
-      k_leadConfig.closedLoop.pid(k_climberP, k_climberI, k_climberD);
+      k_leftConfig.closedLoop.pid(k_climberP, k_climberI, k_climberD);
 
-      k_followConfig.apply(k_leadConfig).follow(CANIDConstants.climber_leader, false);
+      k_leftConfig.encoder.positionConversionFactor(k_climberRotationsToMeters).velocityConversionFactor(k_climberRotationsToMeters / 60);
+
+      k_rightConfig.apply(k_leftConfig);
     }
   }
 
@@ -304,8 +306,8 @@ public final class Constants
     public static final int shooter_3 = 32;
     public static final int shooter_4 = 33;
     public static final int shooter_hood = 34;
-    public static final int climber_leader = 40;
-    public static final int climber_follower = 41;
+    public static final int climber_right = 40;
+    public static final int climber_left = 41;
   }
     public static class LightConstants {
     public static final int k_lightPort = 0; // may be different on actual robot

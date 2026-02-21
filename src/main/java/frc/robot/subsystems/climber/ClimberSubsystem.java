@@ -29,53 +29,67 @@ import frc.robot.Constants.CANIDConstants;
 import frc.robot.Constants.ClimberConstants;
 
 public class ClimberSubsystem extends SubsystemBase {
-  private SparkFlex m_leadMotor = new SparkFlex(CANIDConstants.climber_leader, MotorType.kBrushless);
-  private SparkFlex m_followMotor = new SparkFlex(CANIDConstants.climber_follower, MotorType.kBrushless);
-  private RelativeEncoder m_encoder = m_leadMotor.getEncoder();
-  //TODO: create fterm, multiple control values, or switch to just power
-  private SparkClosedLoopController m_pid = m_leadMotor.getClosedLoopController();
+  private SparkFlex m_leftMotor = new SparkFlex(CANIDConstants.climber_left, MotorType.kBrushless);
+  private SparkFlex m_rightMotor = new SparkFlex(CANIDConstants.climber_right, MotorType.kBrushless);
+  private RelativeEncoder m_leftEncoder = m_leftMotor.getEncoder();
+  private RelativeEncoder m_rightEncoder = m_rightMotor.getEncoder();
+  private SparkClosedLoopController m_leftPID = m_leftMotor.getClosedLoopController();
+  private SparkClosedLoopController m_rightPID = m_rightMotor.getClosedLoopController();
 
-  private ElevatorSim m_climberSim = new ElevatorSim(LinearSystemId.createElevatorSystem(DCMotor.getNeoVortex(1), ClimberConstants.k_climberWeight, ClimberConstants.k_climberDrumWidth/2.0, ClimberConstants.k_climberReduction), DCMotor.getNeoVortex(1), 0, ClimberConstants.k_climberMaxHeight, false, 0);
-  private SparkSim m_motorSim = new SparkSim(m_leadMotor, DCMotor.getNeoVortex(1));
+  private ElevatorSim m_climberSim = new ElevatorSim(LinearSystemId.createElevatorSystem(DCMotor.getNeoVortex(1), ClimberConstants.k_climberWeight/2.0, ClimberConstants.k_climberDrumWidth/2.0, ClimberConstants.k_climberReduction), DCMotor.getNeoVortex(1), 0, ClimberConstants.k_climberMaxHeight, false, 0);
+  private SparkSim m_motorSim = new SparkSim(m_rightMotor, DCMotor.getNeoVortex(1));
 
   private double m_simHeight = 0;
 
-  public Trigger isClimberRetracted = new Trigger(() -> getHeight() < ClimberConstants.k_climberDeadzone);
+  public Trigger isClimberRetracted = new Trigger(() -> getHeight()[0] < ClimberConstants.k_climberDeadzone && getHeight()[1] < ClimberConstants.k_climberDeadzone);
   /** Creates a new ClimberSubsystem. */
   public ClimberSubsystem() {
-    m_leadMotor.configure(ClimberConstants.k_leadConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    m_followMotor.configure(ClimberConstants.k_followConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    m_leftMotor.configure(ClimberConstants.k_leftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    m_rightMotor.configure(ClimberConstants.k_rightConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    m_leftEncoder.setPosition(0);
+    m_rightEncoder.setPosition(0);
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("climber height", getHeight());
+    SmartDashboard.putNumber("climber left height", getHeight()[0]);
+    SmartDashboard.putNumber("climber right height", getHeight()[1]);
   }
 
-  public double getHeight(){
-    return RobotBase.isReal() ? m_encoder.getPosition() : m_simHeight;
+  public double[] getHeight(){
+    return RobotBase.isReal() ? new double[] {m_leftEncoder.getPosition(), m_rightEncoder.getPosition()} : new double[] {m_simHeight, m_simHeight};
   }
 
   public Command extend(){
     return Commands.runOnce(() -> {
-      m_pid.setSetpoint(10 * ClimberConstants.k_climberMaxHeight, ControlType.kPosition);
+      setHeight(ClimberConstants.k_climberMaxHeight);
     }, this);
   }
 
   public Command retract(){
     return Commands.run(() -> {
-      m_pid.setSetpoint(0, ControlType.kPosition);
+      setHeight(0);
     }, this).until(isClimberRetracted);
   }
   public Command climbingRetract(){
     return Commands.runOnce(() -> {
-      m_pid.setSetpoint(ClimberConstants.k_climberClimbingStowedHeight, ControlType.kPosition);
+      setHeight(ClimberConstants.k_climberClimbingStowedHeight);
     }, this);
   }
-  public Command setPower(double power) {
-    return Commands.run(() -> m_pid.setSetpoint(power, ControlType.kVoltage), this);
+
+  public void setHeight(double height){
+    m_leftPID.setSetpoint(height, ControlType.kPosition);
+    m_rightPID.setSetpoint(height, ControlType.kPosition);
   }
+
+  public Command setPower(double power) {
+    return Commands.run(() -> {
+      m_leftPID.setSetpoint(power, ControlType.kVoltage);
+      m_rightPID.setSetpoint(power, ControlType.kVoltage);
+    }, this);
+  }
+
   public void simulationPeriodic() {
     m_climberSim.setInput(m_motorSim.getAppliedOutput() * RoboRioSim.getVInVoltage());
     m_climberSim.update(0.02);

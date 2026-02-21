@@ -61,7 +61,7 @@ public class RobotContainer {
   SendableChooser<PathPlannerAuto> m_autoChooser = new SendableChooser<>();
   
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(m_swerveSubsystem.getSwerveDrive(),
-      () -> m_driverController.getLeftY() * 1 * 
+      () -> m_driverController.getLeftY() * -1 * 
           (m_driverController.leftBumper().getAsBoolean() ? Constants.DrivebaseConstants.k_slowmodeMultiplier : 1),
 
       () -> m_driverController.getLeftX() * -1 *
@@ -82,8 +82,10 @@ public class RobotContainer {
 
     m_swerveSubsystem.setDefaultCommand(driveFieldOrientedAnglularVelocity);
 
-    m_driverController.a().onTrue(m_swerveSubsystem.centerModulesCommand());
-    m_driverController.b().onTrue(Commands.runOnce(() -> m_swerveSubsystem.zeroGyro()));
+    m_driverController.a().whileTrue(m_rollerSubsystem.run(true));
+    m_driverController.b().onTrue(Commands.runOnce(() -> m_swerveSubsystem.zeroGyroWithAlliance()));
+    m_driverController.x().onTrue(m_hoodSubsystem.staticPitch());
+    m_driverController.y().onTrue(m_hoodSubsystem.returnHood());
 
     // m_conveyorSubsystem.setDefaultCommand(m_conveyorSubsystem.runSlow(true));
     // m_shooterSubsystem.setDefaultCommand(m_shooterSubsystem.revCommand());
@@ -154,8 +156,8 @@ public class RobotContainer {
     //       m_fuelLaunchSim.repeatedlyLaunchFuel(() -> (m_shooterSubsystem.getVelocity() * Constants.ShooterConstants.    k_rpmToSurfaceSpeedMperS), () -> (90 - (m_hoodSubsystem.getHoodAngle()+7.8)))
     //     ));
     // m_operatorController.button(2).onTrue(m_pivotSubsystem.retract());    
-    // m_operatorController.button(3).whileTrue(m_climberSubsystem.setPower(-ClimberConstants.k_manualClimbPower)).onFalse(m_climberSubsystem.setPower(0));
-    // m_operatorController.button(4).whileTrue(m_climberSubsystem.setPower(ClimberConstants.k_manualClimbPower)).onFalse(m_climberSubsystem.setPower(0));
+    m_operatorController.button(3).whileTrue(m_climberSubsystem.setPower(-ClimberConstants.k_manualClimbPower)).onFalse(m_climberSubsystem.setPower(0));
+    m_operatorController.button(4).whileTrue(m_climberSubsystem.setPower(ClimberConstants.k_manualClimbPower)).onFalse(m_climberSubsystem.setPower(0));
     // m_operatorController.button(5).onTrue(m_lightSubsystem.overrideWonAuto(false));
     // m_operatorController.button(6).onTrue(m_lightSubsystem.overrideWonAuto(true));
   }
