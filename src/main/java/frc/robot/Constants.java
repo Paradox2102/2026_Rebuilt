@@ -176,7 +176,7 @@ public final class Constants
     public static final double k_staticHoodAngle = 35;
     public static double k_hoodMaxAngle = 35;
 
-    public static final double k_shooterRevVel = 4500;
+    public static final double k_shooterRevVel = 1500;
 
     public static final int k_maxFuelStorage = 45;
 
@@ -215,7 +215,7 @@ public final class Constants
 
     public static final double k_conveyorKV = 0.0035; // Needs to be changed since gear ration increased
 
-    public static final double k_kickerKV = 0.00176;
+    public static final double k_kickerKV = 0.00176; // Also needs to be changed
 
     public static final int k_conveyorCurrent = 40;
 

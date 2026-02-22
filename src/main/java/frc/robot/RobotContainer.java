@@ -44,7 +44,7 @@ public class RobotContainer {
   final SwerveSubsystem m_swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
       "swerve"));
   final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
-  // final ConveyorSubsystem m_conveyorSubsystem = new ConveyorSubsystem();
+  final ConveyorSubsystem m_conveyorSubsystem = new ConveyorSubsystem();
   final KickerSubsystem m_kickerSubsystem = new KickerSubsystem();
   final IntakePivotSubsystem m_pivotSubsystem = new IntakePivotSubsystem();
   final IntakeRollerSubsystem m_rollerSubsystem = new IntakeRollerSubsystem();
@@ -56,7 +56,7 @@ public class RobotContainer {
   //     return m_swerveSubsystem.isDrivetrainAligned.getAsBoolean() && m_shooterSubsystem.isShooterOnTarget.getAsBoolean() && m_hoodSubsystem.isHoodOnTarget.getAsBoolean();
   // });
 
-  // public Trigger shouldAutoAlign = new Trigger(() -> m_swerveSubsystem.isAutoAlignOn());
+  public Trigger shouldAutoAlign = new Trigger(() -> m_swerveSubsystem.isAutoAlignOn());
 
   SendableChooser<PathPlannerAuto> m_autoChooser = new SendableChooser<>();
   
@@ -82,16 +82,16 @@ public class RobotContainer {
 
     m_swerveSubsystem.setDefaultCommand(driveFieldOrientedAnglularVelocity);
 
-    m_driverController.a().whileTrue(m_rollerSubsystem.run(true));
-    m_driverController.b().onTrue(Commands.runOnce(() -> m_swerveSubsystem.zeroGyroWithAlliance()));
-    m_driverController.x().onTrue(m_hoodSubsystem.staticPitch());
+    // m_driverController.a().whileTrue(m_rollerSubsystem.run(true));
+    // m_driverController.b().whileTrue(m_hoodSubsystem.staticPitch());
+    // m_driverController.x().whileTrue(m_hoodSubsystem.returnHood());
     // m_driverController.y().onTrue(m_hoodSubsystem.returnHood());
-    m_driverController.y().onTrue(m_shooterSubsystem.staticShootCommand());
+    // m_driverController.y().onTrue(m_shooterSubsystem.staticShootCommand());
 
-    // m_conveyorSubsystem.setDefaultCommand(m_conveyorSubsystem.runSlow(true));
-    // m_shooterSubsystem.setDefaultCommand(m_shooterSubsystem.revCommand());
-    // m_hoodSubsystem.setDefaultCommand(m_hoodSubsystem.returnHood());
-    // m_kickerSubsystem.setDefaultCommand(m_kickerSubsystem.run(false));
+    m_conveyorSubsystem.setDefaultCommand(m_conveyorSubsystem.runSlow(true));
+    m_shooterSubsystem.setDefaultCommand(m_shooterSubsystem.revCommand());
+    m_hoodSubsystem.setDefaultCommand(m_hoodSubsystem.returnHood());
+    m_kickerSubsystem.setDefaultCommand(m_kickerSubsystem.run(false));
 
     // m_driverController.leftTrigger().whileTrue(new SequentialCommandGroup(
     //   m_climberSubsystem.retract(),
@@ -99,17 +99,20 @@ public class RobotContainer {
     //   m_rollerSubsystem.run(true)
     // )).onFalse(m_rollerSubsystem.stop());
 
-    // m_driverController.rightTrigger().whileTrue(
-    //   new ConditionalCommand(
-    //       new ParallelCommandGroup(
-    //         m_swerveSubsystem.rotateToHub(m_driverController::getLeftX, m_driverController::getLeftY),
-    //         m_hoodSubsystem.pitchHood(() -> m_swerveSubsystem.getHubDist()),
-    //         m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getHubDist())
-    //       ),
-    //   new ParallelCommandGroup(
-    //     m_hoodSubsystem.staticPitch(),
-    //     m_shooterSubsystem.staticShootCommand()),
-    //     shouldAutoAlign));
+    m_driverController.rightTrigger().whileTrue(
+      new ConditionalCommand(
+          new ParallelCommandGroup(
+            m_swerveSubsystem.rotateToHub(m_driverController::getLeftX, m_driverController::getLeftY),
+            m_hoodSubsystem.pitchHood(() -> m_swerveSubsystem.getHubDist()),
+            m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getHubDist()),
+
+            m_conveyorSubsystem.runNormal(true),
+            m_kickerSubsystem.run(true)
+          ),
+      new ParallelCommandGroup(
+        m_hoodSubsystem.staticPitch(),
+        m_shooterSubsystem.staticShootCommand()),
+        shouldAutoAlign));
 
     // m_driverController.rightBumper().whileTrue(
     //   new ConditionalCommand(

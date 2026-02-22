@@ -35,7 +35,7 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
     posePublisher.set(m_robotContainer.m_swerveSubsystem.getPose());
-    // futurePosePublisher.set(m_robotContainer.m_swerveSubsystem.sotmLookAhead(3));
+    // futurePosePublisssher.set(m_robotContainer.m_swerveSubsystem.sotmLookAhead(3));
     // zeroedComponentPoses.set(new Pose3d[] {new Pose3d(), new Pose3d(), new Pose3d()});
     // finalComponentPoses.set(new Pose3d[] {
     //   new Pose3d(-0.184, 0.0, 0.158, new Rotation3d(0, Math.toRadians(m_robotContainer.m_pivotSubsystem.getPosition()) - IntakeConstants.k_pivotMaxRotation,0)),

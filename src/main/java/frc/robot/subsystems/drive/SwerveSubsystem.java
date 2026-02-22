@@ -144,6 +144,7 @@ public class SwerveSubsystem extends SubsystemBase {
     public void periodic() {
         m_vision.updatePoseEstimation(m_swerveDrive);
         SmartDashboard.putBoolean("drivetrain align", isDrivetrainAligned.getAsBoolean());
+        SmartDashboard.putNumber("Distance To Hub", getHubDist());
         m_curPos = getPose();
         m_sotmPos = sotmLookAhead(5);
     }
@@ -811,7 +812,8 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public boolean isAutoAlignOn() {
-        return m_autoAlignOn;
+        // return m_autoAlignOn;
+        return false;
     }
 
     public Command toggleAutoAlign(){
