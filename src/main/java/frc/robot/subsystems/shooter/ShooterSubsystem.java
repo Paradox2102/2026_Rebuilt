@@ -53,7 +53,7 @@ public class ShooterSubsystem extends SubsystemBase {
   private double m_RPMSetPoint = 0;
   private boolean m_isShooting = false;
 
-  public Trigger isShooterOnTarget = new Trigger(() -> (Math.abs(getVelocity() - m_pid.getSetpoint()) <= ShooterConstants.k_shooterDeadzone) && m_isShooting);
+  public Trigger isShooterOnTarget = new Trigger(() -> (getVelocity() - m_RPMSetPoint >= -ShooterConstants.k_shooterDeadzone) && m_isShooting);
   
   public ShooterSubsystem() {
     m_leadMotor.configure(ShooterConstants.k_leaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -83,8 +83,12 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public Command staticShootCommand(){
     return Commands.run(() ->{
+      m_isShooting = true;
       bangBang(ShooterConstants.k_staticShootVel);
-    }, this);
+    }, this).finallyDo(() -> {
+      bangBang(ShooterConstants.k_shooterRevVel);
+      m_isShooting = false;
+    });
   }
 
   public Command revCommand(){
@@ -103,7 +107,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private void bangBang(double targetRPM){
     m_RPMSetPoint = targetRPM;
-    if(getVelocity() < m_RPMSetPoint - ShooterConstants.k_shooterDeadzone){
+    if(getVelocity() < m_RPMSetPoint){
       setVolts(12);
     } else {
       setVolts(ShooterConstants.k_shooterKV * m_RPMSetPoint);

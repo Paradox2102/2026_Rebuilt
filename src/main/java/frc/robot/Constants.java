@@ -105,8 +105,8 @@ public final class Constants
     public static final double k_pivotD = 0;
 
     public static final int k_rollerCurrent = 60;
-    public static final double k_rollerInSpeed = 2000;
-    public static final double k_rollerOutSpeed = -2000;
+    public static final double k_rollerInSpeed = 4000;
+    public static final double k_rollerOutSpeed = -4000;
     
     public static final int k_pivotCurrent = 80;
 
@@ -169,18 +169,18 @@ public final class Constants
     public static final double k_hoodDeadzone = 1.5;
 
     public static final int k_shooterCurrent = 80;
-    public static final double k_shooterKV = 0.00195;
+    public static final double k_shooterKV = 0.0019;
     public static final double k_shooterP = 0.00005;
-    public static final double k_shooterDeadzone = 100;
+    public static final double k_shooterDeadzone = 250;
 
-    public static final double k_staticHoodAngle = 35;
+    public static final double k_staticHoodAngle = 0;
     public static double k_hoodMaxAngle = 35;
 
     public static final double k_shooterRevVel = 1500;
 
     public static final int k_maxFuelStorage = 45;
 
-    public static final double k_staticShootVel = 4500;
+    public static final double k_staticShootVel = 2900;
 
     public static final SparkFlexConfig k_hoodConfig = new SparkFlexConfig();
     public static final SparkFlexConfig k_leaderConfig = new SparkFlexConfig();
@@ -219,14 +219,14 @@ public final class Constants
 
     public static final int k_conveyorCurrent = 40;
 
-    public static final double k_normalConveyorInSpeed = 2000;
-    public static final double k_normalConveyorOutSpeed = -2000;
+    public static final double k_normalConveyorInSpeed = 6000;
+    public static final double k_normalConveyorOutSpeed = -4000;
     public static final double k_slowcConveyorInSpeed = 250;
     public static final double k_slowConveyorOutSpeed = -250;
 
     public static final int k_kickerCurrent = 40;
     public static final double k_kickerInSpeed = 6000;
-    public static final double k_kickerOutSpeed = -6000;
+    public static final double k_kickerOutSpeed = -3000;
 
     public static final SparkFlexConfig k_conveyorConfig = new SparkFlexConfig();
 
@@ -256,7 +256,7 @@ public final class Constants
 
     public static final double k_manualClimbPower = 3; //arbitrary number
 
-    public static final double k_climberP = 5;
+    public static final double k_climberP = 7;
     public static final double k_climberI = 0;
     public static final double k_climberD = 0;
 

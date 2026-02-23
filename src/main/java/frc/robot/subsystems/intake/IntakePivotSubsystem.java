@@ -40,7 +40,7 @@ public class IntakePivotSubsystem extends SubsystemBase {
   
   private double m_simAngleDegrees = 0;
 
-  public Trigger isIntakeRetracted = new Trigger(() -> Math.abs(getPosition() - Math.toDegrees(IntakeConstants.k_pivotMaxRotation)) < IntakeConstants.k_pivotDeadzone);
+  public Trigger isIntakeRetracted = new Trigger(() -> Math.abs(getPosition() - IntakeConstants.k_pivotMaxRotation) < IntakeConstants.k_pivotDeadzone);
 
   /** Creates a new IntakePivotSubsystem. */
   public IntakePivotSubsystem() {
@@ -75,7 +75,7 @@ public class IntakePivotSubsystem extends SubsystemBase {
   }
 
   public RepeatCommand agitate(){
-    return new SequentialCommandGroup(quickRaise(), new WaitCommand(0.25), extend(), new WaitCommand(0.5)).repeatedly();
+    return new SequentialCommandGroup(quickRaise(), new WaitCommand(0.5), extend(), new WaitCommand(0.5)).repeatedly();
   }
 
   public double getPosition() {

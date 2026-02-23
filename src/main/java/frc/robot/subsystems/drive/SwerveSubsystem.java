@@ -280,11 +280,11 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public double computeHubAim() {
-        return m_orientPID.calculate(m_sotmPos.getRotation().getDegrees(), getHubAngle());
+        return -m_orientPID.calculate(m_sotmPos.getRotation().getDegrees(), getHubAngle());
     }
 
     public double computePassAim() {
-        return m_orientPID.calculate(m_curPos.getRotation().getDegrees(), getPassAngle());
+        return -m_orientPID.calculate(m_curPos.getRotation().getDegrees(), getPassAngle());
     }
 
     public double getHubAngle() {
@@ -812,8 +812,7 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public boolean isAutoAlignOn() {
-        // return m_autoAlignOn;
-        return false;
+        return m_autoAlignOn;
     }
 
     public Command toggleAutoAlign(){
