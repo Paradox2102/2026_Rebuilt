@@ -69,7 +69,7 @@ public class RobotContainer {
       () -> m_driverController.getLeftX() * -1 *
           (m_driverController.leftBumper().getAsBoolean() ? Constants.DrivebaseConstants.k_slowmodeMultiplier : 1)
       )
-      .withControllerRotationAxis(() -> m_driverController.getRightX())
+      .withControllerRotationAxis(() -> -m_driverController.getRightX())
       .deadband(OperatorConstants.k_deadBand)
       .allianceRelativeControl(true);
 
