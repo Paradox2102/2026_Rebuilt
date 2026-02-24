@@ -143,6 +143,10 @@ public class RobotContainer {
 
     m_driverController.povLeft().onTrue(new ConditionalCommand(
       new SequentialCommandGroup(
+        new ConditionalCommand(
+          m_swerveSubsystem.PIDClimb(),
+          new InstantCommand(),
+           () -> m_swerveSubsystem.isAutoAlignOn()),
         m_pivotSubsystem.retract(),
         m_climberSubsystem.extend()),
       m_climberSubsystem.retract(),

@@ -44,12 +44,18 @@ public final class Constants
     // Hold time on motor brakes when disabled
     public static final double k_wheelLockTime = 10; // seconds
 
+    public static final double k_alignP = 2.5;
+    public static final double k_alignI = 0;
+    public static final double k_alignD = 0;
+
     public static final double k_rotateP = 0.065;
     public static final double k_rotateI = 0.1;
     public static final double k_rotateD = 0;
 
     public static final double k_rotateIZone = 5;
     public static final double k_rotateDeadzone = 1;
+
+    public static final double k_alignTolerance = 0.5125;
 
     public static final double k_aimTurnDeadzone = 0.1;
 
@@ -63,6 +69,9 @@ public final class Constants
     public static final Translation2d k_blueHub = new Translation2d(4.625, 4.05);
     public static final Translation2d k_blueOutpost = new Translation2d(0.7, 0.675);
     public static final Translation2d k_midField = new Translation2d(k_fieldLengthMeters/2.0, 1.5);
+
+    public static final Translation2d k_leftClimb = new Translation2d(15, 3.61);
+    public static final Translation2d k_rightClimb = new Translation2d(15, 4.954);
 
     public static final double k_blueZoneX = 4.625;
     public static final double k_redZoneX = 11.925;
