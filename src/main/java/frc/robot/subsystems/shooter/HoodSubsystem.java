@@ -52,6 +52,7 @@ public class HoodSubsystem extends SubsystemBase {
     for(double[] shotAngle : ShooterConstants.k_shotAngles){
       m_hoodLerpTable.put(shotAngle[0], shotAngle[1]);
     }
+    m_hoodEncoder.setPosition(0);
   }
 
   @Override
@@ -59,6 +60,7 @@ public class HoodSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Auto Aim Hood Trim", m_autoAlignTrim);
     SmartDashboard.putNumber("Static Hood Trim", m_staticTrim);
     SmartDashboard.putBoolean("hood align", isHoodOnTarget.getAsBoolean());
+    SmartDashboard.putNumber("hood angle", getHoodAngle());
   }
 
   public double getHoodAngle() {

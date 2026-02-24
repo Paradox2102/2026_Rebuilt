@@ -37,9 +37,11 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private final SparkFlex m_leadMotor = new SparkFlex(CANIDConstants.shooter_1, MotorType.kBrushless);
   private final SparkFlex m_follow1 = new SparkFlex(CANIDConstants.shooter_2, MotorType.kBrushless);
-  private final SparkFlex m_follow2 = new SparkFlex(CANIDConstants.shooter_3, MotorType.kBrushless);
-  private final SparkFlex m_follow3 = new SparkFlex(CANIDConstants.shooter_4, MotorType.kBrushless);
+  private final SparkFlex m_lead2 = new SparkFlex(CANIDConstants.shooter_3, MotorType.kBrushless);
+  private final SparkFlex m_follow2 = new SparkFlex(CANIDConstants.shooter_4, MotorType.kBrushless);
   private SparkClosedLoopController  m_pid = m_leadMotor.getClosedLoopController();
+  private SparkClosedLoopController m_pid2 = m_lead2.getClosedLoopController();
+
   private RelativeEncoder m_encoder = m_leadMotor.getEncoder();
 
   private FlywheelSim m_shooterSim = new FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNeoVortex(4), ShooterConstants.k_shooterMomentOfInertia, ShooterConstants.k_shooterMotorReduction), DCMotor.getNeoVortex(4));
@@ -51,13 +53,13 @@ public class ShooterSubsystem extends SubsystemBase {
   private double m_RPMSetPoint = 0;
   private boolean m_isShooting = false;
 
-  public Trigger isShooterOnTarget = new Trigger(() -> (Math.abs(getVelocity() - m_pid.getSetpoint()) <= ShooterConstants.k_shooterDeadzone) && m_isShooting);
+  public Trigger isShooterOnTarget = new Trigger(() -> (getVelocity() - m_RPMSetPoint >= -ShooterConstants.k_shooterDeadzone) && m_isShooting);
   
   public ShooterSubsystem() {
     m_leadMotor.configure(ShooterConstants.k_leaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     m_follow1.configure(ShooterConstants.k_follower1Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    m_follow2.configure(ShooterConstants.k_follower23Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    m_follow3.configure(ShooterConstants.k_follower23Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    m_lead2.configure(ShooterConstants.k_leader2Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    m_follow2.configure(ShooterConstants.k_follower2Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     for(double[] shotSpeed : ShooterConstants.k_shotSpeeds){
       m_shooterPowerLerp.put(shotSpeed[0], shotSpeed[1]);
@@ -65,7 +67,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
   public Command shootCommand(DoubleSupplier distanceToHub){
     return Commands.run(() -> {
-      m_pid.setSetpoint(m_shooterPowerLerp.get(distanceToHub.getAsDouble()), ControlType.kVelocity);
+      bangBang(m_shooterPowerLerp.get(distanceToHub.getAsDouble()));
       m_isShooting = true;
     }, this).until(() -> {
       if (DriverStation.isAutonomous()) {
@@ -74,37 +76,52 @@ public class ShooterSubsystem extends SubsystemBase {
         return false;
       }
     }).finallyDo(() -> {
-      m_pid.setSetpoint(ShooterConstants.k_shooterRevVel, ControlType.kVelocity );
+      bangBang(ShooterConstants.k_shooterRevVel);
       m_isShooting = false;
     });
   }
 
   public Command staticShootCommand(){
     return Commands.run(() ->{
-      m_pid.setSetpoint(ShooterConstants.k_staticShootVel, ControlType.kVelocity);
-    }, this);
+      m_isShooting = true;
+      bangBang(ShooterConstants.k_staticShootVel);
+    }, this).finallyDo(() -> {
+      bangBang(ShooterConstants.k_shooterRevVel);
+      m_isShooting = false;
+    });
   }
 
   public Command revCommand(){
     return Commands.run(() -> {
-      m_pid.setSetpoint(ShooterConstants.k_shooterRevVel, ControlType.kVelocity);
+       bangBang(ShooterConstants.k_shooterRevVel);
+    }, this);
+  }
+
+  public Command setRPM(double rpm){
+    return Commands.runEnd(() -> {
+      bangBang(rpm);
+    }, () -> {
+      setVolts(0);
     }, this);
   }
 
   private void bangBang(double targetRPM){
     m_RPMSetPoint = targetRPM;
     if(getVelocity() < m_RPMSetPoint){
-      m_leadMotor.setVoltage(12);
-      m_follow1.setVoltage(12);
-      m_follow2.setVoltage(12);
-      m_follow3.setVoltage(12);
+      setVolts(12);
     } else {
-      m_leadMotor.setVoltage(m_RPMSetPoint * ShooterConstants.k_shooterKV);
-      m_follow1.setVoltage(m_RPMSetPoint * ShooterConstants.k_shooterKV);
-      m_follow2.setVoltage(m_RPMSetPoint * ShooterConstants.k_shooterKV);
-      m_follow3.setVoltage(m_RPMSetPoint * ShooterConstants.k_shooterKV);
-
+      setVolts(ShooterConstants.k_shooterKV * m_RPMSetPoint);
     }
+  }
+
+  // private void setVelocity(double rpm){
+  //   m_pid.setSetpoint(rpm, ControlType.kVelocity);
+  //   m_pid2.setSetpoint(-rpm, ControlType.kVelocity);
+  // }
+
+  private void setVolts(double volts){
+    m_pid.setSetpoint(volts, ControlType.kVoltage);
+    m_pid2.setSetpoint(-volts, ControlType.kVoltage);
   }
 
   public double getVelocity() {
@@ -114,6 +131,7 @@ public class ShooterSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     SmartDashboard.putBoolean("shooter revved", isShooterOnTarget.getAsBoolean());
+    SmartDashboard.putNumber("shooter speed", getVelocity());
   }
 
   @Override

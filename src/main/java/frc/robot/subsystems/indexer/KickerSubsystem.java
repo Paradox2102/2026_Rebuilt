@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -48,6 +49,7 @@ public class KickerSubsystem extends SubsystemBase {
       m_pid.setSetpoint(0, ControlType.kVelocity);
     }, this);
   }
+  
   public Command runPassiveOut(){
     return Commands.runEnd(() -> {
       m_pid.setSetpoint(IndexerConstants.k_kickerPassiveOutSpeed , ControlType.kVelocity);
@@ -55,6 +57,15 @@ public class KickerSubsystem extends SubsystemBase {
       m_pid.setSetpoint(0, ControlType.kVelocity);
     }, this);
   }
+
+  public Command runVoltage(double voltage){
+    return Commands.runEnd(() -> {
+      m_pid.setSetpoint(voltage, ControlType.kVoltage);
+    }, () -> {
+      m_pid.setSetpoint(0, ControlType.kVoltage);
+    }, this);
+  }
+
   public Command stop() {
     return Commands.runOnce(() ->{
       m_pid.setSetpoint(0, ControlType.kVelocity);
@@ -66,6 +77,7 @@ public class KickerSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    SmartDashboard.putNumber("kicker vel", getVelocity());
   }
 
   public void simulationPeriodic() {

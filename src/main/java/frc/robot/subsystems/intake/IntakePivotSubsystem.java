@@ -4,8 +4,8 @@
 
 package frc.robot.subsystems.intake;
 
-import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.PersistMode;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
@@ -32,7 +32,7 @@ import frc.robot.Constants.CANIDConstants;
 
 public class IntakePivotSubsystem extends SubsystemBase {
   private SparkFlex m_pivotMotor = new SparkFlex(CANIDConstants.intake_pivot, MotorType.kBrushless);
-  private AbsoluteEncoder m_encoder = m_pivotMotor.getAbsoluteEncoder();
+  private RelativeEncoder m_encoder = m_pivotMotor.getEncoder();
   private SparkClosedLoopController m_pid = m_pivotMotor.getClosedLoopController();
 
   private SingleJointedArmSim m_pivotSim = new SingleJointedArmSim(DCMotor.getNeoVortex(1), IntakeConstants.k_pivotReduction, IntakeConstants.k_pivotMOI, IntakeConstants.k_pivotLength, 0, IntakeConstants.k_pivotMaxRotation, true, 0);
@@ -40,17 +40,20 @@ public class IntakePivotSubsystem extends SubsystemBase {
   
   private double m_simAngleDegrees = 0;
 
-  public Trigger isIntakeRetracted = new Trigger(() -> Math.abs(getPosition() - Math.toDegrees(IntakeConstants.k_pivotMaxRotation)) < IntakeConstants.k_pivotDeadzone);
+  public Trigger isIntakeRetracted = new Trigger(() -> Math.abs(getPosition() - IntakeConstants.k_pivotMaxRotation) < IntakeConstants.k_pivotDeadzone);
 
   /** Creates a new IntakePivotSubsystem. */
   public IntakePivotSubsystem() {
     m_pivotMotor.configure(IntakeConstants.k_pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    m_encoder.setPosition(IntakeConstants.k_pivotMaxRotation);
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putBoolean("retracted", isIntakeRetracted.getAsBoolean());
+    SmartDashboard.putNumber("intake pos", getPosition());
+    SmartDashboard.putNumber("intake motor output", m_pivotMotor.getAppliedOutput());
   }
 
   public Command extend() {
@@ -61,18 +64,18 @@ public class IntakePivotSubsystem extends SubsystemBase {
 
   public Command retract() {
     return Commands.run(() -> {
-      m_pid.setSetpoint(Math.toDegrees(IntakeConstants.k_pivotMaxRotation), ControlType.kPosition);
+      m_pid.setSetpoint(IntakeConstants.k_pivotMaxRotation, ControlType.kPosition);
     }, this).until(isIntakeRetracted);
   }
 
   public Command quickRaise(){
     return Commands.runOnce(() -> {
-      m_pid.setSetpoint(Math.toDegrees(IntakeConstants.k_pivotMaxRotation), ControlType.kPosition);
+      m_pid.setSetpoint(IntakeConstants.k_pivotMaxRotation, ControlType.kPosition);
     }, this);
   }
 
   public RepeatCommand agitate(){
-    return new SequentialCommandGroup(quickRaise(), new WaitCommand(0.25), extend(), new WaitCommand(0.5)).repeatedly();
+    return new SequentialCommandGroup(quickRaise(), new WaitCommand(0.5), extend(), new WaitCommand(0.5)).repeatedly();
   }
 
   public double getPosition() {

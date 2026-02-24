@@ -17,6 +17,8 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.swerve.SwerveSetpoint;
 import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -48,6 +50,7 @@ import org.json.simple.parser.ParseException;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
+import swervelib.SwerveModule;
 import swervelib.math.SwerveMath;
 import swervelib.parser.SwerveControllerConfiguration;
 import swervelib.parser.SwerveDriveConfiguration;
@@ -112,9 +115,6 @@ public class SwerveSubsystem extends SubsystemBase {
         m_swerveDrive.setModuleEncoderAutoSynchronize(false,
                 1); // Enable if you want to resynchronize your absolute encoders and motor encoders
                     // periodically when they are not moving.
-        // m_swerveDrive.pushOffsetsToEncoders(); // Set the absolute encoder to be used
-        // over the internal encoder and push the offsets onto it. Throws warning if not
-        // possible
         setupPathPlanner();
         //RobotModeTriggers.autonomous().onTrue(Commands.runOnce(this::zeroGyroWithAlliance));
         m_vision = new Vision(() -> getPose(), m_swerveDrive.field);
@@ -142,8 +142,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // m_vision.updatePoseEstimation(m_swerveDrive);
+        m_vision.updatePoseEstimation(m_swerveDrive);
         SmartDashboard.putBoolean("drivetrain align", isDrivetrainAligned.getAsBoolean());
+        SmartDashboard.putNumber("Distance To Hub", getHubDist());
         m_curPos = getPose();
         m_sotmPos = sotmLookAhead(5);
     }
@@ -279,11 +280,11 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public double computeHubAim() {
-        return m_orientPID.calculate(m_sotmPos.getRotation().getDegrees(), getHubAngle());
+        return -m_orientPID.calculate(m_sotmPos.getRotation().getDegrees(), getHubAngle());
     }
 
     public double computePassAim() {
-        return m_orientPID.calculate(m_curPos.getRotation().getDegrees(), getPassAngle());
+        return -m_orientPID.calculate(m_curPos.getRotation().getDegrees(), getPassAngle());
     }
 
     public double getHubAngle() {
@@ -817,6 +818,14 @@ public class SwerveSubsystem extends SubsystemBase {
     public Command toggleAutoAlign(){
         return Commands.runOnce(() -> {
             m_autoAlignOn = !m_autoAlignOn;
+        }, this);
+    }
+
+    public Command runManual(){
+        return Commands.run(() -> {
+            for (SwerveModule module : m_swerveDrive.getModules()){
+                module.getAngleMotor().set(0.1);
+            }
         }, this);
     }
 }

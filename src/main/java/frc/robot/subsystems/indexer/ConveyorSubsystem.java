@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -28,6 +29,7 @@ import frc.robot.Constants.CANIDConstants;
 
 public class ConveyorSubsystem extends SubsystemBase {
   private SparkFlex m_conveyorMotor = new SparkFlex(CANIDConstants.conveyor, MotorType.kBrushless);
+  //todo: see if we can do this with just setting voltage
   private SparkClosedLoopController m_pid = m_conveyorMotor.getClosedLoopController();
   private RelativeEncoder m_encoder = m_conveyorMotor.getEncoder();
 
@@ -50,7 +52,7 @@ public class ConveyorSubsystem extends SubsystemBase {
   }
   public Command runSlow(boolean in){
     return Commands.runEnd(() -> {
-      m_pid.setSetpoint(in ? IndexerConstants.k_slowcCnveyorInSpeed : IndexerConstants.k_slowConveyorOutSpeed , ControlType.kVelocity);
+      m_pid.setSetpoint(in ? IndexerConstants.k_slowcConveyorInSpeed : IndexerConstants.k_slowConveyorOutSpeed , ControlType.kVelocity);
     }, () -> {
       m_pid.setSetpoint(0, ControlType.kVelocity);
     }, this);
@@ -61,6 +63,7 @@ public class ConveyorSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    SmartDashboard.putNumber("conveyor vel", getVelocity());
   }
 
   public void simulationPeriodic() {

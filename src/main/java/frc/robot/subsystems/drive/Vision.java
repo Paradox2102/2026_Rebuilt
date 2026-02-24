@@ -35,8 +35,14 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import frc.robot.Robot;
+import frc.robot.Constants.VisionConstants;
 import swervelib.SwerveDrive;
 import swervelib.telemetry.SwerveDriveTelemetry;
+
+import java.awt.Desktop;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 public class Vision {
   private static AprilTagFieldLayout m_fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
@@ -133,17 +139,16 @@ public class Vision {
   }
 
   private void openSimCameraViews() {
-    // if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-    //   try
-    //   {
-    //   // Desktop.getDesktop().browse(new URI("http://localhost:1182/"));
-    //   // Desktop.getDesktop().browse(new URI("http://localhost:1184/"));
-    //   // Desktop.getDesktop().browse(new URI("http://localhost:1186/"));
-    //   } catch (IOException | URISyntaxException e)
-    //   {
-    //   e.printStackTrace();
-    //   }
-    // }
+    if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+      try
+      {
+      Desktop.getDesktop().browse(new URI("http://localhost:1182/"));
+      Desktop.getDesktop().browse(new URI("http://localhost:1184/"));
+      } catch (IOException | URISyntaxException e)
+      {
+      e.printStackTrace();
+      }
+    }
   }
 
   public double getDistanceFromAprilTag(int id) {
@@ -175,8 +180,14 @@ public class Vision {
   }
 
   public enum Cameras {
-    EXAMPLE_CAMERA(
-        "example", new Rotation3d(), new Translation3d(), VecBuilder.fill(1000, 1000, 1000), VecBuilder.fill(1000, 1000, 1000));
+    FRONT_LEFT(
+        "front left", VisionConstants.k_flRotation, VisionConstants.k_flTranslation, VisionConstants.k_visionBaseSDev, VisionConstants.k_multiTagSDev),
+    FRONT_RIGHT(
+        "front right", VisionConstants.k_frRotation, VisionConstants.k_frTranslation, VisionConstants.k_visionBaseSDev, VisionConstants.k_multiTagSDev),
+    SIDE_LEFT(
+        "side left", VisionConstants.k_slRotation, VisionConstants.k_slTranslation, VisionConstants.k_visionBaseSDev, VisionConstants.k_multiTagSDev),
+    SIDE_RIGHT(
+        "side right", VisionConstants.k_srRotation, VisionConstants.k_srTranslation, VisionConstants.k_visionBaseSDev, VisionConstants.k_multiTagSDev);
 
     public final PhotonCamera camera;
 

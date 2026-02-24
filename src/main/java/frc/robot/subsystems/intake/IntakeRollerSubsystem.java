@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -28,6 +29,7 @@ import frc.robot.Constants.CANIDConstants;
 
 public class IntakeRollerSubsystem extends SubsystemBase {
   private SparkFlex m_intakeRollerMotor = new SparkFlex(CANIDConstants.intake_roller, MotorType.kBrushless);
+  //todo: maybe switch to voltage control
   private SparkClosedLoopController m_pid = m_intakeRollerMotor.getClosedLoopController();
   private RelativeEncoder m_encoder = m_intakeRollerMotor.getEncoder();
 
@@ -60,6 +62,7 @@ public class IntakeRollerSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    SmartDashboard.putNumber("roller speed", getVelocity());
   }
 
   public void simulationPeriodic() {
