@@ -45,7 +45,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 public class Vision {
-  private static AprilTagFieldLayout m_fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+  private static AprilTagFieldLayout m_fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
 
   public VisionSystemSim m_visionSim;
 
