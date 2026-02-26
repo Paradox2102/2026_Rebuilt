@@ -144,10 +144,10 @@ public class RobotContainer {
     m_driverController.povLeft().onTrue(new ConditionalCommand(
       m_climberSubsystem.retract(),
       new SequentialCommandGroup(
-        new ConditionalCommand(
-          m_swerveSubsystem.PIDClimb(),
-          new InstantCommand(),
-           () -> m_swerveSubsystem.isAutoAlignOn()),
+        // new ConditionalCommand(
+        //   m_swerveSubsystem.PIDClimb(),
+        //   new InstantCommand(),
+        //    () -> m_swerveSubsystem.isAutoAlignOn()),
         m_pivotSubsystem.retract(),
         m_climberSubsystem.extend()),
       m_climberSubsystem.isClimberExtended)
@@ -164,18 +164,22 @@ public class RobotContainer {
     m_operatorController.button(4).whileTrue(m_climberSubsystem.setPower(ClimberConstants.k_manualClimbPower)).onFalse(m_climberSubsystem.setPower(0));
     m_operatorController.button(5).onTrue(m_lightSubsystem.overrideWonAuto(false));
     m_operatorController.button(6).onTrue(m_lightSubsystem.overrideWonAuto(true));
+    // m_operatorController.button(12).whileTrue(new PathPlannerAuto("zonesweep"));
   }
 
   public void setupAuto(){
-    NamedCommands.registerCommand("Shoot", m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getHubDist()).alongWith(m_hoodSubsystem.pitchHood(() -> m_swerveSubsystem.getHubDist()), m_swerveSubsystem.rotateToHub(() -> 0, () -> 0))); 
-    NamedCommands.registerCommand("Intake", new SequentialCommandGroup(
-      m_climberSubsystem.retract(),
+    NamedCommands.registerCommand("Shoot", new ParallelCommandGroup(
+            m_swerveSubsystem.rotateToHub(() -> 0, () -> 0),
+            m_hoodSubsystem.pitchHood(() -> m_swerveSubsystem.getHubDist()),
+            m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getHubDist())
+          )); 
+    NamedCommands.registerCommand("Intake", new ParallelCommandGroup(
       m_pivotSubsystem.extend(),
       m_rollerSubsystem.run(true)));
     NamedCommands.registerCommand("RevShooter", m_shooterSubsystem.revCommand()); 
     NamedCommands.registerCommand("Climber Out", new SequentialCommandGroup(
-      m_pivotSubsystem.retract(),
-      m_climberSubsystem.extend()));
+        m_pivotSubsystem.retract(),
+        m_climberSubsystem.extend()));
     NamedCommands.registerCommand("Climb", m_climberSubsystem.climbingRetract());
     
     m_autoChooser.addOption("depot", new PathPlannerAuto("auto1"));

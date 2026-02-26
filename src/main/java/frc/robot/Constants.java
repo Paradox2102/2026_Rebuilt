@@ -77,14 +77,29 @@ public final class Constants
     public static final double k_redZoneX = 11.925;
 
     public static final double[][] k_shotTimes = {
-      {0,0},
-      {0,0}
+      {1.25, 1},
+      {1.5, 1},
+      {1.75, 1},
+      {2, 1},
+      {2.25, 1},
+      {2.5, 1},
+      {2.75, 1},
+      {3, 1},
+      {3.25, 1},
+      {3.5, 1},
+      {3.75, 1},
+      {4, 1},
+      {4.25, 1},
+      {4.5, 1},
+      {4.75, 1},
+      {5, 1},
+      {5.25, 1}
     };
   }
 
   public static class VisionConstants{
-    public static final Vector<N3> k_visionBaseSDev = VecBuilder.fill(0.9, 0.9, 0.9);
-    public static final Vector<N3> k_multiTagSDev = VecBuilder.fill(0.3, 0.3, 0.3);
+    public static final Vector<N3> k_visionBaseSDev = VecBuilder.fill(3, 3, 3);
+    public static final Vector<N3> k_multiTagSDev = VecBuilder.fill(0.9, 0.9, 0.9);
 
     public static final Translation3d k_flTranslation = new Translation3d(0.327, 0.180, 0.246);
     public static final Rotation3d k_flRotation = new Rotation3d(0, -Math.toRadians(25), -Math.toRadians(30));
@@ -114,8 +129,8 @@ public final class Constants
     public static final double k_pivotD = 0;
 
     public static final int k_rollerCurrent = 60;
-    public static final double k_rollerInSpeed = 4000;
-    public static final double k_rollerOutSpeed = -4000;
+    public static final double k_rollerInSpeed = 5000;
+    public static final double k_rollerOutSpeed = -5000;
     
     public static final int k_pivotCurrent = 80;
 
@@ -251,7 +266,7 @@ public final class Constants
     public static final int k_kickerCurrent = 60;
     public static final double k_kickerInSpeed = 6780;
     public static final double k_kickerOutSpeed = -6000;
-    public static final double k_kickerPassiveOutSpeed = -3000;
+    public static final double k_kickerPassiveOutSpeed = -500;
 
     public static final SparkFlexConfig k_conveyorConfig = new SparkFlexConfig();
 
