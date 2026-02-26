@@ -48,7 +48,7 @@ public final class Constants
     public static final double k_alignI = 0;
     public static final double k_alignD = 0;
 
-    public static final double k_rotateP = 0.065;
+    public static final double k_rotateP = 0.08;
     public static final double k_rotateI = 0.1;
     public static final double k_rotateD = 0;
 
