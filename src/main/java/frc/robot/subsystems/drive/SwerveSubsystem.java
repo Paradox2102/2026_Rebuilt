@@ -20,6 +20,7 @@ import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -69,6 +70,9 @@ public class SwerveSubsystem extends SubsystemBase {
     private Vision m_vision;
 
     private PIDController m_orientPID = new PIDController(DrivebaseConstants.k_rotateP, DrivebaseConstants.k_rotateI, DrivebaseConstants.k_rotateD);
+
+    private PIDController m_xPID = new PIDController(DrivebaseConstants.k_alignP, DrivebaseConstants.k_alignI, DrivebaseConstants.k_alignD);
+    private PIDController m_yPID = new PIDController(DrivebaseConstants.k_alignP, DrivebaseConstants.k_alignI, DrivebaseConstants.k_alignD);
 
     private InterpolatingDoubleTreeMap m_shotTimeInt = new InterpolatingDoubleTreeMap();
 
@@ -833,4 +837,23 @@ public class SwerveSubsystem extends SubsystemBase {
             }
         }, this);
     }
+    public Supplier<Rotation2d> orientPID(DoubleSupplier targetRotation){
+        double setPointDegrees = targetRotation.getAsDouble();
+        double heading = getPose().getRotation().getDegrees();
+        double rotation = MathUtil.clamp(m_orientPID.calculate(heading, setPointDegrees), -0.8, 0.8);
+        return () -> Rotation2d.fromDegrees(rotation);
+    }
+    public Command PIDClimb() {
+        Translation2d climbPos = getPose().getTranslation().getDistance(DrivebaseConstants.k_leftClimb) > getPose().getTranslation().getDistance(DrivebaseConstants.k_rightClimb) ? DrivebaseConstants.k_leftClimb : DrivebaseConstants.k_rightClimb;
+        Supplier<Pose2d> pose = () -> new Pose2d(climbPos.getX(), climbPos.getX(), getPose().getRotation());
+        return Commands.runEnd(() -> {
+            double field_thing = isRedAlliance() ? 0 : -13.5;
+            double x = MathUtil.clamp(m_xPID.calculate(getPose().getX(), pose.get().getX() + field_thing), -0.8, 0.8);
+            double y = MathUtil.clamp(m_yPID.calculate(getPose().getY(), pose.get().getY()), -0.8, 0.8);
+            drive(new Translation2d(x, y), orientPID(() -> pose.get().getRotation().getDegrees()).get().getDegrees(), true);
+        }, () -> {
+        drive(new ChassisSpeeds(0, 0, 0));
+        }
+        , this).until(() -> Math.abs(pose.get().getTranslation().getDistance(getPose().getTranslation())) < DrivebaseConstants.k_alignTolerance);
+    }  
 }
