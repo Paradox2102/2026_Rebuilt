@@ -78,6 +78,7 @@ public class KickerSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     SmartDashboard.putNumber("kicker vel", getVelocity());
+    SmartDashboard.putNumber("kicker power", m_kickerMotor.getAppliedOutput());
   }
 
   public void simulationPeriodic() {

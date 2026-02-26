@@ -130,7 +130,7 @@ public class RobotContainer {
     m_isReadyToShoot.whileTrue(
         new SequentialCommandGroup(
           new ParallelDeadlineGroup(new WaitCommand(0.5), m_conveyorSubsystem.runSlow(false), m_kickerSubsystem.run(false)),
-          new ParallelCommandGroup(m_conveyorSubsystem.runNormal(true), m_kickerSubsystem.run(true) ,m_pivotSubsystem.agitate())
+          new ParallelCommandGroup(m_conveyorSubsystem.runNormal(true), m_kickerSubsystem.run(true) ,m_pivotSubsystem.agitate(), m_rollerSubsystem.run(true))
         )
     );
     
@@ -142,19 +142,18 @@ public class RobotContainer {
     );
 
     m_driverController.povLeft().onTrue(new ConditionalCommand(
+      m_climberSubsystem.retract(),
       new SequentialCommandGroup(
         m_pivotSubsystem.retract(),
         m_climberSubsystem.extend()),
-      m_climberSubsystem.retract(),
-      m_climberSubsystem.isClimberRetracted)
+      m_climberSubsystem.isClimberExtended)
     );
 
     m_driverController.povRight().onTrue(m_climberSubsystem.climbingRetract());
 
-    m_operatorController.button(1).whileTrue(new ParallelCommandGroup(
-          m_conveyorSubsystem.runNormal(true),
-          m_kickerSubsystem.run(true)
-          //m_pivotSubsystem.agitate(),
+    m_operatorController.button(1).whileTrue(new SequentialCommandGroup(
+          new ParallelDeadlineGroup(new WaitCommand(0.5), m_conveyorSubsystem.runSlow(false), m_kickerSubsystem.run(false)),
+          new ParallelCommandGroup(m_conveyorSubsystem.runNormal(true), m_kickerSubsystem.run(true) ,m_pivotSubsystem.agitate(), m_rollerSubsystem.run(true))
         ));
     m_operatorController.button(2).onTrue(m_pivotSubsystem.retract());    
     m_operatorController.button(3).whileTrue(m_climberSubsystem.setPower(-ClimberConstants.k_manualClimbPower)).onFalse(m_climberSubsystem.setPower(0));

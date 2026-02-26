@@ -44,12 +44,12 @@ public final class Constants
     // Hold time on motor brakes when disabled
     public static final double k_wheelLockTime = 10; // seconds
 
-    public static final double k_rotateP = 0.065;
+    public static final double k_rotateP = 0.08;
     public static final double k_rotateI = 0.1;
     public static final double k_rotateD = 0;
 
     public static final double k_rotateIZone = 5;
-    public static final double k_rotateDeadzone = 1;
+    public static final double k_rotateDeadzone = 5;
 
     public static final double k_aimTurnDeadzone = 0.1;
 
@@ -74,8 +74,8 @@ public final class Constants
   }
 
   public static class VisionConstants{
-    public static final Vector<N3> k_visionBaseSDev = VecBuilder.fill(0.1, 0.1, 0.1);
-    public static final Vector<N3> k_multiTagSDev = VecBuilder.fill(0.1, 0.1, 0.1);
+    public static final Vector<N3> k_visionBaseSDev = VecBuilder.fill(0.9, 0.9, 0.9);
+    public static final Vector<N3> k_multiTagSDev = VecBuilder.fill(0.3, 0.3, 0.3);
 
     public static final Translation3d k_flTranslation = new Translation3d(0.327, 0.180, 0.246);
     public static final Rotation3d k_flRotation = new Rotation3d(0, -Math.toRadians(25), -Math.toRadians(30));
@@ -95,7 +95,7 @@ public final class Constants
     public static final double k_pivotReduction = 16;
     public static final double k_pivotLength = 0.7;
     public static final double k_pivotMaxRotation = 93.5;
-    public static final double k_pivotDeadzone = 1;
+    public static final double k_pivotDeadzone = 2;
     public static final double k_pivotConversionFactor = 93.5/3.94322;
 
     public static final double k_rollerKV = 0.002;
@@ -129,28 +129,43 @@ public final class Constants
 
   public static class ShooterConstants{
     public static final double[][] k_shotAngles = {
-      {1.125, 0},
       {1.25, 0},
-      {1.5, 10},
-      {1.75, 12.5},
-      {2, 15},
-      {2.25, 17.5},
+      {1.5, 5},
+      {1.75, 10},
+      {2, 12.5},
+      {2.25, 15},
       {2.5, 19},
-      {2.75, 21},
+      {2.75, 20},
       {3, 22},
-      {4, 22},
-      {4.5, 23},
-      {5, 25},
-      {10, 35}
+      {3.25, 23},
+      {3.5, 24},
+      {3.75, 25},
+      {4, 26},
+      {4.25, 27},
+      {4.5, 28},
+      {4.75, 29},
+      {5, 30},
+      {5.25, 31}
     };
 
     public static final double[][] k_shotSpeeds = {
-      {1.125, 4000},
-      {2.25, 4500},
-      {2.75, 4750},
-      {3.25, 5000},
-      {4, 5500},
-      {4.75, 6000}
+      {1.25, 2750},
+      {1.5, 2750},
+      {1.75, 2750},
+      {2, 2750},
+      {2.25, 2750},
+      {2.5, 2750},
+      {2.75, 2800},
+      {3, 2900},
+      {3.25, 3000},
+      {3.5, 3100},
+      {3.75, 3200},
+      {4, 3300},
+      {4.25, 3400},
+      {4.5, 3530},
+      {4.75, 3640},
+      {5, 3750},
+      {5.25, 3800}
     };
 
     public static final double k_hoodGearRatio = 34.6;
@@ -168,19 +183,19 @@ public final class Constants
     public static final double k_hoodD = 0;
     public static final double k_hoodDeadzone = 1.5;
 
-    public static final int k_shooterCurrent = 80;
-    public static final double k_shooterKV = 0.0019;
+    public static final int k_shooterCurrent = 40;
+    public static final double k_shooterKV = 0.00195;
     public static final double k_shooterP = 0.00005;
-    public static final double k_shooterDeadzone = 250;
+    public static final double k_shooterDeadzone = 100;
 
-    public static final double k_staticHoodAngle = 0;
+    public static final double k_staticHoodAngle = 35;//0;
     public static double k_hoodMaxAngle = 35;
 
-    public static final double k_shooterRevVel = 1500;
+    public static final double k_shooterRevVel = 0;
 
     public static final int k_maxFuelStorage = 45;
 
-    public static final double k_staticShootVel = 2900;
+    public static final double k_staticShootVel = 2750;
 
     public static final SparkFlexConfig k_hoodConfig = new SparkFlexConfig();
     public static final SparkFlexConfig k_leaderConfig = new SparkFlexConfig();
@@ -224,8 +239,8 @@ public final class Constants
     public static final double k_slowcConveyorInSpeed = 250;
     public static final double k_slowConveyorOutSpeed = -250;
 
-    public static final int k_kickerCurrent = 40;
-    public static final double k_kickerInSpeed = 6000;
+    public static final int k_kickerCurrent = 60;
+    public static final double k_kickerInSpeed = 6780;
     public static final double k_kickerOutSpeed = -6000;
     public static final double k_kickerPassiveOutSpeed = -3000;
 
@@ -250,14 +265,14 @@ public final class Constants
     public static final double k_climberDrumWidth = 0.0127;
     public static final double k_climberReduction = 5;
     public static final double k_climberMaxHeight = 0.388;
-    public static final double k_climberClimbingStowedHeight = 0.2; //arbitrary number
-    public static final double k_climberRotationsToMeters = 0.388/40;
+    public static final double k_climberClimbingStowedHeight = 0.15;
+    public static final double k_climberRotationsToMeters = 0.388/76;
 
-    public static final double k_climberDeadzone = 0.01;
+    public static final double k_climberDeadzone = 0.05;
 
-    public static final double k_manualClimbPower = 0.25; //arbitrary number
+    public static final double k_manualClimbPower = 6; //arbitrary number
 
-    public static final double k_climberP = 7;
+    public static final double k_climberP = 200;
     public static final double k_climberI = 0;
     public static final double k_climberD = 0;
 

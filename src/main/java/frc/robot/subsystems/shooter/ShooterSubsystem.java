@@ -107,10 +107,14 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private void bangBang(double targetRPM){
     m_RPMSetPoint = targetRPM;
-    if(getVelocity() < m_RPMSetPoint){
-      setVolts(12);
+    if(m_RPMSetPoint == 0){
+      setVolts(0);
     } else {
-      setVolts(ShooterConstants.k_shooterKV * m_RPMSetPoint);
+      if(getVelocity() < m_RPMSetPoint){
+        setVolts(12);
+      } else {
+        setVolts(ShooterConstants.k_shooterKV * m_RPMSetPoint);
+      }
     }
   }
 

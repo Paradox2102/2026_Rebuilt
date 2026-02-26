@@ -41,7 +41,8 @@ public class ClimberSubsystem extends SubsystemBase {
 
   private double m_simHeight = 0;
 
-  public Trigger isClimberRetracted = new Trigger(() -> getHeight()[0] < ClimberConstants.k_climberDeadzone && getHeight()[1] < ClimberConstants.k_climberDeadzone);
+  public Trigger isClimberRetracted = new Trigger(() -> getHeight()[0] <= ClimberConstants.k_climberDeadzone && getHeight()[1] <= ClimberConstants.k_climberDeadzone);
+  public Trigger isClimberExtended = new Trigger(() -> getHeight()[0] >= ClimberConstants.k_climberMaxHeight -ClimberConstants.k_climberDeadzone && getHeight()[1] >= ClimberConstants.k_climberMaxHeight - ClimberConstants.k_climberDeadzone);
   /** Creates a new ClimberSubsystem. */
   public ClimberSubsystem() {
     m_leftMotor.configure(ClimberConstants.k_leftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);

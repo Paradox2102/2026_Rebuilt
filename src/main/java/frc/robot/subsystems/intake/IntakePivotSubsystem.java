@@ -46,6 +46,7 @@ public class IntakePivotSubsystem extends SubsystemBase {
   public IntakePivotSubsystem() {
     m_pivotMotor.configure(IntakeConstants.k_pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     m_encoder.setPosition(IntakeConstants.k_pivotMaxRotation);
+    m_pid.setSetpoint(IntakeConstants.k_pivotMaxRotation, ControlType.kPosition);
   }
 
   @Override
@@ -75,7 +76,7 @@ public class IntakePivotSubsystem extends SubsystemBase {
   }
 
   public RepeatCommand agitate(){
-    return new SequentialCommandGroup(quickRaise(), new WaitCommand(0.5), extend(), new WaitCommand(0.5)).repeatedly();
+    return new SequentialCommandGroup(quickRaise(), new WaitCommand(0.75), extend(), new WaitCommand(0.5)).repeatedly();
   }
 
   public double getPosition() {
