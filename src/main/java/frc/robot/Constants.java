@@ -70,8 +70,8 @@ public final class Constants
     public static final Translation2d k_blueOutpost = new Translation2d(0.7, 0.675);
     public static final Translation2d k_midField = new Translation2d(k_fieldLengthMeters/2.0, 1.5);
 
-    public static final Translation2d k_leftClimb = new Translation2d(15, 3.61);
-    public static final Translation2d k_rightClimb = new Translation2d(15, 4.954);
+    public static final Translation2d k_leftClimb = new Translation2d(15.05, 3.61);
+    public static final Translation2d k_rightClimb = new Translation2d(15.05, 4.63);
 
     public static final double k_blueZoneX = 4.625;
     public static final double k_redZoneX = 11.925;
@@ -263,7 +263,7 @@ public final class Constants
     public static final double k_slowcConveyorInSpeed = 250;
     public static final double k_slowConveyorOutSpeed = -250;
 
-    public static final int k_kickerCurrent = 60;
+    public static final int k_kickerCurrent = 40;
     public static final double k_kickerInSpeed = 6780;
     public static final double k_kickerOutSpeed = -6000;
     public static final double k_kickerPassiveOutSpeed = -500;

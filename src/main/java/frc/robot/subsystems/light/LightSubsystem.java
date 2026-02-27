@@ -177,7 +177,10 @@ public class LightSubsystem extends SubsystemBase {
     if (DriverStation.isDisabled()){
       m_pattern = LedPatterns.m_disabledPattern;
     }
-    m_pattern.applyTo(m_ledBuffer);
+    if (m_pattern != null){
+      m_pattern.applyTo(m_ledBuffer);
+    }
+    
     
     m_led.setData(m_ledBuffer);
   }

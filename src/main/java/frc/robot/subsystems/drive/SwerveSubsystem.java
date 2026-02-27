@@ -150,6 +150,7 @@ public class SwerveSubsystem extends SubsystemBase {
         m_vision.updatePoseEstimation(m_swerveDrive);
         SmartDashboard.putBoolean("drivetrain align", isDrivetrainAligned.getAsBoolean());
         SmartDashboard.putNumber("Distance To Hub", getHubDist());
+
         m_curPos = getPose();
         m_sotmPos = sotmLookAhead(5);
     }
@@ -844,8 +845,8 @@ public class SwerveSubsystem extends SubsystemBase {
         return () -> Rotation2d.fromDegrees(rotation);
     }
     public Command PIDClimb() {
-        Translation2d climbPos = getPose().getTranslation().getDistance(DrivebaseConstants.k_leftClimb) > getPose().getTranslation().getDistance(DrivebaseConstants.k_rightClimb) ? DrivebaseConstants.k_leftClimb : DrivebaseConstants.k_rightClimb;
-        Supplier<Pose2d> pose = () -> new Pose2d(climbPos.getX(), climbPos.getX(), getPose().getRotation());
+        Translation2d climbPos = getPose().getY() > 4.0 ? DrivebaseConstants.k_leftClimb : DrivebaseConstants.k_rightClimb;
+        Supplier<Pose2d> pose = () -> new Pose2d(climbPos.getX(), climbPos.getY(), getPose().getRotation());
         return Commands.runEnd(() -> {
             double field_thing = isRedAlliance() ? 0 : -13.5;
             double x = MathUtil.clamp(m_xPID.calculate(getPose().getX(), pose.get().getX() + field_thing), -0.8, 0.8);
