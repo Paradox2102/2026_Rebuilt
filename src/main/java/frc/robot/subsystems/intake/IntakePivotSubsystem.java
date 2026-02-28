@@ -71,12 +71,12 @@ public class IntakePivotSubsystem extends SubsystemBase {
 
   public Command quickRaise(){
     return Commands.runOnce(() -> {
-      m_pid.setSetpoint(IntakeConstants.k_pivotMaxRotation, ControlType.kPosition);
+      m_pid.setSetpoint(IntakeConstants.k_pivotPullInHeight, ControlType.kPosition);
     }, this);
   }
 
   public RepeatCommand agitate(){
-    return new SequentialCommandGroup(quickRaise(), new WaitCommand(0.75), extend(), new WaitCommand(0.5)).repeatedly();
+    return new SequentialCommandGroup(quickRaise(), new WaitCommand(1), extend(), new WaitCommand(0.5)).repeatedly();
   }
 
   public double getPosition() {

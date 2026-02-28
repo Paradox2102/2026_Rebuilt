@@ -65,9 +65,13 @@ public class ShooterSubsystem extends SubsystemBase {
       m_shooterPowerLerp.put(shotSpeed[0], shotSpeed[1]);
     }
   }
-  public Command shootCommand(DoubleSupplier distanceToHub){
+  public Command shootCommand(DoubleSupplier distanceToHub, boolean isPass){
     return Commands.run(() -> {
-      bangBang(m_shooterPowerLerp.get(distanceToHub.getAsDouble()));
+      if (isPass){
+        bangBang(m_shooterPowerLerp.get(distanceToHub.getAsDouble()) - 750);
+      } else {
+        bangBang(m_shooterPowerLerp.get(distanceToHub.getAsDouble()));
+      }
       m_isShooting = true;
     }, this).until(() -> {
       if (DriverStation.isAutonomous()) {

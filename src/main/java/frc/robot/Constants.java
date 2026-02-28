@@ -48,7 +48,7 @@ public final class Constants
     public static final double k_alignI = 0;
     public static final double k_alignD = 0;
 
-    public static final double k_rotateP = 0.08;
+    public static final double k_rotateP = 0.1;
     public static final double k_rotateI = 0.1;
     public static final double k_rotateD = 0;
 
@@ -67,7 +67,7 @@ public final class Constants
     public static final double k_fieldWidthMeters = 8.069;
 
     public static final Translation2d k_blueHub = new Translation2d(4.625, 4.05);
-    public static final Translation2d k_blueOutpost = new Translation2d(0.7, 0.675);
+    public static final Translation2d k_blueOutpost = new Translation2d(0.7, 1.25);
     public static final Translation2d k_midField = new Translation2d(k_fieldLengthMeters/2.0, 1.5);
 
     public static final Translation2d k_leftClimb = new Translation2d(15.05, 3.61);
@@ -122,9 +122,11 @@ public final class Constants
     public static final double k_pivotDeadzone = 2;
     public static final double k_pivotConversionFactor = 93.5/3.94322;
 
+    public static final double k_pivotPullInHeight = 61.0;
+
     public static final double k_rollerKV = 0.002;
 
-    public static final double k_pivotP = 0.0035;
+    public static final double k_pivotP = 0.01;
     public static final double k_pivotI = 0;
     public static final double k_pivotD = 0;
 

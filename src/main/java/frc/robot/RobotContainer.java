@@ -106,7 +106,7 @@ public class RobotContainer {
           new ParallelCommandGroup(
             m_swerveSubsystem.rotateToHub(m_driverController::getLeftX, m_driverController::getLeftY),
             m_hoodSubsystem.pitchHood(() -> m_swerveSubsystem.getHubDist()),
-            m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getHubDist())
+            m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getHubDist(), false)
           ),
       new ParallelCommandGroup(
         m_hoodSubsystem.staticPitch(),
@@ -118,7 +118,7 @@ public class RobotContainer {
           new ParallelCommandGroup(
             m_swerveSubsystem.rotateToPass(m_driverController::getLeftX, m_driverController::getLeftY),
             m_hoodSubsystem.pitchHood(() -> m_swerveSubsystem.getPassDist()),
-            m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getPassDist())
+            m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getPassDist(), true)
           ),
       new ParallelCommandGroup(
         m_hoodSubsystem.staticPitch(),
@@ -130,7 +130,7 @@ public class RobotContainer {
     m_isReadyToShoot.whileTrue(
         new SequentialCommandGroup(
           new ParallelDeadlineGroup(new WaitCommand(0.5), m_conveyorSubsystem.runSlow(false), m_kickerSubsystem.run(false)),
-          new ParallelCommandGroup(m_conveyorSubsystem.runNormal(true), m_kickerSubsystem.run(true) ,m_pivotSubsystem.agitate(), m_rollerSubsystem.run(true))
+          new ParallelCommandGroup(m_conveyorSubsystem.runNormal(true), m_kickerSubsystem.run(true) ,m_pivotSubsystem.agitate())
         )
     );
     
@@ -157,7 +157,7 @@ public class RobotContainer {
 
     m_operatorController.button(1).whileTrue(new SequentialCommandGroup(
           new ParallelDeadlineGroup(new WaitCommand(0.5), m_conveyorSubsystem.runSlow(false), m_kickerSubsystem.run(false)),
-          new ParallelCommandGroup(m_conveyorSubsystem.runNormal(true), m_kickerSubsystem.run(true) ,m_pivotSubsystem.agitate(), m_rollerSubsystem.run(true))
+          new ParallelCommandGroup(m_conveyorSubsystem.runNormal(true), m_kickerSubsystem.run(true) ,m_pivotSubsystem.agitate())
         ));
     m_operatorController.button(2).onTrue(m_pivotSubsystem.retract());    
     m_operatorController.button(3).whileTrue(m_climberSubsystem.setPower(-ClimberConstants.k_manualClimbPower)).onFalse(m_climberSubsystem.setPower(0));
@@ -171,7 +171,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Shoot", new ParallelCommandGroup(
             m_swerveSubsystem.rotateToHub(() -> 0, () -> 0),
             m_hoodSubsystem.pitchHood(() -> m_swerveSubsystem.getHubDist()),
-            m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getHubDist())
+            m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getHubDist(), false)
           )); 
     NamedCommands.registerCommand("Intake", new ParallelCommandGroup(
       m_pivotSubsystem.extend(),
