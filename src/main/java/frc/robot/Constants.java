@@ -126,15 +126,17 @@ public final class Constants
 
     public static final double k_rollerKV = 0.002;
 
-    public static final double k_pivotP = 0.01;
-    public static final double k_pivotI = 0;
+    public static final double k_pivotP = 0.025; //0.25
+    public static final double k_pivotI = 0; //0.1
     public static final double k_pivotD = 0;
+    public static final double k_pivotCosF = 0.075;
 
-    public static final int k_rollerCurrent = 60;
-    public static final double k_rollerInSpeed = 5000;
-    public static final double k_rollerOutSpeed = -5000;
+    public static final int k_rollerCurrent = 40;
+    public static final double k_rollerInSpeed = 4000;
+    public static final double k_rollerOutSpeed = -4000;
+    public static final double k_rollerSlowInSpeed = 1000;
     
-    public static final int k_pivotCurrent = 80;
+    public static final int k_pivotCurrent = 60;
 
     public static final SparkFlexConfig k_rollerConfig = new SparkFlexConfig();
 
@@ -148,8 +150,6 @@ public final class Constants
 
       k_pivotConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_pivotCurrent).inverted(false)
       .encoder.positionConversionFactor(k_pivotConversionFactor);
-
-      k_pivotConfig.closedLoop.pid(k_pivotP, k_pivotI, k_pivotD).feedbackSensor(FeedbackSensor.kPrimaryEncoder);
     }
   }
 
@@ -276,7 +276,7 @@ public final class Constants
     static {
       k_conveyorConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_conveyorCurrent).inverted(true);
 
-      k_kickerConfig.apply(k_conveyorConfig).inverted(true);
+      k_kickerConfig.apply(k_conveyorConfig).inverted(false);
 
       k_conveyorConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
       .feedForward.kV(k_conveyorKV);

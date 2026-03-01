@@ -10,13 +10,10 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -33,7 +30,6 @@ import frc.robot.subsystems.indexer.KickerSubsystem;
 import frc.robot.subsystems.intake.IntakePivotSubsystem;
 import frc.robot.subsystems.intake.IntakeRollerSubsystem;
 import frc.robot.subsystems.light.LightSubsystem;
-import frc.robot.subsystems.shooter.FuelLaunchSim;
 import frc.robot.subsystems.shooter.HoodSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import swervelib.SwerveInputStream;
@@ -89,11 +85,12 @@ public class RobotContainer {
     // m_driverController.x().whileTrue(m_hoodSubsystem.returnHood());
     // m_driverController.y().onTrue(m_hoodSubsystem.returnHood());
     // m_driverController.y().onTrue(m_shooterSubsystem.staticShootCommand());
+    m_operatorController.button(12).whileTrue(m_pivotSubsystem.fullPower());
 
     m_conveyorSubsystem.setDefaultCommand(m_conveyorSubsystem.runSlow(true));
     m_shooterSubsystem.setDefaultCommand(m_shooterSubsystem.revCommand());
     m_hoodSubsystem.setDefaultCommand(m_hoodSubsystem.returnHood());
-    m_kickerSubsystem.setDefaultCommand(m_kickerSubsystem.run(false));
+    m_kickerSubsystem.setDefaultCommand(m_kickerSubsystem.runPassiveOut());
 
     m_driverController.leftTrigger().whileTrue(new SequentialCommandGroup(
       m_climberSubsystem.retract(),
@@ -130,7 +127,7 @@ public class RobotContainer {
     m_isReadyToShoot.whileTrue(
         new SequentialCommandGroup(
           new ParallelDeadlineGroup(new WaitCommand(0.5), m_conveyorSubsystem.runSlow(false), m_kickerSubsystem.run(false)),
-          new ParallelCommandGroup(m_conveyorSubsystem.runNormal(true), m_kickerSubsystem.run(true) ,m_pivotSubsystem.agitate())
+          new ParallelCommandGroup(m_conveyorSubsystem.runNormal(true), m_kickerSubsystem.run(true) ,m_pivotSubsystem.agitate(), m_rollerSubsystem.runInSlow())
         )
     );
     
@@ -157,7 +154,7 @@ public class RobotContainer {
 
     m_operatorController.button(1).whileTrue(new SequentialCommandGroup(
           new ParallelDeadlineGroup(new WaitCommand(0.5), m_conveyorSubsystem.runSlow(false), m_kickerSubsystem.run(false)),
-          new ParallelCommandGroup(m_conveyorSubsystem.runNormal(true), m_kickerSubsystem.run(true) ,m_pivotSubsystem.agitate())
+          new ParallelCommandGroup(m_conveyorSubsystem.runNormal(true), m_kickerSubsystem.run(true) ,m_pivotSubsystem.agitate(), m_rollerSubsystem.runInSlow())
         ));
     m_operatorController.button(2).onTrue(m_pivotSubsystem.retract());    
     m_operatorController.button(3).whileTrue(m_climberSubsystem.setPower(-ClimberConstants.k_manualClimbPower)).onFalse(m_climberSubsystem.setPower(0));

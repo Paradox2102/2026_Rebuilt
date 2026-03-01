@@ -50,6 +50,15 @@ public class IntakeRollerSubsystem extends SubsystemBase {
       m_pid.setSetpoint(0, ControlType.kVelocity);
     }, this);
   }
+
+  public Command runInSlow(){
+    return Commands.runEnd(() -> {
+      m_pid.setSetpoint(IntakeConstants.k_rollerSlowInSpeed, ControlType.kVelocity);
+    }, () -> {
+      m_pid.setSetpoint(0, ControlType.kVelocity);
+    }, this);
+  }
+
   public Command stop(){
     return Commands.runOnce(() ->{
       m_pid.setSetpoint(0, ControlType.kVelocity);

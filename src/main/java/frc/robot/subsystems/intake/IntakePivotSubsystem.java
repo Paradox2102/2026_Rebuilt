@@ -13,6 +13,7 @@ import com.revrobotics.spark.SparkSim;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -33,7 +34,7 @@ import frc.robot.Constants.CANIDConstants;
 public class IntakePivotSubsystem extends SubsystemBase {
   private SparkFlex m_pivotMotor = new SparkFlex(CANIDConstants.intake_pivot, MotorType.kBrushless);
   private RelativeEncoder m_encoder = m_pivotMotor.getEncoder();
-  private SparkClosedLoopController m_pid = m_pivotMotor.getClosedLoopController();
+  private PIDController m_pid = new PIDController(IntakeConstants.k_pivotP, IntakeConstants.k_pivotI, IntakeConstants.k_pivotD);
 
   private SingleJointedArmSim m_pivotSim = new SingleJointedArmSim(DCMotor.getNeoVortex(1), IntakeConstants.k_pivotReduction, IntakeConstants.k_pivotMOI, IntakeConstants.k_pivotLength, 0, IntakeConstants.k_pivotMaxRotation, true, 0);
   private SparkSim m_pivotMotorSim = new SparkSim(m_pivotMotor, DCMotor.getNeoVortex(1));
@@ -46,7 +47,7 @@ public class IntakePivotSubsystem extends SubsystemBase {
   public IntakePivotSubsystem() {
     m_pivotMotor.configure(IntakeConstants.k_pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     m_encoder.setPosition(IntakeConstants.k_pivotMaxRotation);
-    m_pid.setSetpoint(IntakeConstants.k_pivotMaxRotation, ControlType.kPosition);
+    setPosition(IntakeConstants.k_pivotMaxRotation);
   }
 
   @Override
@@ -55,28 +56,39 @@ public class IntakePivotSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("retracted", isIntakeRetracted.getAsBoolean());
     SmartDashboard.putNumber("intake pos", getPosition());
     SmartDashboard.putNumber("intake motor output", m_pivotMotor.getAppliedOutput());
+    m_pivotMotor.set(m_pid.calculate(getPosition()) + (IntakeConstants.k_pivotCosF * Math.cos(Math.toRadians(getPosition()))));
   }
 
   public Command extend() {
     return Commands.runOnce(() -> {
-      m_pid.setSetpoint(0, ControlType.kPosition);
+      setPosition(0);
     }, this);
   }
 
   public Command retract() {
     return Commands.run(() -> {
-      m_pid.setSetpoint(IntakeConstants.k_pivotMaxRotation, ControlType.kPosition);
+      setPosition(IntakeConstants.k_pivotMaxRotation);
     }, this).until(isIntakeRetracted);
+  }
+
+  public Command fullPower() {
+    return Commands.run(() -> {
+      m_pivotMotor.setVoltage(12);
+    }, this);
   }
 
   public Command quickRaise(){
     return Commands.runOnce(() -> {
-      m_pid.setSetpoint(IntakeConstants.k_pivotPullInHeight, ControlType.kPosition);
+      setPosition(IntakeConstants.k_pivotPullInHeight);
     }, this);
   }
 
   public RepeatCommand agitate(){
     return new SequentialCommandGroup(quickRaise(), new WaitCommand(1), extend(), new WaitCommand(0.5)).repeatedly();
+  }
+
+  public void setPosition(double pos){
+    m_pid.setSetpoint(pos);
   }
 
   public double getPosition() {
