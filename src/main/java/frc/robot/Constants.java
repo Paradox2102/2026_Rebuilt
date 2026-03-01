@@ -120,16 +120,16 @@ public final class Constants
     public static final double k_pivotLength = 0.7;
     public static final double k_pivotMaxRotation = 93.5;
     public static final double k_pivotDeadzone = 2;
-    public static final double k_pivotConversionFactor = 93.5/3.94322;
+    public static final double k_pivotConversionFactor = 93.5/(93.5-87.82);
 
     public static final double k_pivotPullInHeight = 61.0;
 
     public static final double k_rollerKV = 0.002;
 
-    public static final double k_pivotP = 0.025; //0.25
+    public static final double k_pivotP = 0.01; 
     public static final double k_pivotI = 0; //0.1
     public static final double k_pivotD = 0;
-    public static final double k_pivotCosF = 0.075;
+    public static final double k_pivotCosF = 0.05;
 
     public static final int k_rollerCurrent = 40;
     public static final double k_rollerInSpeed = 4000;
