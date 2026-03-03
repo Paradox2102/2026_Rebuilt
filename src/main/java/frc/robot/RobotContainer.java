@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
@@ -30,11 +31,14 @@ import frc.robot.subsystems.indexer.KickerSubsystem;
 import frc.robot.subsystems.intake.IntakePivotSubsystem;
 import frc.robot.subsystems.intake.IntakeRollerSubsystem;
 import frc.robot.subsystems.light.LightSubsystem;
+import frc.robot.subsystems.shooter.FuelLaunchSim;
 import frc.robot.subsystems.shooter.HoodSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import swervelib.SwerveInputStream;
 
 public class RobotContainer {
+  private boolean m_autonomous = false;
+
   final CommandXboxController m_driverController = new CommandXboxController(0);
   final CommandJoystick m_operatorController = new CommandJoystick(1);
 
@@ -48,12 +52,12 @@ public class RobotContainer {
   final IntakeRollerSubsystem m_rollerSubsystem = new IntakeRollerSubsystem();
   final HoodSubsystem m_hoodSubsystem = new HoodSubsystem();
   final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
-  // final FuelLaunchSim m_fuelLaunchSim = new FuelLaunchSim(m_swerveSubsystem::getPose, m_swerveSubsystem::getFieldVelocity);
+  final FuelLaunchSim m_fuelLaunchSim = new FuelLaunchSim(m_swerveSubsystem::getPose, m_swerveSubsystem::getFieldVelocity);
 
   public Trigger shouldAutoAlign = new Trigger(() -> m_swerveSubsystem.isAutoAlignOn());
 
   final Trigger m_isReadyToShoot = new Trigger(() -> {
-      return (m_swerveSubsystem.isDrivetrainAligned.getAsBoolean() || !shouldAutoAlign.getAsBoolean()) && m_shooterSubsystem.isShooterOnTarget.getAsBoolean() && m_hoodSubsystem.isHoodOnTarget.getAsBoolean();
+      return (m_swerveSubsystem.isDrivetrainAligned.getAsBoolean() || !shouldAutoAlign.getAsBoolean()) && m_shooterSubsystem.isShooterOnTarget.getAsBoolean() && m_hoodSubsystem.isHoodOnTarget.getAsBoolean() && !m_autonomous;
   });
 
   SendableChooser<PathPlannerAuto> m_autoChooser = new SendableChooser<>();
@@ -127,9 +131,11 @@ public class RobotContainer {
     m_isReadyToShoot.whileTrue(
         new SequentialCommandGroup(
           new ParallelDeadlineGroup(new WaitCommand(0.5), m_conveyorSubsystem.runSlow(false), m_kickerSubsystem.run(false)),
-          new ParallelCommandGroup(m_conveyorSubsystem.runNormal(true), m_kickerSubsystem.run(true) ,m_pivotSubsystem.agitate(), m_rollerSubsystem.runInSlow())
+          new ParallelCommandGroup(m_conveyorSubsystem.runNormal(true), m_kickerSubsystem.run(true), m_pivotSubsystem.agitate(), m_rollerSubsystem.runInSlow())
         )
     );
+    
+    m_swerveSubsystem.isDrivetrainAligned.whileTrue(m_fuelLaunchSim.repeatedlyLaunchFuel(() -> 10, () -> 30));
     
     m_driverController.povUp().whileTrue(new ParallelCommandGroup(
           m_conveyorSubsystem.runNormal(false),
@@ -164,7 +170,7 @@ public class RobotContainer {
     // m_operatorController.button(12).whileTrue(new PathPlannerAuto("zonesweep"));
   }
 
-  public void setupAuto(){
+  private void setupAuto(){
     NamedCommands.registerCommand("Shoot", new ParallelCommandGroup(
             m_swerveSubsystem.rotateToHub(() -> 0, () -> 0),
             m_hoodSubsystem.pitchHood(() -> m_swerveSubsystem.getHubDist()),
@@ -173,11 +179,15 @@ public class RobotContainer {
     NamedCommands.registerCommand("Intake", new ParallelCommandGroup(
       m_pivotSubsystem.extend(),
       m_rollerSubsystem.run(true)));
-    NamedCommands.registerCommand("RevShooter", m_shooterSubsystem.revCommand()); 
     NamedCommands.registerCommand("Climber Out", new SequentialCommandGroup(
         m_pivotSubsystem.retract(),
         m_climberSubsystem.extend()));
     NamedCommands.registerCommand("Climb", m_climberSubsystem.climbingRetract());
+    NamedCommands.registerCommand("Feed", 
+      new SequentialCommandGroup(
+        new ParallelDeadlineGroup(new WaitCommand(0.5), m_conveyorSubsystem.runSlow(false), m_kickerSubsystem.run(false)),
+        new ParallelCommandGroup(m_conveyorSubsystem.runNormal(true), m_kickerSubsystem.run(true), m_pivotSubsystem.agitate(), m_rollerSubsystem.runInSlow())));
+    NamedCommands.registerCommand("Wait", Commands.run(() -> {}).until(() -> m_swerveSubsystem.isDrivetrainAligned.getAsBoolean() && m_shooterSubsystem.isShooterOnTarget.getAsBoolean() && m_hoodSubsystem.isHoodOnTarget.getAsBoolean()));
     
     m_autoChooser.addOption("depot", new PathPlannerAuto("auto1"));
     m_autoChooser.addOption("sweep", new PathPlannerAuto("auto2"));
@@ -191,18 +201,22 @@ public class RobotContainer {
     return m_autoChooser.getSelected();
   }
 
-  private void configureFuelSim() {
-    // FuelSim instance = FuelSim.getInstance();
-    // instance.spawnStartingFuel();
-    // instance.registerRobot(0.876, 0.826, 0.4, m_swerveSubsystem::getPose, m_swerveSubsystem::getFieldVelocity);
-    // instance.registerIntake(-0.595, -0.438, -0.333, 0.333, () -> (m_fuelLaunchSim.canIntake() && !m_pivotSubsystem.isIntakeRetracted.getAsBoolean() && m_rollerSubsystem.getVelocity() > 0), m_fuelLaunchSim::intakeFuel);
+  public void switchAuto(boolean isAuto){
+    m_autonomous = isAuto;
+  }
 
-    // instance.start();
-    // SmartDashboard.putData(Commands.runOnce(() -> {
-    //             FuelSim.getInstance().clearFuel();
-    //             FuelSim.getInstance().spawnStartingFuel();
-    //         })
-    //         .withName("Reset Fuel")
-    //         .ignoringDisable(true));
+  private void configureFuelSim() {
+    FuelSim instance = FuelSim.getInstance();
+    instance.spawnStartingFuel();
+    instance.registerRobot(0.876, 0.826, 0.4, m_swerveSubsystem::getPose, m_swerveSubsystem::getFieldVelocity);
+    instance.registerIntake(-0.595, -0.438, -0.333, 0.333, () -> (m_fuelLaunchSim.canIntake() && m_rollerSubsystem.getVelocity() > 0), m_fuelLaunchSim::intakeFuel);
+
+    instance.start();
+    SmartDashboard.putData(Commands.runOnce(() -> {
+                FuelSim.getInstance().clearFuel();
+                FuelSim.getInstance().spawnStartingFuel();
+            })
+            .withName("Reset Fuel")
+            .ignoringDisable(true));
   }
 }

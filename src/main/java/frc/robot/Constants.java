@@ -49,15 +49,13 @@ public final class Constants
     public static final double k_alignD = 0;
 
     public static final double k_rotateP = 0.1;
-    public static final double k_rotateI = 0.1;
+    public static final double k_rotateI = 0.05;
     public static final double k_rotateD = 0;
 
-    public static final double k_rotateIZone = 5;
+    public static final double k_rotateIZone = 7.5;
     public static final double k_rotateDeadzone = 5;
 
     public static final double k_alignTolerance = 0.5125;
-
-    public static final double k_aimTurnDeadzone = 0.1;
 
     public static final double k_slowmodeMultiplier = 0.5; // half speed
     

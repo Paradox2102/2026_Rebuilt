@@ -94,6 +94,8 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       CommandScheduler.getInstance().schedule(m_autonomousCommand);
     }
+
+    m_robotContainer.switchAuto(true);
   }
 
   @Override
@@ -107,6 +109,8 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+
+    m_robotContainer.switchAuto(false);
   }
 
   @Override

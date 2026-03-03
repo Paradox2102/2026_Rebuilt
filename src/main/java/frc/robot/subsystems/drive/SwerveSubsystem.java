@@ -264,9 +264,9 @@ public class SwerveSubsystem extends SubsystemBase {
     }
     
     public Command rotateToHub(DoubleSupplier xAxis, DoubleSupplier yAxis) {
-        double x = Math.abs(xAxis.getAsDouble()) > 2*OperatorConstants.k_deadBand ? xAxis.getAsDouble() : 0;
-        double y = Math.abs(yAxis.getAsDouble()) > 2*OperatorConstants.k_deadBand ? yAxis.getAsDouble() : 0;
         return Commands.run(() -> {
+            double x = Math.abs(xAxis.getAsDouble()) > 2*OperatorConstants.k_deadBand ? xAxis.getAsDouble() : 0;
+            double y = Math.abs(yAxis.getAsDouble()) > 2*OperatorConstants.k_deadBand ? yAxis.getAsDouble() : 0;
             if(isRedAlliance()){
                 drive(new Translation2d(2*y, 2*x), computeHubAim(), true);
             } else {
@@ -274,7 +274,7 @@ public class SwerveSubsystem extends SubsystemBase {
             }
         }, this);
     }
-
+    
     public Command rotateToPass(DoubleSupplier xAxis, DoubleSupplier yAxis){
         return Commands.run(() -> {
             double x = Math.abs(xAxis.getAsDouble()) > 2*OperatorConstants.k_deadBand ? xAxis.getAsDouble() : 0;
