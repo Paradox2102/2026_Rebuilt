@@ -22,6 +22,7 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
@@ -53,6 +54,7 @@ public class ShooterSubsystem extends SubsystemBase {
   private double m_RPMSetPoint = 0;
   private boolean m_isShooting = false;
 
+  private final double k_shootTimerStop = 1.0;
   public Trigger isShooterOnTarget = new Trigger(() -> (getVelocity() - m_RPMSetPoint >= -ShooterConstants.k_shooterDeadzone) && m_isShooting);
   
   public ShooterSubsystem() {
@@ -66,7 +68,11 @@ public class ShooterSubsystem extends SubsystemBase {
     }
   }
   public Command shootCommand(DoubleSupplier distanceToHub, boolean isPass){
+    Timer m_shootTimer = new Timer();
+    m_shootTimer.start();
     return Commands.run(() -> {
+      SmartDashboard.putNumber("Shooter Current", getAverageCurrentDraw());
+      SmartDashboard.putBoolean("I just want to see if rpm times kv is accurate", getAverageCurrentDraw() < m_shooterPowerLerp.get(distanceToHub.getAsDouble() * ShooterConstants.k_shooterKV));
       if (isPass){
         bangBang(m_shooterPowerLerp.get(distanceToHub.getAsDouble()) - 750);
       } else {
@@ -75,7 +81,12 @@ public class ShooterSubsystem extends SubsystemBase {
       m_isShooting = true;
     }, this).until(() -> {
       if (DriverStation.isAutonomous()) {
-        return false; // timer to detect time between shots. if it's too high then stop command.
+        // var lessthanSetPower = getAverageCurrentDraw() < m_shooterPowerLerp.get(distanceToHub.getAsDouble() * ShooterConstants.k_shooterKV); // I will change the rpm kv to be better later
+        // if (lessthanSetPower) {
+        //   m_shootTimer.reset();
+        // }
+        // return m_shootTimer.get() > k_shootTimerStop;
+        return false;
       }else {
         return false;
       }
@@ -135,7 +146,15 @@ public class ShooterSubsystem extends SubsystemBase {
   public double getVelocity() {
     return RobotBase.isReal() ? m_encoder.getVelocity() : m_simVelocity;
   }
-
+  public double getAverageCurrentDraw() {
+    SparkFlex[] motorArray = {m_leadMotor, m_follow1, m_lead2, m_follow2};
+    double current = 0;
+    for (int i = 0; i < motorArray.length - 1; i++){
+      current += motorArray[i].getOutputCurrent();
+    }
+    current /= motorArray.length;
+    return current;
+  }
   @Override
   public void periodic() {
     SmartDashboard.putBoolean("shooter revved", isShooterOnTarget.getAsBoolean());
