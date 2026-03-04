@@ -5,6 +5,7 @@
 package frc.robot.subsystems.drive;
 
 import static edu.wpi.first.units.Units.Meter;
+import static edu.wpi.first.units.Units.Rotation;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -77,6 +78,7 @@ public class SwerveSubsystem extends SubsystemBase {
     private Pose2d m_curPos = new Pose2d();
     private Pose2d m_sotmPos = new Pose2d();
     
+    private boolean spiiningRight = false;
     //ready to shoot if drivetrain is pointing towards aiming target, also requires chassis to be below a specific speed if shooting into hub
     public Trigger isDrivetrainAligned = new Trigger(() -> (Math.abs(m_curPos.getRotation().getDegrees() - getHubAngle()) <= DrivebaseConstants.k_rotateDeadzone) || (Math.abs(m_curPos.getRotation().getDegrees() - getPassAngle()) <= DrivebaseConstants.k_rotateDeadzone));
 
@@ -855,4 +857,16 @@ public class SwerveSubsystem extends SubsystemBase {
         }
         , this).until(() -> Math.abs(pose.get().getTranslation().getDistance(getPose().getTranslation())) < DrivebaseConstants.k_alignTolerance);
     }  
+
+    public Command funCommand() {
+        Timer spiinTimer = new Timer();
+        return Commands.run(()->{
+            SmartDashboard.putBoolean("right", spiiningRight);
+            if (spiinTimer.get() > 0.75){
+                spiiningRight = !spiiningRight;
+                spiinTimer.reset();
+            }
+            setChassisSpeeds(new ChassisSpeeds(0, 0, spiiningRight ? -1 : 1));
+        }, this);
+    }
 }

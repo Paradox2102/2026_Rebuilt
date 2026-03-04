@@ -167,6 +167,7 @@ public class RobotContainer {
     m_operatorController.button(4).whileTrue(m_climberSubsystem.setPower(ClimberConstants.k_manualClimbPower)).onFalse(m_climberSubsystem.setPower(0));
     m_operatorController.button(5).onTrue(m_lightSubsystem.overrideWonAuto(false));
     m_operatorController.button(6).onTrue(m_lightSubsystem.overrideWonAuto(true));
+    m_operatorController.button(7).whileTrue(m_swerveSubsystem.funCommand());
     // m_operatorController.button(12).whileTrue(new PathPlannerAuto("zonesweep"));
   }
 
