@@ -44,8 +44,8 @@ public class LightSubsystem extends SubsystemBase {
   private String gameData;
   private static final Time k_blinkMagnitude = Seconds.of(0.4);
 
-  private final class LedPatterns { // if it doesn't work as third of each team color and scrolling it likely has to do with me not knowing how maps work and it's an issue with k1, 2, and 3
-      private static final LEDPattern m_disabledPattern = LEDPattern.steps(Map.of(0, Color.kRed, 0.33, Color.kBlue, 0.66, Color.kOrange)).scrollAtAbsoluteSpeed(LightConstants.k_disabledVelocity, LightConstants.k_ledSpacing);
+  private final class LedPatterns {
+      private static final LEDPattern m_disabledPattern = LEDPattern.steps(Map.of(0, Color.kRed, 0.16, Color.kBlue, 0.33, new Color(1.0f, 0.35f, 0.0f),0.49, Color.kRed, 0.66, Color.kBlue, 0.83, new Color(1.0f, 0.35f, 0.0f))).scrollAtAbsoluteSpeed(LightConstants.k_disabledVelocity, LightConstants.k_ledSpacing);
       
     }  
 
