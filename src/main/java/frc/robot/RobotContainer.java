@@ -60,6 +60,8 @@ public class RobotContainer {
       return (m_swerveSubsystem.isDrivetrainAligned.getAsBoolean() || !shouldAutoAlign.getAsBoolean()) && m_shooterSubsystem.isShooterOnTarget.getAsBoolean() && m_hoodSubsystem.isHoodOnTarget.getAsBoolean() && !m_autonomous;
   });
 
+  final Trigger m_noIntakeShoot = new Trigger(() -> m_isReadyToShoot.getAsBoolean() && !m_driverController.leftTrigger().getAsBoolean());
+
   SendableChooser<PathPlannerAuto> m_autoChooser = new SendableChooser<>();
   
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(m_swerveSubsystem.getSwerveDrive(),
@@ -131,9 +133,14 @@ public class RobotContainer {
     m_isReadyToShoot.whileTrue(
         new SequentialCommandGroup(
           new ParallelDeadlineGroup(new WaitCommand(0.5), m_conveyorSubsystem.runSlow(false), m_kickerSubsystem.run(false)),
-          new ParallelCommandGroup(m_conveyorSubsystem.runNormal(true), m_kickerSubsystem.run(true), m_pivotSubsystem.agitate(), m_rollerSubsystem.runInSlow())
+          new ParallelCommandGroup(m_conveyorSubsystem.runNormal(true), m_kickerSubsystem.run(true))
         )
     );
+
+    m_noIntakeShoot.whileTrue(
+      new SequentialCommandGroup(
+        new WaitCommand(1),
+        new ParallelCommandGroup(m_pivotSubsystem.agitate(), m_rollerSubsystem.runInSlow())));
     
     m_swerveSubsystem.isDrivetrainAligned.whileTrue(m_fuelLaunchSim.repeatedlyLaunchFuel(() -> 10, () -> 30));
     
