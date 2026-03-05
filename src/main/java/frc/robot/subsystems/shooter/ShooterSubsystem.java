@@ -71,8 +71,8 @@ public class ShooterSubsystem extends SubsystemBase {
     Timer m_shootTimer = new Timer();
     m_shootTimer.start();
     return Commands.run(() -> {
-      SmartDashboard.putNumber("Shooter Current", getAverageCurrentDraw());
-      SmartDashboard.putBoolean("I just want to see if rpm times kv is accurate", getAverageCurrentDraw() < m_shooterPowerLerp.get(distanceToHub.getAsDouble() * ShooterConstants.k_shooterKV));
+      // SmartDashboard.putNumber("Shooter Current", getAverageCurrentDraw());
+      // SmartDashboard.putBoolean("I just want to see if rpm times kv is accurate", getAverageCurrentDraw() < m_shooterPowerLerp.get(distanceToHub.getAsDouble() * ShooterConstants.k_shooterKV));
       if (isPass){
         bangBang(m_shooterPowerLerp.get(distanceToHub.getAsDouble()) - 750);
       } else {
