@@ -19,15 +19,15 @@
  "params":{
   "waypoints":[
     {"x":{"exp":"2.5 m", "val":2.5}, "y":{"exp":"4.5 m", "val":4.5}, "heading":{"exp":"-0.2246271756215888 rad", "val":-0.2246271756215888}, "intervals":43, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
-    {"x":{"exp":"2.1254732608795166 m", "val":2.1254732608795166}, "y":{"exp":"3.98 m", "val":3.98}, "heading":{"exp":"180 deg", "val":3.141592653589793}, "intervals":27, "split":false, "fixTranslation":true, "fixHeading":false, "overrideIntervals":false},
-    {"x":{"exp":"1.5 m", "val":1.5}, "y":{"exp":"3.98 m", "val":3.98}, "heading":{"exp":"180 deg", "val":3.141592653589793}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":false, "overrideIntervals":false}],
+    {"x":{"exp":"2.1254732608795166 m", "val":2.1254732608795166}, "y":{"exp":"4 m", "val":4.0}, "heading":{"exp":"180 deg", "val":3.141592653589793}, "intervals":27, "split":false, "fixTranslation":true, "fixHeading":false, "overrideIntervals":false},
+    {"x":{"exp":"1.5 m", "val":1.5}, "y":{"exp":"4 m", "val":4.0}, "heading":{"exp":"180 deg", "val":3.141592653589793}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":false, "overrideIntervals":false}],
   "constraints":[
     {"from":"first", "to":null, "data":{"type":"StopPoint", "props":{}}, "enabled":true},
     {"from":"last", "to":null, "data":{"type":"StopPoint", "props":{}}, "enabled":true},
     {"from":"first", "to":"last", "data":{"type":"KeepInRectangle", "props":{"x":{"exp":"0 m", "val":0.0}, "y":{"exp":"0 m", "val":0.0}, "w":{"exp":"16.541 m", "val":16.541}, "h":{"exp":"8.0692 m", "val":8.0692}}}, "enabled":false},
     {"from":1, "to":2, "data":{"type":"KeepInLane", "props":{"tolerance":{"exp":"0.01 m", "val":0.01}}}, "enabled":true},
     {"from":0, "to":2, "data":{"type":"MaxVelocity", "props":{"max":{"exp":"0.5 m / s", "val":0.5}}}, "enabled":true},
-    {"from":1, "to":2, "data":{"type":"PointAt", "props":{"x":{"exp":"0 m", "val":0.0}, "y":{"exp":"3.98 m", "val":3.98}, "tolerance":{"exp":"1 deg", "val":0.017453292519943295}, "flip":false}}, "enabled":true},
+    {"from":1, "to":2, "data":{"type":"PointAt", "props":{"x":{"exp":"0 m", "val":0.0}, "y":{"exp":"4 m", "val":4.0}, "tolerance":{"exp":"1 deg", "val":0.017453292519943295}, "flip":false}}, "enabled":true},
     {"from":0, "to":2, "data":{"type":"MaxAngularVelocity", "props":{"max":{"exp":"5 rad / s", "val":5.0}}}, "enabled":true}],
   "targetDt":{
    "exp":"0.05 s",

@@ -51,6 +51,14 @@ public class IntakeRollerSubsystem extends SubsystemBase {
     }, this);
   }
 
+  public Command blegh(){
+    return Commands.runEnd(() -> {
+      m_pid.setSetpoint(12, ControlType.kVoltage);
+    }, () -> {
+      m_pid.setSetpoint(0, ControlType.kVoltage);
+    }, this);
+  }
+
   public Command runInSlow(){
     return Commands.runEnd(() -> {
       m_pid.setSetpoint(IntakeConstants.k_rollerSlowInSpeed, ControlType.kVelocity);

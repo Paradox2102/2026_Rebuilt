@@ -61,7 +61,7 @@ public class IntakePivotSubsystem extends SubsystemBase {
 
   public Command extend() {
     return Commands.runOnce(() -> {
-      setPosition(0);
+      setPosition(-1);
     }, this);
   }
 

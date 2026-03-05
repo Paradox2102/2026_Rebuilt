@@ -30,13 +30,32 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 8.0
+                  "waitTime": 5.0
                 }
               },
               {
                 "type": "named",
                 "data": {
                   "name": "Shoot"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Wait"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Feed"
+                      }
+                    }
+                  ]
                 }
               }
             ]

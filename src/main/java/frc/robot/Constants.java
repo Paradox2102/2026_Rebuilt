@@ -118,20 +118,21 @@ public final class Constants
     public static final double k_pivotLength = 0.7;
     public static final double k_pivotMaxRotation = 93.5;
     public static final double k_pivotDeadzone = 2;
-    public static final double k_pivotConversionFactor = 93.5/(93.5-87.82);
+    public static final double k_pivotConversionFactor = 93.5/(93.5-87.91);
 
     public static final double k_pivotPullInHeight = 61.0;
 
     public static final double k_rollerKV = 0.002;
+    public static final double k_rollerP = 0.00025;
 
-    public static final double k_pivotP = 0.01; 
+    public static final double k_pivotP = 0.02; 
     public static final double k_pivotI = 0; //0.1
     public static final double k_pivotD = 0;
-    public static final double k_pivotCosF = 0.05;
+    public static final double k_pivotCosF = 0;
 
     public static final int k_rollerCurrent = 40;
-    public static final double k_rollerInSpeed = 4000;
-    public static final double k_rollerOutSpeed = -4000;
+    public static final double k_rollerInSpeed = 5000;
+    public static final double k_rollerOutSpeed = -5000;
     public static final double k_rollerSlowInSpeed = 1000;
     
     public static final int k_pivotCurrent = 60;
@@ -143,7 +144,7 @@ public final class Constants
     static {
       k_rollerConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_rollerCurrent).inverted(true);
 
-      k_rollerConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).
+      k_rollerConfig.closedLoop.p(k_rollerP).feedbackSensor(FeedbackSensor.kPrimaryEncoder).
       feedForward.kV(k_rollerKV);
 
       k_pivotConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_pivotCurrent).inverted(false)
@@ -252,21 +253,23 @@ public final class Constants
     public static final double k_kickerMOI = 0.000307;
     public static final double k_kickerReduction = 1;
 
-    public static final double k_conveyorKV = 0.0035; // Needs to be changed since gear ration increased
+    public static final double k_conveyorKV = 0.00185; // Needs to be changed since gear ration increased
+    public static final double k_conveyorP = 0.00025;
 
     public static final double k_kickerKV = 0.00176; // Also needs to be changed
+    public static final double k_kickerP = 0.00005;
 
     public static final int k_conveyorCurrent = 40;
 
     public static final double k_normalConveyorInSpeed = 6000;
     public static final double k_normalConveyorOutSpeed = -4000;
-    public static final double k_slowcConveyorInSpeed = 250;
-    public static final double k_slowConveyorOutSpeed = -250;
+    public static final double k_slowConveyorInSpeed = 2500;
+    public static final double k_slowConveyorOutSpeed = -1500;
 
     public static final int k_kickerCurrent = 40;
     public static final double k_kickerInSpeed = 6780;
     public static final double k_kickerOutSpeed = -6000;
-    public static final double k_kickerPassiveOutSpeed = -500;
+    public static final double k_kickerPassiveOutSpeed = -2500;
 
     public static final SparkFlexConfig k_conveyorConfig = new SparkFlexConfig();
 
@@ -276,10 +279,10 @@ public final class Constants
 
       k_kickerConfig.apply(k_conveyorConfig).inverted(false);
 
-      k_conveyorConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+      k_conveyorConfig.closedLoop.p(k_conveyorP).feedbackSensor(FeedbackSensor.kPrimaryEncoder)
       .feedForward.kV(k_conveyorKV);
 
-      k_kickerConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+      k_kickerConfig.closedLoop.p(k_kickerP).feedbackSensor(FeedbackSensor.kPrimaryEncoder)
       .feedForward.kV(k_kickerKV);
     }
   }

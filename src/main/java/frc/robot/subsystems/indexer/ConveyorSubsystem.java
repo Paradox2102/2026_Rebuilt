@@ -45,14 +45,14 @@ public class ConveyorSubsystem extends SubsystemBase {
 
   public Command runNormal(boolean in){
     return Commands.runEnd(() -> {
-      m_pid.setSetpoint(in ? IndexerConstants.k_normalConveyorInSpeed : IndexerConstants.k_normalConveyorOutSpeed , ControlType.kVelocity);
+      m_pid.setSetpoint(in ? IndexerConstants.k_normalConveyorInSpeed : IndexerConstants.k_normalConveyorOutSpeed, ControlType.kVelocity);
     }, () -> {
       m_pid.setSetpoint(0, ControlType.kVelocity);
     }, this);
   }
   public Command runSlow(boolean in){
     return Commands.runEnd(() -> {
-      m_pid.setSetpoint(in ? IndexerConstants.k_slowcConveyorInSpeed : IndexerConstants.k_slowConveyorOutSpeed , ControlType.kVelocity);
+      m_pid.setSetpoint(in ? IndexerConstants.k_slowConveyorInSpeed : IndexerConstants.k_slowConveyorOutSpeed , ControlType.kVelocity);
     }, () -> {
       m_pid.setSetpoint(0, ControlType.kVelocity);
     }, this);
@@ -64,6 +64,19 @@ public class ConveyorSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     SmartDashboard.putNumber("conveyor vel", getVelocity());
+    SmartDashboard.putNumber("conveyor current", m_conveyorMotor.getOutputCurrent());
+  }
+
+  private void bangBang(double targetRPM){
+    if(targetRPM == 0){
+      m_pid.setSetpoint(0, ControlType.kVoltage);
+    } else {
+      if(getVelocity() < targetRPM){
+        m_pid.setSetpoint(targetRPM > 0 ? 12 : -12, ControlType.kVoltage);
+      } else {
+        m_pid.setSetpoint(targetRPM, ControlType.kVelocity);
+      }
+    }
   }
 
   public void simulationPeriodic() {
