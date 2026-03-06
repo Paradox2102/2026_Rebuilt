@@ -55,7 +55,7 @@ public final class Constants
     public static final double k_rotateIZone = 7.5;
     public static final double k_rotateDeadzone = 5;
 
-    public static final double k_alignTolerance = 0.5125;
+    public static final double k_alignTolerance = 0.05;
 
     public static final double k_slowmodeMultiplier = 0.5; // half speed
     
@@ -68,8 +68,9 @@ public final class Constants
     public static final Translation2d k_blueOutpost = new Translation2d(0.7, 1.25);
     public static final Translation2d k_midField = new Translation2d(k_fieldLengthMeters/2.0, 1.5);
 
-    public static final Translation2d k_leftClimb = new Translation2d(15.05, 3.61);
-    public static final Translation2d k_rightClimb = new Translation2d(15.05, 4.63);
+    public static final Translation2d k_leftClimb = new Translation2d(15.015, 4.059);
+    public static final Translation2d k_rightClimb = new Translation2d(15.015, 4.476);
+    public static final double k_climbCenter = (k_leftClimb.getY()+k_rightClimb.getY())/2.0;
 
     public static final double k_blueZoneX = 4.625;
     public static final double k_redZoneX = 11.925;
@@ -96,8 +97,8 @@ public final class Constants
   }
 
   public static class VisionConstants{
-    public static final Vector<N3> k_visionBaseSDev = VecBuilder.fill(3, 3, 3);
-    public static final Vector<N3> k_multiTagSDev = VecBuilder.fill(0.9, 0.9, 0.9);
+    public static final Vector<N3> k_visionBaseSDev = VecBuilder.fill(1.5, 1.5, 1.5);
+    public static final Vector<N3> k_multiTagSDev = VecBuilder.fill(1.5, 1.5, 1.5);
 
     public static final Translation3d k_flTranslation = new Translation3d(0.327, 0.180, 0.246);
     public static final Rotation3d k_flRotation = new Rotation3d(0, -Math.toRadians(25), -Math.toRadians(30));

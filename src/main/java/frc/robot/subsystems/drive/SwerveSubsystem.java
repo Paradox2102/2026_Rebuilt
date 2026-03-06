@@ -838,18 +838,34 @@ public class SwerveSubsystem extends SubsystemBase {
             }
         }, this);
     }
+
     public Supplier<Rotation2d> orientPID(DoubleSupplier targetRotation){
         double setPointDegrees = targetRotation.getAsDouble();
         double heading = getPose().getRotation().getDegrees();
         double rotation = MathUtil.clamp(m_orientPID.calculate(heading, setPointDegrees), -0.8, 0.8);
         return () -> Rotation2d.fromDegrees(rotation);
     }
+
+    public Translation2d getClimbTarget(){
+        Translation2d target = DrivebaseConstants.k_leftClimb;
+        if(isRedAlliance()){
+            if(m_curPos.getY() > DrivebaseConstants.k_climbCenter){
+                target = DrivebaseConstants.k_rightClimb;
+            }
+        } else {
+            if(m_curPos.getY() < (DrivebaseConstants.k_fieldWidthMeters - DrivebaseConstants.k_climbCenter)){
+                target = DrivebaseConstants.k_rightClimb;
+            }
+            target = new Translation2d(DrivebaseConstants.k_fieldLengthMeters - target.getX(), DrivebaseConstants.k_fieldWidthMeters - target.getY());
+        }
+        return target;
+    }
+
     public Command PIDClimb() {
-        Translation2d climbPos = getPose().getY() > 4.0 ? DrivebaseConstants.k_leftClimb : DrivebaseConstants.k_rightClimb;
+        Translation2d climbPos = getClimbTarget();
         Supplier<Pose2d> pose = () -> new Pose2d(climbPos.getX(), climbPos.getY(), getPose().getRotation());
         return Commands.runEnd(() -> {
-            double field_thing = isRedAlliance() ? 0 : -13.5;
-            double x = MathUtil.clamp(m_xPID.calculate(getPose().getX(), pose.get().getX() + field_thing), -0.8, 0.8);
+            double x = MathUtil.clamp(m_xPID.calculate(getPose().getX(), pose.get().getX()), -0.8, 0.8);
             double y = MathUtil.clamp(m_yPID.calculate(getPose().getY(), pose.get().getY()), -0.8, 0.8);
             drive(new Translation2d(x, y), orientPID(() -> pose.get().getRotation().getDegrees()).get().getDegrees(), true);
         }, () -> {

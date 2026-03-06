@@ -32,7 +32,10 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.NetworkTablesJNI;
+import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import frc.robot.Robot;
 import frc.robot.Constants.VisionConstants;
@@ -79,7 +82,7 @@ public class Vision {
   }
 
   public void updatePoseEstimation(SwerveDrive swerveDrive) {
-    if (SwerveDriveTelemetry.isSimulation && swerveDrive.getSimulationDriveTrainPose().isPresent()) {
+    if (SwerveDriveTelemetry.isSimulation && swerveDrive.getSimulationDriveTrainPose().isPresent() && !RobotBase.isReal()) {
       /*
        * In the maple-sim, odometry is simulated using encoder values, accounting for
        * factors like skidding and drifting.
@@ -90,7 +93,7 @@ public class Vision {
        * Therefore, we must ensure that the actual robot pose is provided in the
        * simulator when updating the vision simulation during the simulation.
        */
-      m_visionSim.update(swerveDrive.getSimulationDriveTrainPose().get());
+      // m_visionSim.update(swerveDrive.getSimulationDriveTrainPose().get());
     }
     for (Cameras camera : Cameras.values()) {
       Optional<EstimatedRobotPose> poseEst = getEstimatedGlobalPose(camera);
@@ -209,6 +212,8 @@ public class Vision {
 
     private double lastReadTimestamp = Microseconds.of(NetworkTablesJNI.now()).in(Seconds);
 
+    StructPublisher<Pose3d> cameraPosePublisher = NetworkTableInstance.getDefault().getStructTopic(name() + " camera est pose", Pose3d.struct).publish();
+
     Cameras(String name, Rotation3d robotToCamRotation, Translation3d robotToCamTranslation,
         Matrix<N3, N1> singleTagStdDevs, Matrix<N3, N1> multiTagStdDevsMatrix) {
       camera = new PhotonCamera(name);
@@ -273,6 +278,9 @@ public class Vision {
 
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
       updateUnreadResults();
+      if(estimatedRobotPose.isPresent()){
+        cameraPosePublisher.set(estimatedRobotPose.get().estimatedPose);
+      }
       return estimatedRobotPose;
     }
 
@@ -343,9 +351,10 @@ public class Vision {
           if (numTags == 1 && avgDist > 4) {
             estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
           } else {
-            estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
+            estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 15));
           }
           curStdDevs = estStdDevs;
+          System.out.println(name() + " avg dist: " + avgDist + "\nnum tags: " + numTags);
         }
       }
     }
