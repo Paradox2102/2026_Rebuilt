@@ -779,6 +779,14 @@ public class SwerveSubsystem extends SubsystemBase {
          DrivebaseConstants.k_blueHub;
     }
 
+    public boolean inZone(){
+        if(isRedAlliance()){
+            return m_curPos.getX() > DrivebaseConstants.k_redZoneX;
+        } else {
+            return m_curPos.getX() < DrivebaseConstants.k_blueZoneX;
+        }
+    }
+
     public Translation2d getPassTarget(){
         Translation2d target = DrivebaseConstants.k_blueOutpost;
         if(isRedAlliance()){

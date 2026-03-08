@@ -132,8 +132,8 @@ public final class Constants
     public static final double k_pivotCosF = 0;
 
     public static final int k_rollerCurrent = 40;
-    public static final double k_rollerInSpeed = 5000;
-    public static final double k_rollerOutSpeed = -5000;
+    public static final double k_rollerInSpeed = 6000;
+    public static final double k_rollerOutSpeed = -6000;
     public static final double k_rollerSlowInSpeed = 1000;
     
     public static final int k_pivotCurrent = 60;
@@ -217,7 +217,7 @@ public final class Constants
     public static final double k_staticHoodAngle = 35;//0;
     public static double k_hoodMaxAngle = 35;
 
-    public static final double k_shooterRevVel = 0;
+    public static final double k_shooterRevVel = 2500;
 
     public static final int k_maxFuelStorage = 45;
 
@@ -294,7 +294,8 @@ public final class Constants
     public static final double k_climberReduction = 5;
     public static final double k_climberMaxHeight = 0.388;
     public static final double k_climberClimbingStowedHeight = 0.15;
-    public static final double k_climberRotationsToMeters = 0.388/76;
+    public static final double k_climberLeftRotationsToMeters = 0.388/65;
+    public static final double k_climberRightRotationsToMeters = 0.388/67;
 
     public static final double k_climberDeadzone = 0.05;
 
@@ -315,9 +316,10 @@ public final class Constants
 
       k_leftConfig.closedLoop.pid(k_climberP, k_climberI, k_climberD);
 
-      k_leftConfig.encoder.positionConversionFactor(k_climberRotationsToMeters).velocityConversionFactor(k_climberRotationsToMeters / 60);
-
       k_rightConfig.apply(k_leftConfig);
+
+      k_leftConfig.encoder.positionConversionFactor(k_climberLeftRotationsToMeters).velocityConversionFactor(k_climberLeftRotationsToMeters / 60);
+      k_rightConfig.encoder.positionConversionFactor(k_climberRightRotationsToMeters).velocityConversionFactor(k_climberRightRotationsToMeters / 60);
     }
   }
 

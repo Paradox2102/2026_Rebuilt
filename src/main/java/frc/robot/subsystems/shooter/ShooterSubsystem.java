@@ -5,6 +5,7 @@
 package frc.robot.subsystems.shooter;
 
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import com.revrobotics.PersistMode;
@@ -106,9 +107,13 @@ public class ShooterSubsystem extends SubsystemBase {
     });
   }
 
-  public Command revCommand(){
+  public Command revCommand(BooleanSupplier shouldRev){
     return Commands.run(() -> {
-       bangBang(ShooterConstants.k_shooterRevVel);
+      if (shouldRev.getAsBoolean()){
+        bangBang(ShooterConstants.k_shooterRevVel);
+      } else {
+        bangBang(0);
+      }
     }, this);
   }
 

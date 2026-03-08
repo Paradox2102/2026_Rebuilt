@@ -95,7 +95,7 @@ public class RobotContainer {
     m_operatorController.button(12).whileTrue(m_pivotSubsystem.fullPower());
 
     m_conveyorSubsystem.setDefaultCommand(m_conveyorSubsystem.runSlow(true));
-    m_shooterSubsystem.setDefaultCommand(m_shooterSubsystem.revCommand());
+    m_shooterSubsystem.setDefaultCommand(m_shooterSubsystem.revCommand(m_swerveSubsystem::inZone));
     m_hoodSubsystem.setDefaultCommand(m_hoodSubsystem.returnHood());
     m_kickerSubsystem.setDefaultCommand(m_kickerSubsystem.runPassiveOut());
 
@@ -145,11 +145,12 @@ public class RobotContainer {
     
     m_swerveSubsystem.isDrivetrainAligned.whileTrue(m_fuelLaunchSim.repeatedlyLaunchFuel(() -> 10, () -> 30));
     
-    m_driverController.povUp().whileTrue(new ParallelCommandGroup(
+    m_driverController.povUp().whileTrue(
+      m_pivotSubsystem.extend().andThen(new ParallelCommandGroup(
           m_conveyorSubsystem.runNormal(false),
           m_kickerSubsystem.run(false),
           m_rollerSubsystem.run(false)
-          )
+          ))
     );
 
     m_driverController.povLeft().onTrue(new ConditionalCommand(
@@ -189,7 +190,8 @@ public class RobotContainer {
           )); 
     NamedCommands.registerCommand("Intake", new ParallelCommandGroup(
       m_pivotSubsystem.extend(),
-      m_rollerSubsystem.run(true)));
+      m_rollerSubsystem.run(true),
+      m_conveyorSubsystem.runSlow(true)));
     NamedCommands.registerCommand("Climber Out", new SequentialCommandGroup(
         m_pivotSubsystem.retract(),
         m_climberSubsystem.extend()));

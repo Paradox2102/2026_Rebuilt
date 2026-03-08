@@ -75,21 +75,9 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "Climber Out"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "auto3_2"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Climb"
           }
         }
       ]

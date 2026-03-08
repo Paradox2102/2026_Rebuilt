@@ -22,7 +22,6 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -37,6 +36,7 @@ import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.Constants.VisionConstants;
 import swervelib.SwerveDrive;
@@ -212,6 +212,8 @@ public class Vision {
 
     private double lastReadTimestamp = Microseconds.of(NetworkTablesJNI.now()).in(Seconds);
 
+    private boolean distanceFilter = false;
+
     StructPublisher<Pose3d> cameraPosePublisher = NetworkTableInstance.getDefault().getStructTopic(name() + " camera est pose", Pose3d.struct).publish();
 
     Cameras(String name, Rotation3d robotToCamRotation, Translation3d robotToCamTranslation,
@@ -278,10 +280,12 @@ public class Vision {
 
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
       updateUnreadResults();
-      if(estimatedRobotPose.isPresent()){
+      if(estimatedRobotPose.isPresent() && !distanceFilter){
         cameraPosePublisher.set(estimatedRobotPose.get().estimatedPose);
+      } else {
+        cameraPosePublisher.set(new Pose3d());
       }
-      return estimatedRobotPose;
+      return distanceFilter ? Optional.empty() : estimatedRobotPose;
     }
 
     private void updateUnreadResults() {
@@ -312,6 +316,7 @@ public class Vision {
 
     private void updateEstimationStdDevs(
         Optional<EstimatedRobotPose> estimatedPose, List<PhotonTrackedTarget> targets) {
+      distanceFilter = false;
       if (estimatedPose.isEmpty()) {
         // No pose input. Default to single-tag std devs
         curStdDevs = singleTagStdDevs;
@@ -321,6 +326,7 @@ public class Vision {
         var estStdDevs = singleTagStdDevs;
         int numTags = 0;
         double avgDist = 0;
+        double minDist = Double.MAX_VALUE;
 
         // Precalculation - see how many tags we found, and calculate an
         // average-distance metric
@@ -330,11 +336,17 @@ public class Vision {
             continue;
           }
           numTags++;
-          avgDist += tagPose
+          double dist = tagPose
               .get()
               .toPose2d()
               .getTranslation()
               .getDistance(estimatedPose.get().estimatedPose.toPose2d().getTranslation());
+
+          if(dist < minDist){
+            minDist = dist;
+          }
+
+          avgDist += dist;
         }
 
         if (numTags == 0) {
@@ -342,19 +354,19 @@ public class Vision {
           curStdDevs = singleTagStdDevs;
         } else {
           // One or more tags visible, run the full heuristic.
+          if(minDist > 4){
+            distanceFilter = true;
+          }
+
           avgDist /= numTags;
+          SmartDashboard.putNumber(name() + " avg tag distance", avgDist);
           // Decrease std devs if multiple targets are visible
           if (numTags > 1) {
             estStdDevs = multiTagStdDevs;
           }
-          // Increase std devs based on (average) distance
-          if (numTags == 1 && avgDist > 4) {
-            estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
-          } else {
-            estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 15));
-          }
+
+          estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 15));
           curStdDevs = estStdDevs;
-          System.out.println(name() + " avg dist: " + avgDist + "\nnum tags: " + numTags);
         }
       }
     }
