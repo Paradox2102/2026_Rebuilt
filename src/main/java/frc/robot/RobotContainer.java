@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.drive.SwerveSubsystem;
 import frc.robot.subsystems.indexer.ConveyorSubsystem;
@@ -156,12 +157,13 @@ public class RobotContainer {
     m_driverController.povLeft().onTrue(new ConditionalCommand(
       m_climberSubsystem.retract(),
       new SequentialCommandGroup(
-        // m_pivotSubsystem.retract(),
-        m_climberSubsystem.extend(),
-        new ConditionalCommand(
-          m_swerveSubsystem.PIDClimb(),
-          new InstantCommand(),
-           () -> m_swerveSubsystem.isAutoAlignOn())),
+        m_pivotSubsystem.retract(),
+        m_climberSubsystem.extend()
+        // new ConditionalCommand(
+        //   m_swerveSubsystem.PIDClimb(),
+        //   new InstantCommand(),
+        //    () -> m_swerveSubsystem.isAutoAlignOn())
+           ),
       m_climberSubsystem.isClimberExtended)
     );
 
@@ -174,11 +176,11 @@ public class RobotContainer {
     m_operatorController.button(2).onTrue(m_pivotSubsystem.retract());    
     m_operatorController.button(3).whileTrue(m_climberSubsystem.setPower(-ClimberConstants.k_manualClimbPower)).onFalse(m_climberSubsystem.setPower(0));
     m_operatorController.button(4).whileTrue(m_climberSubsystem.setPower(ClimberConstants.k_manualClimbPower)).onFalse(m_climberSubsystem.setPower(0));
-    m_operatorController.button(5).onTrue(m_hoodSubsystem.trimShooterCommand(shouldAutoAlign, true));
-    m_operatorController.button(6).onTrue(m_hoodSubsystem.trimShooterCommand(shouldAutoAlign, false));
+    m_operatorController.button(5).onTrue(m_hoodSubsystem.trimShooterCommand(shouldAutoAlign, false));
+    m_operatorController.button(6).onTrue(m_hoodSubsystem.trimShooterCommand(shouldAutoAlign, true));
     m_operatorController.button(7).onTrue(m_lightSubsystem.overrideWonAuto(false));
     m_operatorController.button(8).onTrue(m_lightSubsystem.overrideWonAuto(true));
-    m_operatorController.button(11).whileTrue(m_swerveSubsystem.funCommand());
+    // m_operatorController.button(11).whileTrue(m_swerveSubsystem.funCommand());
     // m_operatorController.button(12).whileTrue(new PathPlannerAuto("zonesweep"));
   }
 
@@ -201,6 +203,7 @@ public class RobotContainer {
         new ParallelDeadlineGroup(new WaitCommand(0.5), m_conveyorSubsystem.runSlow(false), m_kickerSubsystem.run(false)),
         new ParallelCommandGroup(m_conveyorSubsystem.runNormal(true), m_kickerSubsystem.run(true), m_pivotSubsystem.agitate(), m_rollerSubsystem.runInSlow())));
     NamedCommands.registerCommand("Wait", Commands.run(() -> {}).until(() -> m_swerveSubsystem.isDrivetrainAligned.getAsBoolean() && m_shooterSubsystem.isShooterOnTarget.getAsBoolean() && m_hoodSubsystem.isHoodOnTarget.getAsBoolean()));
+    NamedCommands.registerCommand("Rev Double Swipe", m_shooterSubsystem.shootCommand(() -> ShooterConstants.k_doubleSwipeShotDist, false));
     
     m_autoChooser.addOption("depot", new PathPlannerAuto("auto1"));
     m_autoChooser.addOption("sweep", new PathPlannerAuto("auto2"));

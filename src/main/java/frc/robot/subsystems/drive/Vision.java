@@ -4,8 +4,11 @@ import static edu.wpi.first.units.Units.Microseconds;
 import static edu.wpi.first.units.Units.Seconds;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import org.photonvision.EstimatedRobotPose;
@@ -212,9 +215,11 @@ public class Vision {
 
     private double lastReadTimestamp = Microseconds.of(NetworkTablesJNI.now()).in(Seconds);
 
-    private boolean distanceFilter = false;
+    private boolean filterResult = false;
 
-    StructPublisher<Pose3d> cameraPosePublisher = NetworkTableInstance.getDefault().getStructTopic(name() + " camera est pose", Pose3d.struct).publish();
+    private Set<Integer> ignoreSet = new HashSet<>();
+
+    private StructPublisher<Pose3d> cameraPosePublisher = NetworkTableInstance.getDefault().getStructTopic(name() + " camera est pose", Pose3d.struct).publish();
 
     Cameras(String name, Rotation3d robotToCamRotation, Translation3d robotToCamTranslation,
         Matrix<N3, N1> singleTagStdDevs, Matrix<N3, N1> multiTagStdDevsMatrix) {
@@ -230,6 +235,10 @@ public class Vision {
 
       this.singleTagStdDevs = singleTagStdDevs;
       this.multiTagStdDevs = multiTagStdDevsMatrix;
+
+      for(int ignore : VisionConstants.ignoreTagList){
+        ignoreSet.add(ignore);
+      }
 
       if (Robot.isSimulation()) {
         SimCameraProperties cameraProp = new SimCameraProperties();
@@ -280,12 +289,12 @@ public class Vision {
 
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
       updateUnreadResults();
-      if(estimatedRobotPose.isPresent() && !distanceFilter){
+      if(estimatedRobotPose.isPresent() && !filterResult){
         cameraPosePublisher.set(estimatedRobotPose.get().estimatedPose);
       } else {
         cameraPosePublisher.set(new Pose3d());
       }
-      return distanceFilter ? Optional.empty() : estimatedRobotPose;
+      return filterResult ? Optional.empty() : estimatedRobotPose;
     }
 
     private void updateUnreadResults() {
@@ -316,7 +325,7 @@ public class Vision {
 
     private void updateEstimationStdDevs(
         Optional<EstimatedRobotPose> estimatedPose, List<PhotonTrackedTarget> targets) {
-      distanceFilter = false;
+      filterResult = false;
       if (estimatedPose.isEmpty()) {
         // No pose input. Default to single-tag std devs
         curStdDevs = singleTagStdDevs;
@@ -331,7 +340,11 @@ public class Vision {
         // Precalculation - see how many tags we found, and calculate an
         // average-distance metric
         for (var tgt : targets) {
-          var tagPose = poseEstimator.getFieldTags().getTagPose(tgt.getFiducialId());
+          int id = tgt.getFiducialId();
+          var tagPose = poseEstimator.getFieldTags().getTagPose(id);
+          if(ignoreSet.contains(id)){
+            filterResult = true;
+          }
           if (tagPose.isEmpty()) {
             continue;
           }
@@ -355,7 +368,7 @@ public class Vision {
         } else {
           // One or more tags visible, run the full heuristic.
           if(minDist > 4){
-            distanceFilter = true;
+            filterResult = true;
           }
 
           avgDist /= numTags;

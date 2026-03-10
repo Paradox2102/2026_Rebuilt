@@ -108,6 +108,8 @@ public final class Constants
     public static final Rotation3d k_slRotation = new Rotation3d(0, -Math.toRadians(15), Math.toRadians(90));
     public static final Translation3d k_srTranslation = new Translation3d(0.111, -0.343, 0.490);
     public static final Rotation3d k_srRotation = new Rotation3d(0, -Math.toRadians(15), -Math.toRadians(90));
+
+    public static final int[] ignoreTagList = {};
   }
 
   public static class IntakeConstants{
@@ -117,9 +119,9 @@ public final class Constants
     public static final double k_pivotMOI = 0.5426;
     public static final double k_pivotReduction = 16;
     public static final double k_pivotLength = 0.7;
-    public static final double k_pivotMaxRotation = 93.5;
+    public static final double k_pivotMaxRotation = 108.5;
     public static final double k_pivotDeadzone = 2;
-    public static final double k_pivotConversionFactor = 93.5/(93.5-87.91);
+    public static final double k_pivotEncoderZero = 0.55;
 
     public static final double k_pivotPullInHeight = 61.0;
 
@@ -149,7 +151,7 @@ public final class Constants
       feedForward.kV(k_rollerKV);
 
       k_pivotConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_pivotCurrent).inverted(false)
-      .encoder.positionConversionFactor(k_pivotConversionFactor);
+      .absoluteEncoder.zeroOffset(k_pivotEncoderZero).positionConversionFactor(360).inverted(true);
     }
   }
 
@@ -194,6 +196,8 @@ public final class Constants
       {5.25, 3800}
     };
 
+    public static final double k_doubleSwipeShotDist = 0;
+
     public static final double k_hoodGearRatio = 34.6;
     public static final double k_hoodMomentOfInertia = 0.0642;
     public static final double k_hoodArmLengthMeters = 0.215;
@@ -214,10 +218,10 @@ public final class Constants
     public static final double k_shooterP = 0.00005;
     public static final double k_shooterDeadzone = 100;
 
-    public static final double k_staticHoodAngle = 35;//0;
+    public static final double k_staticHoodAngle = 0;
     public static double k_hoodMaxAngle = 35;
 
-    public static final double k_shooterRevVel = 2500;
+    public static final double k_shooterRevVel = 0;
 
     public static final int k_maxFuelStorage = 45;
 
@@ -264,7 +268,7 @@ public final class Constants
 
     public static final double k_normalConveyorInSpeed = 6000;
     public static final double k_normalConveyorOutSpeed = -4000;
-    public static final double k_slowConveyorInSpeed = 2500;
+    public static final double k_slowConveyorInSpeed = 1500;
     public static final double k_slowConveyorOutSpeed = -1500;
 
     public static final int k_kickerCurrent = 40;

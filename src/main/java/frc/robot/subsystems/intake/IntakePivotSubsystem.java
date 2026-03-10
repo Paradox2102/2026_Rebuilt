@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.intake;
 
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
@@ -31,7 +32,7 @@ import frc.robot.Constants.CANIDConstants;
 
 public class IntakePivotSubsystem extends SubsystemBase {
   private SparkFlex m_pivotMotor = new SparkFlex(CANIDConstants.intake_pivot, MotorType.kBrushless);
-  private RelativeEncoder m_encoder = m_pivotMotor.getEncoder();
+  private AbsoluteEncoder m_encoder = m_pivotMotor.getAbsoluteEncoder();
   private PIDController m_pid = new PIDController(IntakeConstants.k_pivotP, IntakeConstants.k_pivotI, IntakeConstants.k_pivotD);
 
   private SingleJointedArmSim m_pivotSim = new SingleJointedArmSim(DCMotor.getNeoVortex(1), IntakeConstants.k_pivotReduction, IntakeConstants.k_pivotMOI, IntakeConstants.k_pivotLength, 0, IntakeConstants.k_pivotMaxRotation, true, 0);
@@ -44,7 +45,6 @@ public class IntakePivotSubsystem extends SubsystemBase {
   /** Creates a new IntakePivotSubsystem. */
   public IntakePivotSubsystem() {
     m_pivotMotor.configure(IntakeConstants.k_pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    m_encoder.setPosition(IntakeConstants.k_pivotMaxRotation);
     setPosition(IntakeConstants.k_pivotMaxRotation);
   }
 
@@ -59,7 +59,7 @@ public class IntakePivotSubsystem extends SubsystemBase {
 
   public Command extend() {
     return Commands.runOnce(() -> {
-      setPosition(-1);
+      setPosition(0);
     }, this);
   }
 
