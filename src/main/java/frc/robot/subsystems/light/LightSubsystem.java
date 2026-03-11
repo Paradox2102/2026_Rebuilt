@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.light;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 
 import java.util.Map;
@@ -44,8 +45,10 @@ public class LightSubsystem extends SubsystemBase {
   private String gameData;
   private static final Time k_blinkMagnitude = Seconds.of(0.4);
 
-  private final class LedPatterns {
-      private static final LEDPattern m_disabledPattern = LEDPattern.steps(Map.of(0, Color.kRed, 0.16, Color.kBlue, 0.33, new Color(1.0f, 0.35f, 0.0f),0.49, Color.kRed, 0.66, Color.kBlue, 0.83, new Color(1.0f, 0.35f, 0.0f))).scrollAtAbsoluteSpeed(LightConstants.k_disabledVelocity, LightConstants.k_ledSpacing);
+  private boolean m_isOn = true;
+  private boolean m_isScrolling = true;
+  public final class LedPatterns {
+      public static LEDPattern m_disabledPattern = LEDPattern.steps(Map.of(0, Color.kRed, 0.16, Color.kBlue, 0.33, new Color(1.0f, 0.35f, 0.0f),0.49, Color.kRed, 0.66, Color.kBlue, 0.83, new Color(1.0f, 0.35f, 0.0f))).scrollAtAbsoluteSpeed(LightConstants.k_disabledVelocity, LightConstants.k_ledSpacing);
       
     }  
 
@@ -159,6 +162,18 @@ public class LightSubsystem extends SubsystemBase {
       m_pattern.applyTo(m_ledBuffer);
   }
   public LightSubsystem() {
+    SmartDashboard.putData(Commands.runOnce(() -> {
+        m_isOn = !m_isOn;
+      })
+      .withName("Toggle Lights")
+      .ignoringDisable(true));
+
+      SmartDashboard.putData(Commands.runOnce(() -> {
+        m_isScrolling = !m_isScrolling;
+        LedPatterns.m_disabledPattern = LEDPattern.steps(Map.of(0, Color.kRed, 0.16, Color.kBlue, 0.33, new Color(1.0f, 0.35f, 0.0f),0.49, Color.kRed, 0.66, Color.kBlue, 0.83, new Color(1.0f, 0.35f, 0.0f))).scrollAtAbsoluteSpeed(m_isScrolling ? LightConstants.k_disabledVelocity : MetersPerSecond.of(0), LightConstants.k_ledSpacing);
+      })
+      .withName("Toggle Disable Scrolling")
+      .ignoringDisable(true));
     m_led.setLength(LightConstants.k_lightAmount);
     m_led.setData(m_ledBuffer);
     m_led.start();
@@ -173,14 +188,18 @@ public class LightSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    gameData = DriverStation.getGameSpecificMessage();
-    if (DriverStation.isDisabled()){
-      m_pattern = LedPatterns.m_disabledPattern;
-    }
-    if (m_pattern != null){
+    if (m_isOn){
+      gameData = DriverStation.getGameSpecificMessage();
+      if (DriverStation.isDisabled()){
+        m_pattern = LedPatterns.m_disabledPattern;
+      }
+      if (m_pattern != null){
+        m_pattern.applyTo(m_ledBuffer);
+      }
+    }else{
+      m_pattern = LEDPattern.solid(Color.kBlack);
       m_pattern.applyTo(m_ledBuffer);
     }
-    
     
     m_led.setData(m_ledBuffer);
   }
