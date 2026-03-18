@@ -64,6 +64,9 @@ public class RobotContainer {
 
   final Trigger m_noIntakeShoot = new Trigger(() -> m_isReadyToShoot.getAsBoolean() && !m_driverController.leftTrigger().getAsBoolean());
 
+  final Trigger teleConveyorJammed = new Trigger(() -> m_conveyorSubsystem.isJammed.getAsBoolean() && !m_autonomous);
+  final Trigger teleKickerJammed = new Trigger(() -> m_kickerSubsystem.isJammed.getAsBoolean() && !m_autonomous);
+
   SendableChooser<PathPlannerAuto> m_autoChooser = new SendableChooser<>();
   
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(m_swerveSubsystem.getSwerveDrive(),
@@ -96,9 +99,12 @@ public class RobotContainer {
     m_operatorController.button(12).whileTrue(m_pivotSubsystem.fullPower());
 
     m_conveyorSubsystem.setDefaultCommand(m_conveyorSubsystem.runSlow(true));
-    m_shooterSubsystem.setDefaultCommand(m_shooterSubsystem.revCommand(m_swerveSubsystem::inZone));
+    m_shooterSubsystem.setDefaultCommand(m_shooterSubsystem.revCommand(() -> m_swerveSubsystem.inZone()));
     m_hoodSubsystem.setDefaultCommand(m_hoodSubsystem.returnHood());
     m_kickerSubsystem.setDefaultCommand(m_kickerSubsystem.runPassiveOut());
+
+    teleConveyorJammed.onTrue(new ParallelDeadlineGroup(new WaitCommand(0.25), m_conveyorSubsystem.runNormal(false)));
+    // teleKickerJammed.onTrue(new ParallelDeadlineGroup(new WaitCommand(0.25), m_kickerSubsystem.run(false)));
 
     m_driverController.leftTrigger().whileTrue(new SequentialCommandGroup(
       m_climberSubsystem.retract(),
@@ -142,7 +148,7 @@ public class RobotContainer {
     m_noIntakeShoot.whileTrue(
       new SequentialCommandGroup(
         new WaitCommand(1),
-        new ParallelCommandGroup(m_pivotSubsystem.agitate(), m_rollerSubsystem.runInSlow())));
+        new ParallelCommandGroup(m_pivotSubsystem.agitate(), m_rollerSubsystem.run(true))));
     
     m_swerveSubsystem.isDrivetrainAligned.whileTrue(m_fuelLaunchSim.repeatedlyLaunchFuel(() -> 10, () -> 30));
     
@@ -158,11 +164,11 @@ public class RobotContainer {
       m_climberSubsystem.retract(),
       new SequentialCommandGroup(
         m_pivotSubsystem.retract(),
-        m_climberSubsystem.extend()
-        // new ConditionalCommand(
-        //   m_swerveSubsystem.PIDClimb(),
-        //   new InstantCommand(),
-        //    () -> m_swerveSubsystem.isAutoAlignOn())
+        m_climberSubsystem.extend(),
+        new ConditionalCommand(
+          m_swerveSubsystem.PIDClimb(),
+          new InstantCommand(),
+           () -> m_swerveSubsystem.isAutoAlignOn())
            ),
       m_climberSubsystem.isClimberExtended)
     );
@@ -180,6 +186,7 @@ public class RobotContainer {
     m_operatorController.button(6).onTrue(m_hoodSubsystem.trimShooterCommand(shouldAutoAlign, true));
     m_operatorController.button(7).onTrue(m_lightSubsystem.overrideWonAuto(false));
     m_operatorController.button(8).onTrue(m_lightSubsystem.overrideWonAuto(true));
+    m_operatorController.button(12).toggleOnTrue(m_swerveSubsystem.wheelRadiusCharacterization(m_swerveSubsystem));
     // m_operatorController.button(11).whileTrue(m_swerveSubsystem.funCommand());
     // m_operatorController.button(12).whileTrue(new PathPlannerAuto("zonesweep"));
   }
@@ -193,22 +200,28 @@ public class RobotContainer {
     NamedCommands.registerCommand("Intake", new ParallelCommandGroup(
       m_pivotSubsystem.extend(),
       m_rollerSubsystem.run(true),
-      m_conveyorSubsystem.runSlow(true)));
+      new ConditionalCommand(m_conveyorSubsystem.runNormal(false), m_conveyorSubsystem.runSlow(true), m_conveyorSubsystem.isJammed)));
     NamedCommands.registerCommand("Climber Out", new SequentialCommandGroup(
-        m_pivotSubsystem.retract(),
+        m_pivotSubsystem.retract().deadlineFor(m_rollerSubsystem.run(true)),
         m_climberSubsystem.extend()));
     NamedCommands.registerCommand("Climb", m_climberSubsystem.climbingRetract());
     NamedCommands.registerCommand("Feed", 
       new SequentialCommandGroup(
-        new ParallelDeadlineGroup(new WaitCommand(0.5), m_conveyorSubsystem.runSlow(false), m_kickerSubsystem.run(false)),
-        new ParallelCommandGroup(m_conveyorSubsystem.runNormal(true), m_kickerSubsystem.run(true), m_pivotSubsystem.agitate(), m_rollerSubsystem.runInSlow())));
+      new ParallelDeadlineGroup(new WaitCommand(0.5), m_conveyorSubsystem.runSlow(false), m_kickerSubsystem.run(false)),
+        new ParallelCommandGroup(
+          new ConditionalCommand(m_conveyorSubsystem.runNormal(false), m_conveyorSubsystem.runNormal(true), m_conveyorSubsystem.isJammed), 
+          new ConditionalCommand(m_kickerSubsystem.run(false), m_kickerSubsystem.run(true), m_kickerSubsystem.isJammed),
+          m_pivotSubsystem.agitate(), m_rollerSubsystem.runInSlow())));
     NamedCommands.registerCommand("Wait", Commands.run(() -> {}).until(() -> m_swerveSubsystem.isDrivetrainAligned.getAsBoolean() && m_shooterSubsystem.isShooterOnTarget.getAsBoolean() && m_hoodSubsystem.isHoodOnTarget.getAsBoolean()));
-    NamedCommands.registerCommand("Rev Double Swipe", m_shooterSubsystem.shootCommand(() -> ShooterConstants.k_doubleSwipeShotDist, false));
+    NamedCommands.registerCommand("Rev Double Swipe", m_shooterSubsystem.shootCommand(() -> ShooterConstants.k_doubleSwipeShotDist, false).alongWith(m_hoodSubsystem.returnHood()));
+    NamedCommands.registerCommand("PID Climb", m_swerveSubsystem.PIDClimb());
     
     m_autoChooser.addOption("depot", new PathPlannerAuto("auto1"));
     m_autoChooser.addOption("sweep", new PathPlannerAuto("auto2"));
     m_autoChooser.addOption("centerL", new PathPlannerAuto("auto3"));
     m_autoChooser.addOption("centerR", new PathPlannerAuto("auto4"));
+    m_autoChooser.addOption("double swipe r", new PathPlannerAuto("auto5"));
+    m_autoChooser.addOption("double swipe l", new PathPlannerAuto("auto6"));
 
     SmartDashboard.putData("auto choice", m_autoChooser);
   }

@@ -63,9 +63,9 @@ public class ClimberSubsystem extends SubsystemBase {
   }
 
   public Command extend(){
-    return Commands.runOnce(() -> {
+    return Commands.run(() -> {
       setHeight(ClimberConstants.k_climberMaxHeight);
-    }, this);
+    }, this).until(() -> (getHeight()[0] > (ClimberConstants.k_climberMaxHeight - ClimberConstants.k_climberDeadzone)));
   }
 
   public Command retract(){

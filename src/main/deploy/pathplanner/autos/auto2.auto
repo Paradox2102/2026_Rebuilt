@@ -89,6 +89,12 @@
         {
           "type": "named",
           "data": {
+            "name": "PID Climb"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "Climb"
           }
         }

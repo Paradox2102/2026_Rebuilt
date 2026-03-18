@@ -53,9 +53,10 @@ public final class Constants
     public static final double k_rotateD = 0;
 
     public static final double k_rotateIZone = 7.5;
-    public static final double k_rotateDeadzone = 5;
+    public static final double k_rotateDeadzone = 7.5;
+    public static final double k_xLockDeadzone = 2;
 
-    public static final double k_alignTolerance = 0.05;
+    public static final double k_alignTolerance = 0.1;
 
     public static final double k_slowmodeMultiplier = 0.5; // half speed
     
@@ -68,8 +69,8 @@ public final class Constants
     public static final Translation2d k_blueOutpost = new Translation2d(0.7, 1.25);
     public static final Translation2d k_midField = new Translation2d(k_fieldLengthMeters/2.0, 1.5);
 
-    public static final Translation2d k_leftClimb = new Translation2d(15.015, 4.059);
-    public static final Translation2d k_rightClimb = new Translation2d(15.015, 4.476);
+    public static final Translation2d k_leftClimb = new Translation2d(15.02, 4.059);
+    public static final Translation2d k_rightClimb = new Translation2d(15.02, 4.476);
     public static final double k_climbCenter = (k_leftClimb.getY()+k_rightClimb.getY())/2.0;
 
     public static final double k_blueZoneX = 4.625;
@@ -94,6 +95,13 @@ public final class Constants
       {5, 1},
       {5.25, 1}
     };
+
+     //Wheel Calibration
+    public static final double k_wheelRadiusMaxVelocity = 0.5; // Rad/Sec
+    public static final double k_wheelRadiusRampRate = 0.25; // Rad/Sec^2
+    public static final double k_wheelRadiusMeters = 0.038;
+
+    public static final double k_driveBaseRadius = Math.hypot(0.2921, 0.3175);
   }
 
   public static class VisionConstants{
@@ -109,7 +117,7 @@ public final class Constants
     public static final Translation3d k_srTranslation = new Translation3d(0.111, -0.343, 0.490);
     public static final Rotation3d k_srRotation = new Rotation3d(0, -Math.toRadians(15), -Math.toRadians(90));
 
-    public static final int[] ignoreTagList = {};
+    public static final int[] ignoreTagList = {1,6,7,12,15,16};
   }
 
   public static class IntakeConstants{
@@ -119,9 +127,9 @@ public final class Constants
     public static final double k_pivotMOI = 0.5426;
     public static final double k_pivotReduction = 16;
     public static final double k_pivotLength = 0.7;
-    public static final double k_pivotMaxRotation = 108.5;
+    public static final double k_pivotMaxRotation = 105;
     public static final double k_pivotDeadzone = 2;
-    public static final double k_pivotEncoderZero = 0.55;
+    public static final double k_pivotEncoderZero = 0.78;
 
     public static final double k_pivotPullInHeight = 61.0;
 
@@ -158,8 +166,8 @@ public final class Constants
   public static class ShooterConstants{
     public static final double[][] k_shotAngles = {
       {1.25, 0},
-      {1.5, 5},
-      {1.75, 10},
+      {1.5, 4.5},
+      {1.75, 9},
       {2, 12.5},
       {2.25, 15},
       {2.5, 19},
@@ -221,7 +229,7 @@ public final class Constants
     public static final double k_staticHoodAngle = 0;
     public static double k_hoodMaxAngle = 35;
 
-    public static final double k_shooterRevVel = 0;
+    public static final double k_shooterRevVel = 2750;
 
     public static final int k_maxFuelStorage = 45;
 
@@ -258,23 +266,25 @@ public final class Constants
     public static final double k_kickerMOI = 0.000307;
     public static final double k_kickerReduction = 1;
 
-    public static final double k_conveyorKV = 0.00185; // Needs to be changed since gear ration increased
-    public static final double k_conveyorP = 0.00025;
+    public static final double k_conveyorKV = 0.00185;
+    public static final double k_conveyorP = 0.0000625;
 
-    public static final double k_kickerKV = 0.00176; // Also needs to be changed
-    public static final double k_kickerP = 0.00005;
+    public static final double k_kickerKV = 0.00176;
+    public static final double k_kickerP = 0.00025;
 
     public static final int k_conveyorCurrent = 40;
 
     public static final double k_normalConveyorInSpeed = 6000;
     public static final double k_normalConveyorOutSpeed = -4000;
-    public static final double k_slowConveyorInSpeed = 1500;
+    public static final double k_slowConveyorInSpeed = 2500;
     public static final double k_slowConveyorOutSpeed = -1500;
+    public static final double k_conveyorStallDeadzone = 100;
 
     public static final int k_kickerCurrent = 40;
     public static final double k_kickerInSpeed = 6780;
     public static final double k_kickerOutSpeed = -6000;
     public static final double k_kickerPassiveOutSpeed = -2500;
+    public static final double k_kickerStallDeadzone = 100;
 
     public static final SparkFlexConfig k_conveyorConfig = new SparkFlexConfig();
 

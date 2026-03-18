@@ -91,7 +91,7 @@ public class LightSubsystem extends SubsystemBase {
         }
       }
       else{
-        color = Color.kGreen;
+        color = Color.kPurple;
       }
       return color;
     }
@@ -202,6 +202,8 @@ public class LightSubsystem extends SubsystemBase {
     }
     
     m_led.setData(m_ledBuffer);
+
+    SmartDashboard.putBoolean("Won Auto?", getWonAuto());
   }
   /**
    * Using the current shift, estimated through a timer, It will return if the alliance hub is currently active.

@@ -43,7 +43,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 5.0
+                  "waitTime": 4.5
                 }
               },
               {
@@ -84,6 +84,12 @@
           "type": "path",
           "data": {
             "pathName": "auto4_2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PID Climb"
           }
         },
         {

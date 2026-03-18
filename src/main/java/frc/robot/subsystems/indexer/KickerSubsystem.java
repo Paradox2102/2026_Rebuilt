@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.CANIDConstants;
 
@@ -36,6 +37,10 @@ public class KickerSubsystem extends SubsystemBase {
   private SparkSim m_kickerMotorSim = new SparkSim(m_kickerMotor, DCMotor.getNeoVortex(1));
   
   private double m_simVelocity = 0;
+
+  public Trigger isJammed = new Trigger(() -> 
+    m_pid.getControlType() == ControlType.kVelocity && m_pid.getSetpoint() > 0 && getVelocity() <= IndexerConstants.k_kickerStallDeadzone
+  ).debounce(0.5);
 
   /** Creates a new kickerSubsystem. */
   public KickerSubsystem() {

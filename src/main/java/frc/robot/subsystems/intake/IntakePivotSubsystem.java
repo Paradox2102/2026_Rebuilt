@@ -54,6 +54,7 @@ public class IntakePivotSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("retracted", isIntakeRetracted.getAsBoolean());
     SmartDashboard.putNumber("intake pos", getPosition());
     SmartDashboard.putNumber("intake motor output", m_pivotMotor.getAppliedOutput());
+    SmartDashboard.putNumber("intake motor current", m_pivotMotor.getOutputCurrent());
     m_pivotMotor.set(m_pid.calculate(getPosition()) + (IntakeConstants.k_pivotCosF * Math.cos(Math.toRadians(getPosition()))));
   }
 

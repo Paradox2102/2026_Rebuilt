@@ -22,6 +22,7 @@ import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -41,6 +42,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.Constants.OperatorConstants;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -90,13 +93,7 @@ public class SwerveSubsystem extends SubsystemBase {
      * @param directory Directory of swerve drive config files.
      */
     public SwerveSubsystem(File directory) {
-        boolean blueAlliance = false;
-        Pose2d startingPose = blueAlliance ? new Pose2d(new Translation2d(Meter.of(1),
-                Meter.of(4)),
-                Rotation2d.fromDegrees(0))
-                : new Pose2d(new Translation2d(Meter.of(16),
-                        Meter.of(4)),
-                        Rotation2d.fromDegrees(180));
+        Pose2d startingPose = new Pose2d(DrivebaseConstants.k_fieldLengthMeters/2.0, DrivebaseConstants.k_fieldWidthMeters/2.0, new Rotation2d(0));
         // Configure the Telemetry before creating the SwerveDrive to avoid unnecessary
         // objects being created.
         SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
@@ -117,7 +114,7 @@ public class SwerveSubsystem extends SubsystemBase {
                 true,
                 0.1); // Correct for skew that gets worse as angular velocity increases. Start with a
                       // coefficient of 0.1.
-        m_swerveDrive.setModuleEncoderAutoSynchronize(false,
+        m_swerveDrive.setModuleEncoderAutoSynchronize(true,
                 1); // Enable if you want to resynchronize your absolute encoders and motor encoders
                     // periodically when they are not moving.
         setupPathPlanner();
@@ -150,6 +147,7 @@ public class SwerveSubsystem extends SubsystemBase {
         m_vision.updatePoseEstimation(m_swerveDrive);
         SmartDashboard.putBoolean("drivetrain align", isDrivetrainAligned.getAsBoolean());
         SmartDashboard.putNumber("Distance To Hub", getHubDist());
+        SmartDashboard.putBoolean("in zone", inZone());
 
         m_curPos = getPose();
         m_sotmPos = sotmLookAhead(5);
@@ -269,11 +267,15 @@ public class SwerveSubsystem extends SubsystemBase {
         return Commands.run(() -> {
             double x = Math.abs(xAxis.getAsDouble()) > 2*OperatorConstants.k_deadBand ? xAxis.getAsDouble() : 0;
             double y = Math.abs(yAxis.getAsDouble()) > 2*OperatorConstants.k_deadBand ? yAxis.getAsDouble() : 0;
-            if(isRedAlliance()){
-                drive(new Translation2d(2*y, 2*x), computeHubAim(), true);
+            if(Math.abs(m_curPos.getRotation().getDegrees() - getHubAngle()) < DrivebaseConstants.k_xLockDeadzone && x == 0 && y == 0){
+                lock();
             } else {
-                drive(new Translation2d(-2*y, -2*x), computeHubAim(), true);
-            }
+                if(isRedAlliance()){
+                    drive(new Translation2d(2*y, 2*x), computeHubAim(), true);
+                } else {
+                    drive(new Translation2d(-2*y, -2*x), computeHubAim(), true);
+                }
+            }    
         }, this);
     }
     
@@ -281,10 +283,14 @@ public class SwerveSubsystem extends SubsystemBase {
         return Commands.run(() -> {
             double x = Math.abs(xAxis.getAsDouble()) > 2*OperatorConstants.k_deadBand ? xAxis.getAsDouble() : 0;
             double y = Math.abs(yAxis.getAsDouble()) > 2*OperatorConstants.k_deadBand ? yAxis.getAsDouble() : 0;
-            if(isRedAlliance()){
-                drive(new Translation2d(2*y, 2*x), computePassAim(), true);
+            if(Math.abs(m_curPos.getRotation().getDegrees() - getHubAngle()) < DrivebaseConstants.k_xLockDeadzone && x == 0 && y == 0){
+                lock();
             } else {
-                drive(new Translation2d(-2*y, -2*x), computePassAim(), true);
+                if(isRedAlliance()){
+                    drive(new Translation2d(2*y, 2*x), computePassAim(), true);
+                } else {
+                    drive(new Translation2d(-2*y, -2*x), computePassAim(), true);
+                }
             }
         }, this);
     }
@@ -870,16 +876,14 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public Command PIDClimb() {
-        Translation2d climbPos = getClimbTarget();
-        Supplier<Pose2d> pose = () -> new Pose2d(climbPos.getX(), climbPos.getY(), getPose().getRotation());
         return Commands.runEnd(() -> {
-            double x = MathUtil.clamp(m_xPID.calculate(getPose().getX(), pose.get().getX()), -0.8, 0.8);
-            double y = MathUtil.clamp(m_yPID.calculate(getPose().getY(), pose.get().getY()), -0.8, 0.8);
-            drive(new Translation2d(x, y), orientPID(() -> pose.get().getRotation().getDegrees()).get().getDegrees(), true);
+            double x = MathUtil.clamp(m_xPID.calculate(getPose().getX(), getClimbTarget().getX()), -0.8, 0.8);
+            double y = MathUtil.clamp(m_yPID.calculate(getPose().getY(), getClimbTarget().getY()), -0.8, 0.8);
+            drive(new Translation2d(x, y), orientPID(() -> isRedAlliance() ? 0 : 180).get().getDegrees(), true);
         }, () -> {
         drive(new ChassisSpeeds(0, 0, 0));
         }
-        , this).until(() -> Math.abs(pose.get().getTranslation().getDistance(getPose().getTranslation())) < DrivebaseConstants.k_alignTolerance);
+        , this).until(() -> Math.abs(getClimbTarget().getDistance(getPose().getTranslation())) < DrivebaseConstants.k_alignTolerance);
     }  
 
     public Command funCommand() {
@@ -893,4 +897,92 @@ public class SwerveSubsystem extends SubsystemBase {
             setChassisSpeeds(new ChassisSpeeds(0, 0, spiiningRight ? -1 : 1));
         }, this);
     }
+
+    public Command wheelRadiusCharacterization(SwerveSubsystem drive) {
+    SlewRateLimiter limiter = new SlewRateLimiter(DrivebaseConstants.k_wheelRadiusRampRate);
+    WheelRadiusCharacterizationState state = new WheelRadiusCharacterizationState();
+
+    return Commands.parallel(
+        // Drive control sequence
+        Commands.sequence(
+            // Reset acceleration limiter
+            Commands.runOnce(
+                () -> {
+                  limiter.reset(0.0);
+                }),
+
+            // Turn in place, accelerating up to full speed
+            Commands.run(
+                () -> {
+                  double speed = limiter.calculate(DrivebaseConstants.k_wheelRadiusMaxVelocity);
+                  drive.drive(new ChassisSpeeds(0.0, 0.0, speed));
+                },
+                drive)),
+
+        // Measurement sequence
+        Commands.sequence(
+            // Wait for modules to fully orient before starting measurement
+            Commands.waitSeconds(1.0),
+
+            // Record starting measurement
+            Commands.runOnce(
+                () -> {
+                  state.positions = drive.getWheelRadiusCharacterizationPositions();
+                  state.lastAngle = drive.getPose().getRotation();
+                  state.gyroDelta = 0.0;
+                }),
+
+            //Update gyro delta
+            Commands.run(
+                    () -> {
+                      var rotation = drive.getPose().getRotation();
+                      state.gyroDelta += Math.abs(rotation.minus(state.lastAngle).getRadians());
+                      state.lastAngle = rotation;
+                    })
+
+                // When cancelled, calculate and print results
+                .finallyDo(
+                    () -> {
+                      double[] positions = drive.getWheelRadiusCharacterizationPositions();
+                      double wheelDelta = 0.0;
+                      for (int i = 0; i < 4; i++) {
+                        wheelDelta += Math.abs(positions[i] - state.positions[i]) / 4.0;
+                      }
+                      double wheelRadius =
+                          (state.gyroDelta * DrivebaseConstants.k_driveBaseRadius) / wheelDelta;
+
+                      NumberFormat formatter = new DecimalFormat("#0.000");
+                      System.out.println(
+                          "********** Wheel Radius Characterization Results **********");
+                      System.out.println(
+                          "\tWheel Delta: " + formatter.format(wheelDelta) + " radians");
+                      System.out.println(
+                          "\tGyro Delta: " + formatter.format(state.gyroDelta) + " radians");
+                      System.out.println(
+                          "\tWheel Radius: "
+                              + formatter.format(wheelRadius)
+                              + " meters, "
+                              + formatter.format(Units.metersToInches(wheelRadius))
+                              + " inches");
+                    })));
+  }
+
+  private static class WheelRadiusCharacterizationState {
+    double[] positions = new double[4];
+    Rotation2d lastAngle = new Rotation2d();
+    double gyroDelta = 0.0;
+  }
+
+  public double[] getWheelRadiusCharacterizationPositions() {
+    
+    double[] values = new double[4];
+    for (int i = 0; i < 4; i++) {
+      values[i] = getModuleCharacterizationPosition(m_swerveDrive.getModules()[i]);
+    }
+    return values;
+  }
+
+  public double getModuleCharacterizationPosition(SwerveModule module){
+    return (module.getDriveMotor().getPosition() / DrivebaseConstants.k_wheelRadiusMeters);
+  }
 }
