@@ -249,6 +249,8 @@ public final class Constants
       .feedbackSensor(FeedbackSensor.kPrimaryEncoder);
 
       k_leaderConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(k_shooterCurrent).inverted(true);
+      
+      k_leaderConfig.encoder.uvwAverageDepth(1).uvwMeasurementPeriod(8);
 
       k_leaderConfig.closedLoop.p(k_shooterP).feedbackSensor(FeedbackSensor.kPrimaryEncoder).feedForward.kV(k_shooterKV);
       k_leader2Config.apply(k_leaderConfig);
@@ -313,7 +315,7 @@ public final class Constants
 
     public static final double k_climberDeadzone = 0.05;
 
-    public static final double k_manualClimbPower = 6; //arbitrary number
+    public static final double k_manualClimbPower = 12; //arbitrary number
 
     public static final double k_climberP = 200;
     public static final double k_climberI = 0;

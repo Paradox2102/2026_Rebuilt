@@ -47,7 +47,7 @@ public class RobotContainer {
   final LightSubsystem m_lightSubsystem = new LightSubsystem();
   final SwerveSubsystem m_swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
       "swerve"));
-  final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
+  // final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
   final ConveyorSubsystem m_conveyorSubsystem = new ConveyorSubsystem();
   final KickerSubsystem m_kickerSubsystem = new KickerSubsystem();
   final IntakePivotSubsystem m_pivotSubsystem = new IntakePivotSubsystem();
@@ -107,7 +107,7 @@ public class RobotContainer {
     // teleKickerJammed.onTrue(new ParallelDeadlineGroup(new WaitCommand(0.25), m_kickerSubsystem.run(false)));
 
     m_driverController.leftTrigger().whileTrue(new SequentialCommandGroup(
-      m_climberSubsystem.retract(),
+      // m_climberSubsystem.retract(),
       m_pivotSubsystem.extend(),
       m_rollerSubsystem.run(true)
     )).onFalse(m_rollerSubsystem.stop());
@@ -160,28 +160,28 @@ public class RobotContainer {
           ))
     );
 
-    m_driverController.povLeft().onTrue(new ConditionalCommand(
-      m_climberSubsystem.retract(),
-      new SequentialCommandGroup(
-        m_pivotSubsystem.retract(),
-        m_climberSubsystem.extend(),
-        new ConditionalCommand(
-          m_swerveSubsystem.PIDClimb(),
-          new InstantCommand(),
-           () -> m_swerveSubsystem.isAutoAlignOn())
-           ),
-      m_climberSubsystem.isClimberExtended)
-    );
+    // m_driverController.povLeft().onTrue(new ConditionalCommand(
+    //   // m_climberSubsystem.retract(),
+    //   new SequentialCommandGroup(
+    //     m_pivotSubsystem.retract(),
+    //     // m_climberSubsystem.extend(),
+    //     new ConditionalCommand(
+    //       m_swerveSubsystem.PIDClimb(),
+    //       new InstantCommand(),
+    //        () -> m_swerveSubsystem.isAutoAlignOn())
+    //        ),
+    //   m_climberSubsystem.isClimberExtended)
+    // );
 
-    m_driverController.povRight().onTrue(m_climberSubsystem.climbingRetract());
+    // m_driverController.povRight().onTrue(m_climberSubsystem.climbingRetract());
 
     m_operatorController.button(1).whileTrue(new SequentialCommandGroup(
           new ParallelDeadlineGroup(new WaitCommand(0.5), m_conveyorSubsystem.runSlow(false), m_kickerSubsystem.run(false)),
           new ParallelCommandGroup(m_conveyorSubsystem.runNormal(true), m_kickerSubsystem.run(true) ,m_pivotSubsystem.agitate(), m_rollerSubsystem.runInSlow())
         ));
     m_operatorController.button(2).onTrue(m_pivotSubsystem.retract());    
-    m_operatorController.button(3).whileTrue(m_climberSubsystem.setPower(-ClimberConstants.k_manualClimbPower)).onFalse(m_climberSubsystem.setPower(0));
-    m_operatorController.button(4).whileTrue(m_climberSubsystem.setPower(ClimberConstants.k_manualClimbPower)).onFalse(m_climberSubsystem.setPower(0));
+    // m_operatorController.button(3).whileTrue(m_climberSubsystem.setPower(-ClimberConstants.k_manualClimbPower)).onFalse(m_climberSubsystem.setPower(0));
+    // m_operatorController.button(4).whileTrue(m_climberSubsystem.setPower(ClimberConstants.k_manualClimbPower)).onFalse(m_climberSubsystem.setPower(0));
     m_operatorController.button(5).onTrue(m_hoodSubsystem.trimShooterCommand(shouldAutoAlign, false));
     m_operatorController.button(6).onTrue(m_hoodSubsystem.trimShooterCommand(shouldAutoAlign, true));
     m_operatorController.button(7).onTrue(m_lightSubsystem.overrideWonAuto(false));
@@ -201,10 +201,10 @@ public class RobotContainer {
       m_pivotSubsystem.extend(),
       m_rollerSubsystem.run(true),
       new ConditionalCommand(m_conveyorSubsystem.runNormal(false), m_conveyorSubsystem.runSlow(true), m_conveyorSubsystem.isJammed)));
-    NamedCommands.registerCommand("Climber Out", new SequentialCommandGroup(
-        m_pivotSubsystem.retract().deadlineFor(m_rollerSubsystem.run(true)),
-        m_climberSubsystem.extend()));
-    NamedCommands.registerCommand("Climb", m_climberSubsystem.climbingRetract());
+    // NamedCommands.registerCommand("Climber Out", new SequentialCommandGroup(
+    //     m_pivotSubsystem.retract().deadlineFor(m_rollerSubsystem.run(true)),
+    //     m_climberSubsystem.extend()));
+    // NamedCommands.registerCommand("Climb", m_climberSubsystem.climbingRetract());
     NamedCommands.registerCommand("Feed", 
       new SequentialCommandGroup(
       new ParallelDeadlineGroup(new WaitCommand(0.5), m_conveyorSubsystem.runSlow(false), m_kickerSubsystem.run(false)),

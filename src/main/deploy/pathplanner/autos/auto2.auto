@@ -43,7 +43,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 5.0
+                  "waitTime": 10.0
                 }
               },
               {
@@ -72,30 +72,6 @@
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Climber Out"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "auto2_2.0"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "PID Climb"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Climb"
           }
         }
       ]
