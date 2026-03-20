@@ -196,6 +196,11 @@ public class RobotContainer {
             m_swerveSubsystem.rotateToHub(() -> 0, () -> 0),
             m_hoodSubsystem.pitchHood(() -> m_swerveSubsystem.getHubDist()),
             m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getHubDist(), false)
+          ));
+    NamedCommands.registerCommand("Pass", new ParallelCommandGroup(
+            m_swerveSubsystem.rotateToPass(() -> 0, () -> 0),
+            m_hoodSubsystem.pitchHood(() -> m_swerveSubsystem.getPassDist()),
+            m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getPassDist(), true)
           )); 
     NamedCommands.registerCommand("Intake", new ParallelCommandGroup(
       m_pivotSubsystem.extend(),
