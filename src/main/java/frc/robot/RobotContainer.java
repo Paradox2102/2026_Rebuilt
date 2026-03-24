@@ -219,6 +219,7 @@ public class RobotContainer {
           m_pivotSubsystem.agitate(), m_rollerSubsystem.runInSlow())));
     NamedCommands.registerCommand("Wait", Commands.run(() -> {}).until(() -> m_swerveSubsystem.isDrivetrainAligned.getAsBoolean() && m_shooterSubsystem.isShooterOnTarget.getAsBoolean() && m_hoodSubsystem.isHoodOnTarget.getAsBoolean()));
     NamedCommands.registerCommand("Rev Double Swipe", m_shooterSubsystem.shootCommand(() -> ShooterConstants.k_doubleSwipeShotDist, false).alongWith(m_hoodSubsystem.returnHood()));
+    NamedCommands.registerCommand("Hood Down", m_hoodSubsystem.returnHood());
     NamedCommands.registerCommand("PID Climb", m_swerveSubsystem.PIDClimb());
     
     m_autoChooser.addOption("depot", new PathPlannerAuto("auto1"));

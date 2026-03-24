@@ -40,6 +40,8 @@ import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Robot;
 import frc.robot.Constants.VisionConstants;
 import swervelib.SwerveDrive;
@@ -72,6 +74,12 @@ public class Vision {
       }
 
       openSimCameraViews();
+
+      SmartDashboard.putData(Commands.runOnce(() -> {
+            for(Cameras camera : Cameras.values()){
+                camera.toggleCameraDisabled();
+            }
+        }).withName("Disable All Cameras").ignoringDisable(true));
     }
   }
 
@@ -217,6 +225,10 @@ public class Vision {
 
     private boolean filterResult = false;
 
+    private boolean manualDisable = false;
+
+    private Pose3d lastEst = new Pose3d();
+
     private Set<Integer> ignoreSet = new HashSet<>();
 
     private StructPublisher<Pose3d> cameraPosePublisher = NetworkTableInstance.getDefault().getStructTopic(name() + " camera est pose", Pose3d.struct).publish();
@@ -257,6 +269,8 @@ public class Vision {
         cameraSim = new PhotonCameraSim(camera, cameraProp);
         cameraSim.enableDrawWireframe(true);
       }
+
+      SmartDashboard.putData(this.toggleCameraDisabled().withName("toggle " + name() + " camera").ignoringDisable(true));
     }
 
     public void addToVisionSim(VisionSystemSim systemSim) {
@@ -289,6 +303,11 @@ public class Vision {
 
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
       updateUnreadResults();
+      SmartDashboard.putBoolean(name() + "Camera Enabled", !manualDisable);
+      SmartDashboard.putBoolean(name() + " filtering", filterResult);
+      if (manualDisable){
+        filterResult = true;
+      }
       if(estimatedRobotPose.isPresent() && !filterResult){
         cameraPosePublisher.set(estimatedRobotPose.get().estimatedPose);
       } else {
@@ -323,9 +342,28 @@ public class Vision {
       estimatedRobotPose = visionEst;
     }
 
+    public Command toggleCameraDisabled(){
+      return Commands.runOnce(() -> {
+        manualDisable = !manualDisable;
+      });
+    }
+
+    private void disconnectFilter() {
+      if(estimatedRobotPose.isPresent()){
+        Pose3d curEst = estimatedRobotPose.get().estimatedPose;
+        if (lastEst.getTranslation().getDistance(curEst.getTranslation()) == 0){
+          filterResult = true;
+        }
+        lastEst = curEst;
+      }
+    }
+
     private void updateEstimationStdDevs(
         Optional<EstimatedRobotPose> estimatedPose, List<PhotonTrackedTarget> targets) {
       filterResult = false;
+
+      disconnectFilter();
+
       if (estimatedPose.isEmpty()) {
         // No pose input. Default to single-tag std devs
         curStdDevs = singleTagStdDevs;
@@ -367,15 +405,18 @@ public class Vision {
           curStdDevs = singleTagStdDevs;
         } else {
           // One or more tags visible, run the full heuristic.
-          if(minDist > 4){
-            filterResult = true;
-          }
-
           avgDist /= numTags;
           SmartDashboard.putNumber(name() + " avg tag distance", avgDist);
           // Decrease std devs if multiple targets are visible
           if (numTags > 1) {
             estStdDevs = multiTagStdDevs;
+            if(minDist > 4){
+              filterResult = true;
+            }
+          } else {
+            if(minDist > 3){
+              filterResult = true;
+            }
           }
 
           estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 15));

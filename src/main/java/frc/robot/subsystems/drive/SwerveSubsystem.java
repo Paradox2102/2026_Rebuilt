@@ -41,6 +41,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.subsystems.drive.Vision.Cameras;
+import pabeles.concurrency.ConcurrencyOps.Reset;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -126,6 +128,8 @@ public class SwerveSubsystem extends SubsystemBase {
         for(double[] values : DrivebaseConstants.k_shotTimes){
             m_shotTimeInt.put(values[0], values[1]);
         }
+
+        SmartDashboard.putData(Commands.run(() -> zeroGyroWithAlliance(), this).withName("reset gyro"));
     }
 
     /**

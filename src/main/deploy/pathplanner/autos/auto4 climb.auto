@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "auto3_1"
+                  "pathName": "auto4_1"
                 }
               },
               {
@@ -43,7 +43,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 5.5
+                  "waitTime": 4.5
                 }
               },
               {
@@ -75,28 +75,27 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "named",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "auto3_3"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Intake"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Hood Down"
-                }
-              }
-            ]
+            "name": "Climber Out"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "auto4_2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PID Climb"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Climb"
           }
         }
       ]
