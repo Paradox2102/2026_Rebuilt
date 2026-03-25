@@ -162,12 +162,7 @@ public class RobotContainer {
           ))
     );
     
-    m_driverController.a().whileTrue(
-      new ParallelCommandGroup(
-        m_hoodSubsystem.hardCodedPitch(HardCodedShotAngle.AGAINST_HUB.angle),
-        m_shooterSubsystem.hardCodedShot(HardCodedShotRPM.AGAINST_HUB.rpm)
-    ));
-        m_driverController.b().whileTrue(
+        m_driverController.y().whileTrue(
       new ParallelCommandGroup(
         m_hoodSubsystem.hardCodedPitch(HardCodedShotAngle.BEHIND_TOWER.angle),
         m_shooterSubsystem.hardCodedShot(HardCodedShotRPM.BEHIND_TOWER.rpm)

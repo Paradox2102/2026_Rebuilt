@@ -48,7 +48,6 @@ public class HoodSubsystem extends SubsystemBase {
   public Trigger isHoodOnTarget = new Trigger(() -> (Math.abs(getHoodAngle() - m_pid.getSetpoint()) <= ShooterConstants.k_hoodDeadzone) && m_isShooting);
   
   public static enum HardCodedShotAngle {
-    AGAINST_HUB(1.5),
     BEHIND_TOWER(10.0),
     AGAINST_TRENCH(10.0);
 
