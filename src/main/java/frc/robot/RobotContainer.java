@@ -36,6 +36,8 @@ import frc.robot.subsystems.light.LightSubsystem;
 import frc.robot.subsystems.shooter.FuelLaunchSim;
 import frc.robot.subsystems.shooter.HoodSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
+import frc.robot.subsystems.shooter.HoodSubsystem.HardCodedShotAngle;
+import frc.robot.subsystems.shooter.ShooterSubsystem.HardCodedShotRPM;
 import swervelib.SwerveInputStream;
 
 public class RobotContainer {
@@ -159,6 +161,22 @@ public class RobotContainer {
           m_rollerSubsystem.run(false)
           ))
     );
+    
+    m_driverController.a().whileTrue(
+      new ParallelCommandGroup(
+        m_hoodSubsystem.hardCodedPitch(HardCodedShotAngle.AGAINST_HUB.angle),
+        m_shooterSubsystem.hardCodedShot(HardCodedShotRPM.AGAINST_HUB.rpm)
+    ));
+        m_driverController.b().whileTrue(
+      new ParallelCommandGroup(
+        m_hoodSubsystem.hardCodedPitch(HardCodedShotAngle.BEHIND_TOWER.angle),
+        m_shooterSubsystem.hardCodedShot(HardCodedShotRPM.BEHIND_TOWER.rpm)
+    ));
+        m_driverController.x().whileTrue(
+      new ParallelCommandGroup(
+        m_hoodSubsystem.hardCodedPitch(HardCodedShotAngle.AGAINST_TRENCH.angle),
+        m_shooterSubsystem.hardCodedShot(HardCodedShotRPM.AGAINST_TRENCH.rpm)
+    ));
 
     // m_driverController.povLeft().onTrue(new ConditionalCommand(
     //   // m_climberSubsystem.retract(),

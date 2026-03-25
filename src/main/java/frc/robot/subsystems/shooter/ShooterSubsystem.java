@@ -58,6 +58,18 @@ public class ShooterSubsystem extends SubsystemBase {
   private final double k_shootTimerStop = 1.0;
   public Trigger isShooterOnTarget = new Trigger(() -> (getVelocity() - m_RPMSetPoint >= -ShooterConstants.k_shooterDeadzone) && m_isShooting);
   
+  public static enum HardCodedShotRPM {
+    AGAINST_HUB(2750),
+    BEHIND_TOWER(10.0),
+    AGAINST_TRENCH(10.0);
+
+    public final double rpm;
+    HardCodedShotRPM(double rpm){
+      this.rpm = rpm;
+    }
+
+  }
+
   public ShooterSubsystem() {
     m_leadMotor.configure(ShooterConstants.k_leaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     m_follow1.configure(ShooterConstants.k_follower1Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -101,6 +113,16 @@ public class ShooterSubsystem extends SubsystemBase {
     return Commands.run(() ->{
       m_isShooting = true;
       bangBang(ShooterConstants.k_staticShootVel);
+    }, this).finallyDo(() -> {
+      bangBang(ShooterConstants.k_shooterRevVel);
+      m_isShooting = false;
+    });
+  }
+
+  public Command hardCodedShot(double rpm){
+    return Commands.run(() ->{
+      m_isShooting = true;
+      bangBang(rpm);
     }, this).finallyDo(() -> {
       bangBang(ShooterConstants.k_shooterRevVel);
       m_isShooting = false;

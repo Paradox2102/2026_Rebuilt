@@ -103,8 +103,8 @@ public class LightSubsystem extends SubsystemBase {
       SmartDashboard.putNumber("Time Until Shift", round(shift - m_timer.get()));
     }
     public double round(double number) {
-      int biigerNumber = (int) (number * 100);
-      return ((double) biigerNumber) / 100;
+      double biigerNumber = Math.floor(number * 10);
+      return (biigerNumber) / 10;
     }
     @Override
     public boolean isFinished() {
