@@ -59,8 +59,8 @@ public class ShooterSubsystem extends SubsystemBase {
   public Trigger isShooterOnTarget = new Trigger(() -> (getVelocity() - m_RPMSetPoint >= -ShooterConstants.k_shooterDeadzone) && m_isShooting);
   
   public static enum HardCodedShotRPM {
-    BEHIND_TOWER(10.0),
-    AGAINST_TRENCH(10.0);
+    TOWER(3250),
+    TRENCH(10.0);
 
     public final double rpm;
     HardCodedShotRPM(double rpm){

@@ -164,13 +164,13 @@ public class RobotContainer {
     
         m_driverController.y().whileTrue(
       new ParallelCommandGroup(
-        m_hoodSubsystem.hardCodedPitch(HardCodedShotAngle.BEHIND_TOWER.angle),
-        m_shooterSubsystem.hardCodedShot(HardCodedShotRPM.BEHIND_TOWER.rpm)
+        m_hoodSubsystem.hardCodedPitch(HardCodedShotAngle.TOWER.angle),
+        m_shooterSubsystem.hardCodedShot(HardCodedShotRPM.TOWER.rpm)
     ));
         m_driverController.x().whileTrue(
       new ParallelCommandGroup(
-        m_hoodSubsystem.hardCodedPitch(HardCodedShotAngle.AGAINST_TRENCH.angle),
-        m_shooterSubsystem.hardCodedShot(HardCodedShotRPM.AGAINST_TRENCH.rpm)
+        m_hoodSubsystem.hardCodedPitch(HardCodedShotAngle.TRENCH.angle),
+        m_shooterSubsystem.hardCodedShot(HardCodedShotRPM.TRENCH.rpm)
     ));
 
     // m_driverController.povLeft().onTrue(new ConditionalCommand(
@@ -240,7 +240,7 @@ public class RobotContainer {
     m_autoChooser.addOption("centerL", new PathPlannerAuto("auto3"));
     m_autoChooser.addOption("centerR", new PathPlannerAuto("auto4"));
     m_autoChooser.addOption("double swipe r", new PathPlannerAuto("auto5"));
-    m_autoChooser.addOption("double swipe l", new PathPlannerAuto("auto6"));
+    m_autoChooser.addOption("double swipe l", new PathPlannerAuto("auto7"));
 
     SmartDashboard.putData("auto choice", m_autoChooser);
   }
