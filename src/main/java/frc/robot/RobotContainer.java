@@ -141,10 +141,7 @@ public class RobotContainer {
     m_driverController.povDown().onTrue(m_swerveSubsystem.toggleAutoAlign());
 
     m_isReadyToShoot.whileTrue(
-        new SequentialCommandGroup(
-          new ParallelDeadlineGroup(new WaitCommand(0.5), m_conveyorSubsystem.runSlow(false), m_kickerSubsystem.run(false)),
-          new ParallelCommandGroup(m_conveyorSubsystem.runNormal(true), m_kickerSubsystem.run(true))
-        )
+        new ParallelCommandGroup(m_conveyorSubsystem.runNormal(true), m_kickerSubsystem.run(true))
     );
 
     m_noIntakeShoot.whileTrue(
@@ -188,10 +185,9 @@ public class RobotContainer {
 
     // m_driverController.povRight().onTrue(m_climberSubsystem.climbingRetract());
 
-    m_operatorController.button(1).whileTrue(new SequentialCommandGroup(
-          new ParallelDeadlineGroup(new WaitCommand(0.5), m_conveyorSubsystem.runSlow(false), m_kickerSubsystem.run(false)),
+    m_operatorController.button(1).whileTrue(
           new ParallelCommandGroup(m_conveyorSubsystem.runNormal(true), m_kickerSubsystem.run(true) ,m_pivotSubsystem.agitate(), m_rollerSubsystem.runInSlow())
-        ));
+        );
     m_operatorController.button(2).onTrue(m_pivotSubsystem.retract());    
     // m_operatorController.button(3).whileTrue(m_climberSubsystem.setPower(-ClimberConstants.k_manualClimbPower)).onFalse(m_climberSubsystem.setPower(0));
     // m_operatorController.button(4).whileTrue(m_climberSubsystem.setPower(ClimberConstants.k_manualClimbPower)).onFalse(m_climberSubsystem.setPower(0));
@@ -224,12 +220,9 @@ public class RobotContainer {
     //     m_climberSubsystem.extend()));
     // NamedCommands.registerCommand("Climb", m_climberSubsystem.climbingRetract());
     NamedCommands.registerCommand("Feed", 
-      new SequentialCommandGroup(
-      new ParallelDeadlineGroup(new WaitCommand(0.5), m_conveyorSubsystem.runSlow(false), m_kickerSubsystem.run(false)),
         new ParallelCommandGroup(
           new ConditionalCommand(m_conveyorSubsystem.runNormal(false), m_conveyorSubsystem.runNormal(true), m_conveyorSubsystem.isJammed), 
-          new ConditionalCommand(m_kickerSubsystem.run(false), m_kickerSubsystem.run(true), m_kickerSubsystem.isJammed),
-          m_pivotSubsystem.agitate(), m_rollerSubsystem.runInSlow())));
+          m_kickerSubsystem.run(true), m_pivotSubsystem.agitate(), m_rollerSubsystem.runInSlow()));
     NamedCommands.registerCommand("Wait", Commands.run(() -> {}).until(() -> m_swerveSubsystem.isDrivetrainAligned.getAsBoolean() && m_shooterSubsystem.isShooterOnTarget.getAsBoolean() && m_hoodSubsystem.isHoodOnTarget.getAsBoolean()));
     NamedCommands.registerCommand("Rev Double Swipe", m_shooterSubsystem.shootCommand(() -> ShooterConstants.k_doubleSwipeShotDist, false).alongWith(m_hoodSubsystem.returnHood()));
     NamedCommands.registerCommand("Hood Down", m_hoodSubsystem.returnHood());
@@ -239,7 +232,7 @@ public class RobotContainer {
     m_autoChooser.addOption("sweep", new PathPlannerAuto("auto2"));
     m_autoChooser.addOption("centerL", new PathPlannerAuto("auto3"));
     m_autoChooser.addOption("centerR", new PathPlannerAuto("auto4"));
-    m_autoChooser.addOption("double swipe r", new PathPlannerAuto("auto5"));
+    m_autoChooser.addOption("double swipe r", new PathPlannerAuto("auto8"));
     m_autoChooser.addOption("double swipe l", new PathPlannerAuto("auto7"));
 
     SmartDashboard.putData("auto choice", m_autoChooser);

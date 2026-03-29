@@ -105,8 +105,8 @@ public final class Constants
   }
 
   public static class VisionConstants{
-    public static final Vector<N3> k_visionBaseSDev = VecBuilder.fill(10, 10, 10);
-    public static final Vector<N3> k_multiTagSDev = VecBuilder.fill(.9, .9, .9);
+    public static final Vector<N3> k_visionBaseSDev = VecBuilder.fill(15, 15, 15);
+    public static final Vector<N3> k_multiTagSDev = VecBuilder.fill(.5, .5, .5);
 
     public static final Translation3d k_flTranslation = new Translation3d(0.327, 0.180, 0.246);
     public static final Rotation3d k_flRotation = new Rotation3d(0, -Math.toRadians(25), -Math.toRadians(30));
