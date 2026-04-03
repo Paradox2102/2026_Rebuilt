@@ -263,7 +263,7 @@ public final class Constants
 
   public static class IndexerConstants{
     public static final double k_conveyorMOI = 0.000936;
-    public static final double k_conveyorReduction = 1;
+    public static final double k_conveyorReduction = 3;
 
     public static final double k_kickerMOI = 0.000307;
     public static final double k_kickerReduction = 1;
@@ -276,17 +276,17 @@ public final class Constants
 
     public static final int k_conveyorCurrent = 40;
 
-    public static final double k_normalConveyorInSpeed = 6000;
-    public static final double k_normalConveyorOutSpeed = -4000;
+    public static final double k_normalConveyorInSpeed = 6500;
+    public static final double k_normalConveyorOutSpeed = -5000;
     public static final double k_slowConveyorInSpeed = 2500;
     public static final double k_slowConveyorOutSpeed = -1500;
-    public static final double k_conveyorStallDeadzone = 100;
+    public static final double k_conveyorStallDeadzone = 20;
 
     public static final int k_kickerCurrent = 40;
     public static final double k_kickerInSpeed = 6780;
     public static final double k_kickerOutSpeed = -6000;
     public static final double k_kickerPassiveOutSpeed = -2500;
-    public static final double k_kickerStallDeadzone = 100;
+    public static final double k_kickerStallDeadzone = 200;
 
     public static final SparkFlexConfig k_conveyorConfig = new SparkFlexConfig();
 
