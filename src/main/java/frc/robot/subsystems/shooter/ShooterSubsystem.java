@@ -60,7 +60,7 @@ public class ShooterSubsystem extends SubsystemBase {
   
   public static enum HardCodedShotRPM {
     TOWER(3250),
-    TRENCH(10.0);
+    TRENCH(2750);
 
     public final double rpm;
     HardCodedShotRPM(double rpm){

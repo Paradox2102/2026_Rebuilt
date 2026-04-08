@@ -99,7 +99,7 @@ public final class Constants
      //Wheel Calibration
     public static final double k_wheelRadiusMaxVelocity = 0.5; // Rad/Sec
     public static final double k_wheelRadiusRampRate = 0.25; // Rad/Sec^2
-    public static final double k_wheelRadiusMeters = 0.038;
+    public static final double k_wheelRadiusMeters = 0.037;
 
     public static final double k_driveBaseRadius = Math.hypot(0.2921, 0.3175);
   }
@@ -132,6 +132,7 @@ public final class Constants
     public static final double k_pivotEncoderZero = 0.78;
 
     public static final double k_pivotPullInHeight = 61.0;
+    public static final double k_pivotEjectAngle = 25;
 
     public static final double k_rollerKV = 0.002;
     public static final double k_rollerP = 0.00025;
@@ -167,11 +168,11 @@ public final class Constants
     public static final double[][] k_shotAngles = {
       {1.25, 0},
       {1.5, 4.5},
-      {1.75, 9},
+      {1.75, 8.75},
       {2, 12.5},
       {2.25, 15},
-      {2.5, 19},
-      {2.75, 20},
+      {2.5, 18},
+      {2.75, 19},
       {3, 22},
       {3.25, 23},
       {3.5, 24},
@@ -191,14 +192,14 @@ public final class Constants
       {2, 2750},
       {2.25, 2750},
       {2.5, 2750},
-      {2.75, 2800},
+      {2.75, 2900},
       {3, 2900},
       {3.25, 3000},
       {3.5, 3100},
       {3.75, 3200},
       {4, 3300},
-      {4.25, 3400},
-      {4.5, 3530},
+      {4.25, 3325},
+      {4.5, 3500},
       {4.75, 3640},
       {5, 3750},
       {5.25, 3800}
@@ -276,7 +277,7 @@ public final class Constants
 
     public static final int k_conveyorCurrent = 40;
 
-    public static final double k_normalConveyorInSpeed = 6500;
+    public static final double k_normalConveyorInSpeed = 6780;
     public static final double k_normalConveyorOutSpeed = -5000;
     public static final double k_slowConveyorInSpeed = 2500;
     public static final double k_slowConveyorOutSpeed = -1500;

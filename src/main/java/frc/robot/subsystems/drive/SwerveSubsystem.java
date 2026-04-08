@@ -81,13 +81,14 @@ public class SwerveSubsystem extends SubsystemBase {
     private InterpolatingDoubleTreeMap m_shotTimeInt = new InterpolatingDoubleTreeMap();
 
     private Pose2d m_curPos = new Pose2d();
-    private Pose2d m_sotmPos = new Pose2d();
+    private Pose2d m_sotmHubPos = new Pose2d();
+    private Pose2d m_sotmPassPos = new Pose2d();
     
     private boolean spiiningRight = false;
     //ready to shoot if drivetrain is pointing towards aiming target, also requires chassis to be below a specific speed if shooting into hub
     public Trigger isDrivetrainAligned = new Trigger(() -> (Math.abs(m_curPos.getRotation().getDegrees() - getHubAngle()) <= DrivebaseConstants.k_rotateDeadzone) || (Math.abs(m_curPos.getRotation().getDegrees() - getPassAngle()) <= DrivebaseConstants.k_rotateDeadzone));
 
-    private boolean m_autoAlignOn = false;
+    private boolean m_autoAlignOn = true;
 
     /**
      * Initialize {@link SwerveDrive} with the directory provided.
@@ -129,7 +130,7 @@ public class SwerveSubsystem extends SubsystemBase {
             m_shotTimeInt.put(values[0], values[1]);
         }
 
-        SmartDashboard.putData(Commands.run(() -> zeroGyroWithAlliance(), this).withName("reset gyro"));
+        SmartDashboard.putData(resetGyroDisableCameras().withName("Reset Gyro Disable Cameras"));
     }
 
     /**
@@ -154,7 +155,8 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putBoolean("in zone", inZone());
 
         m_curPos = getPose();
-        m_sotmPos = sotmLookAhead(5);
+        m_sotmHubPos = sotmLookAhead(5, getHubTarget());
+        m_sotmPassPos = sotmLookAhead(5, getPassTarget());
     }
 
     @Override
@@ -300,23 +302,23 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public double computeHubAim() {
-        return m_orientPID.calculate(m_sotmPos.getRotation().getDegrees(), getHubAngle());
+        return m_orientPID.calculate(m_sotmHubPos.getRotation().getDegrees(), getHubAngle());
     }
 
     public double computePassAim() {
-        return m_orientPID.calculate(m_curPos.getRotation().getDegrees(), getPassAngle());
+        return m_orientPID.calculate(m_sotmPassPos.getRotation().getDegrees(), getPassAngle());
     }
 
     public double getHubAngle() {
-        var dx = getHubTarget().getX() - m_sotmPos.getX();
-        var dy = getHubTarget().getY() - m_sotmPos.getY();
+        var dx = getHubTarget().getX() - m_sotmHubPos.getX();
+        var dy = getHubTarget().getY() - m_sotmHubPos.getY();
         var angle = Math.toDegrees(Math.atan2(dy, dx));
         return angle;
     }
 
     public double getPassAngle() {
-        var dx = getPassTarget().getX() - m_curPos.getX();
-        var dy = getPassTarget().getY() - m_curPos.getY();
+        var dx = getPassTarget().getX() - m_sotmPassPos.getX();
+        var dy = getPassTarget().getY() - m_sotmPassPos.getY();
         var angle = Math.toDegrees(Math.atan2(dy, dx));
         return angle;
     }
@@ -653,6 +655,13 @@ public class SwerveSubsystem extends SubsystemBase {
         }
     } 
 
+    public Command resetGyroDisableCameras(){
+        return Commands.runOnce(() -> {
+            m_vision.disableAllCameras();
+            zeroGyroWithAlliance();
+        }, this);
+    }
+
     /**
      * Sets the drive motors to brake/coast mode.
      *
@@ -816,7 +825,7 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public double getHubDist(){
-        return getHubTarget().getDistance(m_sotmPos.getTranslation());
+        return getHubTarget().getDistance(m_sotmHubPos.getTranslation());
     }
 
     public double getPassDist(){
@@ -830,10 +839,10 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     //iteratively look forward in time to find aiming pose for shoot on the move
-    public Pose2d sotmLookAhead(int iterations){
+    public Pose2d sotmLookAhead(int iterations, Translation2d targetTranslation){
         Pose2d futurePos = getFuturePos(m_shotTimeInt.get(getHubDist()));
         for(int i = 0; i < iterations; i++){
-            double futureShotTime = m_shotTimeInt.get(getHubTarget().getDistance(futurePos.getTranslation()));
+            double futureShotTime = m_shotTimeInt.get(targetTranslation.getDistance(futurePos.getTranslation()));
             futurePos = getFuturePos(futureShotTime);
         }
         return futurePos;

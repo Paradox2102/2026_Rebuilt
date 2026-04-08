@@ -49,7 +49,7 @@ public class HoodSubsystem extends SubsystemBase {
   
   public static enum HardCodedShotAngle {
     TOWER(23.5),
-    TRENCH(10.0);
+    TRENCH(18);
 
     public final double angle;
     HardCodedShotAngle(double angle){

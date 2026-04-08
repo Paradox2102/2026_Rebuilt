@@ -41,8 +41,6 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
     posePublisher.set(m_robotContainer.m_swerveSubsystem.getPose());
-    futurePosePublisher.set(m_robotContainer.m_swerveSubsystem.sotmLookAhead(3));
-    alignPosePublisher.set(new Pose2d(m_robotContainer.m_swerveSubsystem.sotmLookAhead(3).getTranslation(), m_robotContainer.m_swerveSubsystem.getPose().getRotation()));
     SmartDashboard.putBoolean("Align On", m_robotContainer.shouldAutoAlign.getAsBoolean());
     SmartDashboard.putNumber("current", m_pd.getTotalCurrent());
     // SmartDashboard.putNumber("bl current (6)", m_pd.getCurrent(6));

@@ -74,13 +74,13 @@ public class Vision {
       }
 
       openSimCameraViews();
+    }
+  }
 
-      SmartDashboard.putData(Commands.runOnce(() -> {
-            for(Cameras camera : Cameras.values()){
+  public void disableAllCameras(){
+    for(Cameras camera : Cameras.values()){
                 camera.toggleCameraDisabled();
             }
-        }).withName("Disable All Cameras").ignoringDisable(true));
-    }
   }
 
   public static Pose2d getAprilTagPose(int aprilTag, Transform2d robotOffset) {

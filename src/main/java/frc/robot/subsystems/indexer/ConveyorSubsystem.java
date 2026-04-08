@@ -39,9 +39,12 @@ public class ConveyorSubsystem extends SubsystemBase {
   
   private double m_simVelocity = 0;
 
-  public Trigger isJammed = new Trigger(() -> 
+  public Trigger isJammedForward = new Trigger(() -> 
     m_pid.getControlType() == ControlType.kVelocity && m_pid.getSetpoint() > 0 && getVelocity() <= IndexerConstants.k_conveyorStallDeadzone
-  ).debounce(1.25);
+  ).debounce(.5);
+  public Trigger isJammedBackward = new Trigger(() -> 
+    m_pid.getControlType() == ControlType.kVelocity && m_pid.getSetpoint() < 0 && getVelocity() >= -IndexerConstants.k_conveyorStallDeadzone
+  ).debounce(.5);
 
   /** Creates a new ConveyorSubsystem. */
   public ConveyorSubsystem() {

@@ -53,8 +53,7 @@ public class IntakePivotSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
     SmartDashboard.putBoolean("retracted", isIntakeRetracted.getAsBoolean());
     SmartDashboard.putNumber("intake pos", getPosition());
-    SmartDashboard.putNumber("intake motor output", m_pivotMotor.getAppliedOutput());
-    SmartDashboard.putNumber("intake motor current", m_pivotMotor.getOutputCurrent());
+    SmartDashboard.putNumber("intake rel pos", m_pivotMotor.getEncoder().getPosition());
     m_pivotMotor.set(m_pid.calculate(getPosition()) + (IntakeConstants.k_pivotCosF * Math.cos(Math.toRadians(getPosition()))));
   }
 
@@ -82,8 +81,14 @@ public class IntakePivotSubsystem extends SubsystemBase {
     }, this);
   }
 
+  public Command ejectRaise(){
+    return Commands.runOnce(() -> {
+      setPosition(IntakeConstants.k_pivotEjectAngle);
+    }, this);
+  }
+
   public RepeatCommand agitate(){
-    return new SequentialCommandGroup(quickRaise(), new WaitCommand(1), extend(), new WaitCommand(0.5)).repeatedly();
+    return new SequentialCommandGroup(quickRaise(), new WaitCommand(0.5), extend(), new WaitCommand(0.5)).repeatedly();
   }
 
   public void setPosition(double pos){

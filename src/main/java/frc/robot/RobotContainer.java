@@ -66,8 +66,9 @@ public class RobotContainer {
 
   final Trigger m_noIntakeShoot = new Trigger(() -> m_isReadyToShoot.getAsBoolean() && !m_driverController.leftTrigger().getAsBoolean());
 
-  final Trigger teleConveyorJammed = new Trigger(() -> m_conveyorSubsystem.isJammed.getAsBoolean() && !m_autonomous);
-  final Trigger teleKickerJammed = new Trigger(() -> m_kickerSubsystem.isJammed.getAsBoolean() && !m_autonomous);
+  final Trigger teleJammedForward = new Trigger(() -> m_conveyorSubsystem.isJammedForward.getAsBoolean() && !m_autonomous);
+  final Trigger teleJammedBackward = new Trigger(() -> m_conveyorSubsystem.isJammedBackward.getAsBoolean() && !m_autonomous);
+
 
   SendableChooser<PathPlannerAuto> m_autoChooser = new SendableChooser<>();
   
@@ -105,7 +106,8 @@ public class RobotContainer {
     m_hoodSubsystem.setDefaultCommand(m_hoodSubsystem.returnHood());
     m_kickerSubsystem.setDefaultCommand(m_kickerSubsystem.runPassiveOut());
 
-    teleConveyorJammed.onTrue(new ParallelDeadlineGroup(new WaitCommand(0.25), m_conveyorSubsystem.runNormal(false)));
+    teleJammedForward.onTrue(new ParallelDeadlineGroup(new WaitCommand(0.25), m_conveyorSubsystem.runNormal(false)));
+    teleJammedBackward.onTrue(new ParallelDeadlineGroup(new WaitCommand(0.25), m_conveyorSubsystem.runNormal(true)));
     // teleKickerJammed.onTrue(new ParallelDeadlineGroup(new WaitCommand(0.25), m_kickerSubsystem.run(false)));
 
     m_driverController.leftTrigger().whileTrue(new SequentialCommandGroup(
@@ -146,7 +148,7 @@ public class RobotContainer {
 
     m_noIntakeShoot.whileTrue(
       new SequentialCommandGroup(
-        new WaitCommand(1),
+        new WaitCommand(0.75),
         new ParallelCommandGroup(m_pivotSubsystem.agitate(), m_rollerSubsystem.run(true))));
     
     m_swerveSubsystem.isDrivetrainAligned.whileTrue(m_fuelLaunchSim.repeatedlyLaunchFuel(() -> 10, () -> 30));
@@ -155,7 +157,8 @@ public class RobotContainer {
       m_pivotSubsystem.extend().andThen(new ParallelCommandGroup(
           m_conveyorSubsystem.runNormal(false),
           m_kickerSubsystem.run(false),
-          m_rollerSubsystem.run(false)
+          m_rollerSubsystem.run(false),
+          m_pivotSubsystem.ejectRaise()
           ))
     );
     
@@ -170,20 +173,8 @@ public class RobotContainer {
         m_shooterSubsystem.hardCodedShot(HardCodedShotRPM.TRENCH.rpm)
     ));
 
-    // m_driverController.povLeft().onTrue(new ConditionalCommand(
-    //   // m_climberSubsystem.retract(),
-    //   new SequentialCommandGroup(
-    //     m_pivotSubsystem.retract(),
-    //     // m_climberSubsystem.extend(),
-    //     new ConditionalCommand(
-    //       m_swerveSubsystem.PIDClimb(),
-    //       new InstantCommand(),
-    //        () -> m_swerveSubsystem.isAutoAlignOn())
-    //        ),
-    //   m_climberSubsystem.isClimberExtended)
-    // );
+    m_driverController.povRight().onTrue(m_swerveSubsystem.resetGyroDisableCameras());
 
-    // m_driverController.povRight().onTrue(m_climberSubsystem.climbingRetract());
 
     m_operatorController.button(1).whileTrue(
           new ParallelCommandGroup(m_conveyorSubsystem.runNormal(true), m_kickerSubsystem.run(true) ,m_pivotSubsystem.agitate(), m_rollerSubsystem.runInSlow())
@@ -214,14 +205,14 @@ public class RobotContainer {
     NamedCommands.registerCommand("Intake", new ParallelCommandGroup(
       m_pivotSubsystem.extend(),
       m_rollerSubsystem.run(true),
-      new ConditionalCommand(m_conveyorSubsystem.runNormal(false), m_conveyorSubsystem.runSlow(true), m_conveyorSubsystem.isJammed)));
+      new ConditionalCommand(m_conveyorSubsystem.runNormal(false), m_conveyorSubsystem.runSlow(true), m_conveyorSubsystem.isJammedForward)));
     // NamedCommands.registerCommand("Climber Out", new SequentialCommandGroup(
     //     m_pivotSubsystem.retract().deadlineFor(m_rollerSubsystem.run(true)),
     //     m_climberSubsystem.extend()));
     // NamedCommands.registerCommand("Climb", m_climberSubsystem.climbingRetract());
     NamedCommands.registerCommand("Feed", 
         new ParallelCommandGroup(
-          new ConditionalCommand(m_conveyorSubsystem.runNormal(false), m_conveyorSubsystem.runNormal(true), m_conveyorSubsystem.isJammed), 
+          new ConditionalCommand(m_conveyorSubsystem.runNormal(false), m_conveyorSubsystem.runNormal(true), m_conveyorSubsystem.isJammedForward), 
           m_kickerSubsystem.run(true), m_pivotSubsystem.agitate(), m_rollerSubsystem.runInSlow()));
     NamedCommands.registerCommand("Wait", Commands.run(() -> {}).until(() -> m_swerveSubsystem.isDrivetrainAligned.getAsBoolean() && m_shooterSubsystem.isShooterOnTarget.getAsBoolean() && m_hoodSubsystem.isHoodOnTarget.getAsBoolean()));
     NamedCommands.registerCommand("Rev Double Swipe", m_shooterSubsystem.shootCommand(() -> ShooterConstants.k_doubleSwipeShotDist, false).alongWith(m_hoodSubsystem.returnHood()));
