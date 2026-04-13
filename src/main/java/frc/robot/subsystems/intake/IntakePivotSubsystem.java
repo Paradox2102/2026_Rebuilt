@@ -88,7 +88,7 @@ public class IntakePivotSubsystem extends SubsystemBase {
   }
 
   public RepeatCommand agitate(){
-    return new SequentialCommandGroup(quickRaise(), new WaitCommand(0.5), extend(), new WaitCommand(0.5)).repeatedly();
+    return new SequentialCommandGroup(quickRaise(), new WaitCommand(1), extend(), new WaitCommand(0.5)).repeatedly();
   }
 
   public void setPosition(double pos){
@@ -96,7 +96,12 @@ public class IntakePivotSubsystem extends SubsystemBase {
   }
 
   public double getPosition() {
-    return RobotBase.isReal() ? m_encoder.getPosition() : m_simAngleDegrees;
+    double angle = RobotBase.isReal() ? m_encoder.getPosition() : m_simAngleDegrees;
+    if(angle > 300){
+      return 0.1;
+    } else {
+      return angle;
+    }
   }
 
   public void simulationPeriodic() {

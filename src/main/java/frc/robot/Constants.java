@@ -129,7 +129,7 @@ public final class Constants
     public static final double k_pivotLength = 0.7;
     public static final double k_pivotMaxRotation = 105;
     public static final double k_pivotDeadzone = 2;
-    public static final double k_pivotEncoderZero = 0.78;
+    public static final double k_pivotEncoderZero = 0.72;
 
     public static final double k_pivotPullInHeight = 61.0;
     public static final double k_pivotEjectAngle = 25;
@@ -182,7 +182,8 @@ public final class Constants
       {4.5, 28},
       {4.75, 29},
       {5, 30},
-      {5.25, 31}
+      {5.25, 31},
+      {14, 35}
     };
 
     public static final double[][] k_shotSpeeds = {
@@ -202,7 +203,8 @@ public final class Constants
       {4.5, 3500},
       {4.75, 3640},
       {5, 3750},
-      {5.25, 3800}
+      {5.25, 3800},
+      {14, 6750}
     };
 
     public static final double k_doubleSwipeShotDist = 0;

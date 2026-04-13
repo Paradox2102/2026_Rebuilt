@@ -157,8 +157,8 @@ public class RobotContainer {
       m_pivotSubsystem.extend().andThen(new ParallelCommandGroup(
           m_conveyorSubsystem.runNormal(false),
           m_kickerSubsystem.run(false),
-          m_rollerSubsystem.run(false),
-          m_pivotSubsystem.ejectRaise()
+          m_rollerSubsystem.run(false)//,
+          // m_pivotSubsystem.ejectRaise()
           ))
     );
     
@@ -174,11 +174,19 @@ public class RobotContainer {
     ));
 
     m_driverController.povRight().onTrue(m_swerveSubsystem.resetGyroDisableCameras());
+    m_driverController.povLeft().onTrue(
+      new ParallelCommandGroup(
+        m_conveyorSubsystem.runNormal(true), m_kickerSubsystem.run(true),
+        new SequentialCommandGroup(
+            new WaitCommand(0.75),
+            new ParallelCommandGroup(m_pivotSubsystem.agitate(), m_rollerSubsystem.run(true)))));
 
 
     m_operatorController.button(1).whileTrue(
-          new ParallelCommandGroup(m_conveyorSubsystem.runNormal(true), m_kickerSubsystem.run(true) ,m_pivotSubsystem.agitate(), m_rollerSubsystem.runInSlow())
-        );
+          new ParallelCommandGroup(m_conveyorSubsystem.runNormal(true), m_kickerSubsystem.run(true),
+          new SequentialCommandGroup(
+            new WaitCommand(0.75),
+            new ParallelCommandGroup(m_pivotSubsystem.agitate(), m_rollerSubsystem.run(true)))));
     m_operatorController.button(2).onTrue(m_pivotSubsystem.retract());    
     // m_operatorController.button(3).whileTrue(m_climberSubsystem.setPower(-ClimberConstants.k_manualClimbPower)).onFalse(m_climberSubsystem.setPower(0));
     // m_operatorController.button(4).whileTrue(m_climberSubsystem.setPower(ClimberConstants.k_manualClimbPower)).onFalse(m_climberSubsystem.setPower(0));
@@ -225,6 +233,10 @@ public class RobotContainer {
     m_autoChooser.addOption("centerR", new PathPlannerAuto("auto4"));
     m_autoChooser.addOption("double swipe r", new PathPlannerAuto("auto8"));
     m_autoChooser.addOption("double swipe l", new PathPlannerAuto("auto7"));
+    m_autoChooser.addOption("double swipe r close", new PathPlannerAuto("auto8 safe"));
+    m_autoChooser.addOption("double swipe l close", new PathPlannerAuto("auto7 safe"));
+    m_autoChooser.addOption("double swipe r bump", new PathPlannerAuto("auto8 bump"));
+    m_autoChooser.addOption("double swipe l bump", new PathPlannerAuto("auto7 bump"));
 
     SmartDashboard.putData("auto choice", m_autoChooser);
   }

@@ -13,6 +13,7 @@ import com.revrobotics.spark.SparkSim;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
@@ -41,10 +42,10 @@ public class ConveyorSubsystem extends SubsystemBase {
 
   public Trigger isJammedForward = new Trigger(() -> 
     m_pid.getControlType() == ControlType.kVelocity && m_pid.getSetpoint() > 0 && getVelocity() <= IndexerConstants.k_conveyorStallDeadzone
-  ).debounce(.5);
+  ).debounce(.5, DebounceType.kRising).debounce(0.75, DebounceType.kFalling);
   public Trigger isJammedBackward = new Trigger(() -> 
     m_pid.getControlType() == ControlType.kVelocity && m_pid.getSetpoint() < 0 && getVelocity() >= -IndexerConstants.k_conveyorStallDeadzone
-  ).debounce(.5);
+  ).debounce(.5, DebounceType.kRising).debounce(0.75, DebounceType.kFalling);
 
   /** Creates a new ConveyorSubsystem. */
   public ConveyorSubsystem() {

@@ -277,9 +277,9 @@ public class SwerveSubsystem extends SubsystemBase {
                 lock();
             } else {
                 if(isRedAlliance()){
-                    drive(new Translation2d(2*y, 2*x), computeHubAim(), true);
+                    drive(new Translation2d(1.25*y, 1.25*x), computeHubAim(), true);
                 } else {
-                    drive(new Translation2d(-2*y, -2*x), computeHubAim(), true);
+                    drive(new Translation2d(-1.25*y, -1.25*x), computeHubAim(), true);
                 }
             }    
         }, this);
