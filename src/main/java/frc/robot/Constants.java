@@ -53,7 +53,8 @@ public final class Constants
     public static final double k_rotateD = 0;
 
     public static final double k_rotateIZone = 7.5;
-    public static final double k_rotateDeadzone = 7.5;
+    public static final double k_hubRotateDeadzone = 7.5;
+    public static final double k_passRotateDeadzone = 19.5;
     public static final double k_xLockDeadzone = 2;
 
     public static final double k_alignTolerance = 0.1;

@@ -86,7 +86,7 @@ public class SwerveSubsystem extends SubsystemBase {
     
     private boolean spiiningRight = false;
     //ready to shoot if drivetrain is pointing towards aiming target, also requires chassis to be below a specific speed if shooting into hub
-    public Trigger isDrivetrainAligned = new Trigger(() -> (Math.abs(m_curPos.getRotation().getDegrees() - getHubAngle()) <= DrivebaseConstants.k_rotateDeadzone) || (Math.abs(m_curPos.getRotation().getDegrees() - getPassAngle()) <= DrivebaseConstants.k_rotateDeadzone));
+    public Trigger isDrivetrainAligned = new Trigger(() -> (Math.abs(m_curPos.getRotation().getDegrees() - getHubAngle()) <= DrivebaseConstants.k_hubRotateDeadzone) || (Math.abs(m_curPos.getRotation().getDegrees() - getPassAngle()) <= DrivebaseConstants.k_passRotateDeadzone));
 
     private boolean m_autoAlignOn = true;
 
