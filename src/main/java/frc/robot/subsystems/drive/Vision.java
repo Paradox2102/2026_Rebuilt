@@ -61,9 +61,13 @@ public class Vision {
 
   private Field2d m_field2d;
 
-  public Vision(Supplier<Pose2d> m_currentPose, Field2d field) {
+  public SwerveSubsystem m_swerveSubsystem;
+
+  public Vision(Supplier<Pose2d> m_currentPose, Field2d field, SwerveSubsystem swerveSubsystem) {
+    m_swerveSubsystem = swerveSubsystem;
     this.m_currentPose = m_currentPose;
     this.m_field2d = field;
+
 
     if (Robot.isSimulation()) {
       m_visionSim = new VisionSystemSim("Vision");

@@ -85,6 +85,8 @@ public class SwerveSubsystem extends SubsystemBase {
     private Pose2d m_sotmPassPos = new Pose2d();
     
     private boolean spiiningRight = false;
+
+    public boolean m_isPassing = false;
     //ready to shoot if drivetrain is pointing towards aiming target, also requires chassis to be below a specific speed if shooting into hub
     public Trigger isDrivetrainAligned = new Trigger(() -> (Math.abs(m_curPos.getRotation().getDegrees() - getHubAngle()) <= DrivebaseConstants.k_hubRotateDeadzone) || (Math.abs(m_curPos.getRotation().getDegrees() - getPassAngle()) <= DrivebaseConstants.k_passRotateDeadzone));
 
@@ -122,7 +124,7 @@ public class SwerveSubsystem extends SubsystemBase {
                     // periodically when they are not moving.
         setupPathPlanner();
         //RobotModeTriggers.autonomous().onTrue(Commands.runOnce(this::zeroGyroWithAlliance));
-        m_vision = new Vision(() -> getPose(), m_swerveDrive.field);
+        m_vision = new Vision(() -> getPose(), m_swerveDrive.field, this);
 
         m_orientPID.enableContinuousInput(-180, 180);
         m_orientPID.setIZone(DrivebaseConstants.k_rotateIZone);
@@ -287,6 +289,7 @@ public class SwerveSubsystem extends SubsystemBase {
     
     public Command rotateToPass(DoubleSupplier xAxis, DoubleSupplier yAxis){
         return Commands.run(() -> {
+            m_isPassing = true;
             double x = Math.abs(xAxis.getAsDouble()) > 2*OperatorConstants.k_deadBand ? xAxis.getAsDouble() : 0;
             double y = Math.abs(yAxis.getAsDouble()) > 2*OperatorConstants.k_deadBand ? yAxis.getAsDouble() : 0;
             if(Math.abs(m_curPos.getRotation().getDegrees() - getHubAngle()) < DrivebaseConstants.k_xLockDeadzone && x == 0 && y == 0){
@@ -298,7 +301,7 @@ public class SwerveSubsystem extends SubsystemBase {
                     drive(new Translation2d(-2*y, -2*x), computePassAim(), true);
                 }
             }
-        }, this);
+        }, this).finallyDo(()->{m_isPassing = false;});
     }
 
     public double computeHubAim() {
