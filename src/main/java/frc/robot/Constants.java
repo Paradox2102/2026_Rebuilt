@@ -368,6 +368,7 @@ public final class Constants
     public static final int br_turn = 8;
     public static final int intake_pivot = 10;
     public static final int intake_roller = 11;
+    public static final int intake_follow = 12;
     public static final int conveyor = 20;
     public static final int kicker = 21;
     public static final int shooter_1 = 30;

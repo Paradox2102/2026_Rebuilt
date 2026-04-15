@@ -29,8 +29,7 @@ import frc.robot.Constants.CANIDConstants;
 
 public class IntakeRollerSubsystem extends SubsystemBase {
   private SparkFlex m_intakeRollerMotor = new SparkFlex(CANIDConstants.intake_roller, MotorType.kBrushless);
-  //TODO: Needs a CANID
-  private SparkFlex m_followIntakeMotor = new SparkFlex(0, MotorType.kBrushless);
+  private SparkFlex m_followIntakeMotor = new SparkFlex(CANIDConstants.intake_follow, MotorType.kBrushless);
   //todo: maybe switch to voltage control
   private SparkClosedLoopController m_pid = m_intakeRollerMotor.getClosedLoopController();
   private RelativeEncoder m_encoder = m_intakeRollerMotor.getEncoder();
