@@ -201,7 +201,10 @@ public class RobotContainer {
 
   private void setupAuto(){
     NamedCommands.registerCommand("Shoot", new ParallelCommandGroup(
-            m_swerveSubsystem.rotateToHub(() -> 0, () -> 0),
+            new ConditionalCommand(
+              m_swerveSubsystem.rotateToPass(() -> 0, () -> 0),
+              m_swerveSubsystem.rotateToHub(() -> 0, () -> 0),
+              () -> m_swerveSubsystem.getPose().getX() > 4 && m_swerveSubsystem.getPose().getX() < 12),
             m_hoodSubsystem.pitchHood(() -> m_swerveSubsystem.getHubDist()),
             m_shooterSubsystem.shootCommand(() -> m_swerveSubsystem.getHubDist(), false)
           ));
