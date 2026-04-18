@@ -156,12 +156,12 @@ public final class Constants
     public static final SparkFlexConfig k_pivotConfig = new SparkFlexConfig();
 
     static {
-      k_rollerConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_rollerCurrent).inverted(true);
+      k_rollerConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_rollerCurrent).inverted(false);
 
       k_rollerConfig.closedLoop.p(k_rollerP).feedbackSensor(FeedbackSensor.kPrimaryEncoder).
       feedForward.kV(k_rollerKV);
 
-      k_rollerFollowConfig.apply(k_rollerConfig).follow(CANIDConstants.intake_roller, false);
+      k_rollerFollowConfig.apply(k_rollerConfig).follow(CANIDConstants.intake_roller, true);
 
       k_pivotConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_pivotCurrent).inverted(false)
       .absoluteEncoder.zeroOffset(k_pivotEncoderZero).positionConversionFactor(360).inverted(true);

@@ -42,7 +42,7 @@ public class IntakeRollerSubsystem extends SubsystemBase {
   /** Creates a new intakeRollerSubsystem. */
   public IntakeRollerSubsystem() {
     m_intakeRollerMotor.configure(IntakeConstants.k_rollerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    m_followIntakeMotor.configure(IntakeConstants.k_rollerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    m_followIntakeMotor.configure(IntakeConstants.k_rollerFollowConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   public Command run(boolean in){
