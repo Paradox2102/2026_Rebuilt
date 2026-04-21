@@ -144,7 +144,7 @@ public final class Constants
     public static final double k_pivotCosF = 0;
 
     public static final int k_rollerCurrent = 40;
-    public static final double k_rollerInSpeed = 6000;
+    public static final double k_rollerInSpeed = 6780;
     public static final double k_rollerOutSpeed = -6000;
     public static final double k_rollerSlowInSpeed = 1000;
     

@@ -240,6 +240,17 @@ public class RobotContainer {
     m_autoChooser.addOption("double swipe l close", new PathPlannerAuto("auto7 safe"));
     m_autoChooser.addOption("double swipe r bump", new PathPlannerAuto("auto8 bump"));
     m_autoChooser.addOption("double swipe l bump", new PathPlannerAuto("auto7 bump"));
+    m_autoChooser.addOption("3nz trench bump l", new PathPlannerAuto("auto9 bump"));
+    m_autoChooser.addOption("3nz trench bump r", new PathPlannerAuto("auto10 bump"));
+    m_autoChooser.addOption("3nz trench trench l", new PathPlannerAuto("auto9 trench"));
+    m_autoChooser.addOption("3nz trench trench r", new PathPlannerAuto("auto10 trench"));
+    m_autoChooser.addOption("3nz bump bump l", new PathPlannerAuto("auto11"));
+    m_autoChooser.addOption("3nz bump bump r", new PathPlannerAuto("auto12"));
+    m_autoChooser.addOption("3nz spike trench l", new PathPlannerAuto("auto13 trench"));
+    m_autoChooser.addOption("3nz spike trench r", new PathPlannerAuto("auto14 trench"));
+    m_autoChooser.addOption("3nz spike bump l", new PathPlannerAuto("auto13 bump"));
+    m_autoChooser.addOption("3nz spike bump r", new PathPlannerAuto("auto14 bump"));
+    m_autoChooser.addOption("3nz depot bump", new PathPlannerAuto("auto11 depot"));
 
     SmartDashboard.putData("auto choice", m_autoChooser);
   }
