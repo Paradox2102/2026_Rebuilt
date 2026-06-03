@@ -130,13 +130,13 @@ public final class Constants
     public static final double k_pivotLength = 0.7;
     public static final double k_pivotMaxRotation = 105;
     public static final double k_pivotDeadzone = 2;
-    public static final double k_pivotEncoderZero = 0.72;
+    public static final double k_pivotEncoderZero = 0.59;
 
     public static final double k_pivotPullInHeight = 61.0;
     public static final double k_pivotEjectAngle = 25;
 
     public static final double k_rollerKV = 0.002;
-    public static final double k_rollerP = 0.00025;
+    public static final double k_rollerP = 0.000125;
 
     public static final double k_pivotP = 0.02; 
     public static final double k_pivotI = 0; //0.1
@@ -144,8 +144,8 @@ public final class Constants
     public static final double k_pivotCosF = 0;
 
     public static final int k_rollerCurrent = 40;
-    public static final double k_rollerInSpeed = 6780;
-    public static final double k_rollerOutSpeed = -6000;
+    public static final double k_rollerInSpeed = 3000;
+    public static final double k_rollerOutSpeed = -4000;
     public static final double k_rollerSlowInSpeed = 1000;
     
     public static final int k_pivotCurrent = 60;
@@ -156,7 +156,7 @@ public final class Constants
     public static final SparkFlexConfig k_pivotConfig = new SparkFlexConfig();
 
     static {
-      k_rollerConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_rollerCurrent).inverted(false);
+      k_rollerConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(k_rollerCurrent).inverted(true);
 
       k_rollerConfig.closedLoop.p(k_rollerP).feedbackSensor(FeedbackSensor.kPrimaryEncoder).
       feedForward.kV(k_rollerKV);
@@ -187,7 +187,7 @@ public final class Constants
       {4.75, 29},
       {5, 30},
       {5.25, 31},
-      {14, 35}
+      {14, 33}
     };
 
     public static final double[][] k_shotSpeeds = {
@@ -208,7 +208,7 @@ public final class Constants
       {4.75, 3640},
       {5, 3750},
       {5.25, 3800},
-      {14, 6750}
+      {14, 4400}
     };
 
     public static final double k_doubleSwipeShotDist = 0;

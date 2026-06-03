@@ -26,13 +26,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "auto10_1"
+            "pathName": "auto9_1"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 2.0
+            "waitTime": 2.5
           }
         },
         {
@@ -42,7 +42,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "auto10_3"
+                  "pathName": "auto9_4"
                 }
               },
               {

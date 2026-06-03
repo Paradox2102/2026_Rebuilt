@@ -251,6 +251,8 @@ public class RobotContainer {
     m_autoChooser.addOption("3nz spike bump l", new PathPlannerAuto("auto13 bump"));
     m_autoChooser.addOption("3nz spike bump r", new PathPlannerAuto("auto14 bump"));
     m_autoChooser.addOption("3nz depot bump", new PathPlannerAuto("auto11 depot"));
+    m_autoChooser.addOption("3nz trench trench fast l", new PathPlannerAuto("auto9 trench fast"));
+    m_autoChooser.addOption("3nz trench trench fast r", new PathPlannerAuto("auto10 trench fast"));
 
     SmartDashboard.putData("auto choice", m_autoChooser);
   }

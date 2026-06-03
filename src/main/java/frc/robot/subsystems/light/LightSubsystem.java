@@ -49,7 +49,8 @@ public class LightSubsystem extends SubsystemBase {
   private boolean m_isScrolling = true;
   public final class LedPatterns {
       public static LEDPattern m_disabledPattern = LEDPattern.steps(Map.of(0, Color.kRed, 0.16, Color.kBlue, 0.33, new Color(1.0f, 0.35f, 0.0f),0.49, Color.kRed, 0.66, Color.kBlue, 0.83, new Color(1.0f, 0.35f, 0.0f))).scrollAtAbsoluteSpeed(LightConstants.k_disabledVelocity, LightConstants.k_ledSpacing);
-      
+
+      public static LEDPattern m_prideFlag = LEDPattern.steps(Map.of(0, new Color(0.357f, 0.808f, 0.980f), 0.1, new Color(0.961f, 0.663f, 0.722f), 0.2, Color.kWhite, 0.3, new Color(0.961f, 0.663f, 0.722f), 0.4, new Color(0.357f, 0.808f, 0.980f), 0.6, new Color(0.961f, 0.663f, 0.722f), 0.7, Color.kWhite, 0.8, new Color(0.961f, 0.663f, 0.722f), 0.9, new Color(0.357f, 0.808f, 0.980f)));
     }  
 
   private final class ShiftCommand extends Command {
@@ -77,7 +78,11 @@ public class LightSubsystem extends SubsystemBase {
       }
       m_timer.start();
       m_color = getColor();
-      applyPattern(m_color, false);
+      // if(getColor() == Color.kPurple){
+      //   m_pattern = LedPatterns.m_prideFlag;
+      // } else {
+        applyPattern(m_color, false);
+      // }  
     }
     
     public Color getColor(){
